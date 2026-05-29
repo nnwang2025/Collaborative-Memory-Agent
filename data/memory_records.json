@@ -1,0 +1,290 @@
+[
+  {
+    "record_id": "semantic-001",
+    "time_start": "2026-05-01 09:00",
+    "time_end": "2026-05-01 09:30",
+    "participants": [
+      "架构师",
+      "算法工程师"
+    ],
+    "topic_hints": [
+      "Agent架构设计",
+      "Collaborative Memory Agent"
+    ],
+    "entity_memory": {
+      "tech": [
+        "Agent架构设计",
+        "Agent + RAG"
+      ],
+      "module": [
+        "Coordinator Agent",
+        "Skill"
+      ]
+    },
+    "summary": "Agent架构设计 的项目知识沉淀：Coordinator Agent 负责意图识别、route_score 计算和 Skill 聚合。 该结论用于 Collaborative Memory Agent 的长期记忆检索、证据聚合和回答生成。"
+  },
+  {
+    "record_id": "semantic-002",
+    "time_start": "2026-05-02 09:00",
+    "time_end": "2026-05-02 09:30",
+    "participants": [
+      "架构师",
+      "算法工程师"
+    ],
+    "topic_hints": [
+      "混合检索",
+      "Collaborative Memory Agent"
+    ],
+    "entity_memory": {
+      "tech": [
+        "混合检索",
+        "Agent + RAG"
+      ],
+      "module": [
+        "Coordinator Agent",
+        "Skill"
+      ]
+    },
+    "summary": "混合检索 的项目知识沉淀：系统同时使用 Exact Match、BM25、Entity Retrieval、Embedding Retrieval 和 Rerank。 该结论用于 Collaborative Memory Agent 的长期记忆检索、证据聚合和回答生成。"
+  },
+  {
+    "record_id": "semantic-003",
+    "time_start": "2026-05-03 09:00",
+    "time_end": "2026-05-03 09:30",
+    "participants": [
+      "架构师",
+      "算法工程师"
+    ],
+    "topic_hints": [
+      "BM25",
+      "Collaborative Memory Agent"
+    ],
+    "entity_memory": {
+      "tech": [
+        "BM25",
+        "Agent + RAG"
+      ],
+      "module": [
+        "Coordinator Agent",
+        "Skill"
+      ]
+    },
+    "summary": "BM25 的项目知识沉淀：BM25 用于处理中文关键词、Issue 标题、Commit Message 和短文本召回。 该结论用于 Collaborative Memory Agent 的长期记忆检索、证据聚合和回答生成。"
+  },
+  {
+    "record_id": "semantic-004",
+    "time_start": "2026-05-04 09:00",
+    "time_end": "2026-05-04 09:30",
+    "participants": [
+      "架构师",
+      "算法工程师"
+    ],
+    "topic_hints": [
+      "Embedding Retrieval",
+      "Collaborative Memory Agent"
+    ],
+    "entity_memory": {
+      "tech": [
+        "Embedding Retrieval",
+        "Agent + RAG"
+      ],
+      "module": [
+        "Coordinator Agent",
+        "Skill"
+      ]
+    },
+    "summary": "Embedding Retrieval 的项目知识沉淀：Embedding Retrieval 用于处理模糊自然语言和语义相似问题。 该结论用于 Collaborative Memory Agent 的长期记忆检索、证据聚合和回答生成。"
+  },
+  {
+    "record_id": "semantic-005",
+    "time_start": "2026-05-05 09:00",
+    "time_end": "2026-05-05 09:30",
+    "participants": [
+      "架构师",
+      "算法工程师"
+    ],
+    "topic_hints": [
+      "Rerank",
+      "Collaborative Memory Agent"
+    ],
+    "entity_memory": {
+      "tech": [
+        "Rerank",
+        "Agent + RAG"
+      ],
+      "module": [
+        "Coordinator Agent",
+        "Skill"
+      ]
+    },
+    "summary": "Rerank 的项目知识沉淀：Rerank 根据实体重合度、来源可信度和时间线重新排序候选证据。 该结论用于 Collaborative Memory Agent 的长期记忆检索、证据聚合和回答生成。"
+  },
+  {
+    "record_id": "semantic-006",
+    "time_start": "2026-05-06 09:00",
+    "time_end": "2026-05-06 09:30",
+    "participants": [
+      "架构师",
+      "算法工程师"
+    ],
+    "topic_hints": [
+      "Memory设计",
+      "Collaborative Memory Agent"
+    ],
+    "entity_memory": {
+      "tech": [
+        "Memory设计",
+        "Agent + RAG"
+      ],
+      "module": [
+        "Coordinator Agent",
+        "Skill"
+      ]
+    },
+    "summary": "Memory设计 的项目知识沉淀：长期记忆被拆分为 Semantic、Episodic、Entity、Relationship 和 Decision Memory。 该结论用于 Collaborative Memory Agent 的长期记忆检索、证据聚合和回答生成。"
+  },
+  {
+    "record_id": "semantic-007",
+    "time_start": "2026-05-07 09:00",
+    "time_end": "2026-05-07 09:30",
+    "participants": [
+      "架构师",
+      "算法工程师"
+    ],
+    "topic_hints": [
+      "LangGraph工作流",
+      "Collaborative Memory Agent"
+    ],
+    "entity_memory": {
+      "tech": [
+        "LangGraph工作流",
+        "Agent + RAG"
+      ],
+      "module": [
+        "Coordinator Agent",
+        "Skill"
+      ]
+    },
+    "summary": "LangGraph工作流 的项目知识沉淀：后续计划把 Coordinator 的路由与聚合升级成更清晰的 LangGraph workflow。 该结论用于 Collaborative Memory Agent 的长期记忆检索、证据聚合和回答生成。"
+  },
+  {
+    "record_id": "semantic-008",
+    "time_start": "2026-05-08 09:00",
+    "time_end": "2026-05-08 09:30",
+    "participants": [
+      "架构师",
+      "算法工程师"
+    ],
+    "topic_hints": [
+      "多Skill路由",
+      "Collaborative Memory Agent"
+    ],
+    "entity_memory": {
+      "tech": [
+        "多Skill路由",
+        "Agent + RAG"
+      ],
+      "module": [
+        "Coordinator Agent",
+        "Skill"
+      ]
+    },
+    "summary": "多Skill路由 的项目知识沉淀：memory、problem、dependency、entrypoint、document Skill 分别处理不同研发协作问题。 该结论用于 Collaborative Memory Agent 的长期记忆检索、证据聚合和回答生成。"
+  },
+  {
+    "record_id": "semantic-009",
+    "time_start": "2026-05-09 09:00",
+    "time_end": "2026-05-09 09:30",
+    "participants": [
+      "架构师",
+      "算法工程师"
+    ],
+    "topic_hints": [
+      "实体抽取",
+      "Collaborative Memory Agent"
+    ],
+    "entity_memory": {
+      "tech": [
+        "实体抽取",
+        "Agent + RAG"
+      ],
+      "module": [
+        "Coordinator Agent",
+        "Skill"
+      ]
+    },
+    "summary": "实体抽取 的项目知识沉淀：实体抽取会识别模块、文件、函数、Issue、Commit、技术关键词和项目角色。 该结论用于 Collaborative Memory Agent 的长期记忆检索、证据聚合和回答生成。"
+  },
+  {
+    "record_id": "semantic-010",
+    "time_start": "2026-05-10 09:00",
+    "time_end": "2026-05-10 09:30",
+    "participants": [
+      "架构师",
+      "算法工程师"
+    ],
+    "topic_hints": [
+      "长期记忆管理",
+      "Collaborative Memory Agent"
+    ],
+    "entity_memory": {
+      "tech": [
+        "长期记忆管理",
+        "Agent + RAG"
+      ],
+      "module": [
+        "Coordinator Agent",
+        "Skill"
+      ]
+    },
+    "summary": "长期记忆管理 的项目知识沉淀：Memory Manager 统一管理记忆写入、更新、去重、证据绑定和冷启动加载。 该结论用于 Collaborative Memory Agent 的长期记忆检索、证据聚合和回答生成。"
+  },
+  {
+    "record_id": "semantic-011",
+    "time_start": "2026-05-11 09:00",
+    "time_end": "2026-05-11 09:30",
+    "participants": [
+      "架构师",
+      "算法工程师"
+    ],
+    "topic_hints": [
+      "检索优化",
+      "Collaborative Memory Agent"
+    ],
+    "entity_memory": {
+      "tech": [
+        "检索优化",
+        "Agent + RAG"
+      ],
+      "module": [
+        "Coordinator Agent",
+        "Skill"
+      ]
+    },
+    "summary": "检索优化 的项目知识沉淀：检索优化重点是降低无关聊天命中，提高决策记忆和项目文档的权重。 该结论用于 Collaborative Memory Agent 的长期记忆检索、证据聚合和回答生成。"
+  },
+  {
+    "record_id": "semantic-012",
+    "time_start": "2026-05-12 09:00",
+    "time_end": "2026-05-12 09:30",
+    "participants": [
+      "架构师",
+      "算法工程师"
+    ],
+    "topic_hints": [
+      "Prompt设计",
+      "Collaborative Memory Agent"
+    ],
+    "entity_memory": {
+      "tech": [
+        "Prompt设计",
+        "Agent + RAG"
+      ],
+      "module": [
+        "Coordinator Agent",
+        "Skill"
+      ]
+    },
+    "summary": "Prompt设计 的项目知识沉淀：Prompt 需要约束回答先总结再给证据，避免只罗列搜索结果。 该结论用于 Collaborative Memory Agent 的长期记忆检索、证据聚合和回答生成。"
+  }
+]

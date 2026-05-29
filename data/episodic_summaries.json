@@ -1,0 +1,74 @@
+[
+  {
+    "record_id": "episode-001",
+    "time_start": "2026-05-01 10:00",
+    "time_end": "2026-05-01 11:00",
+    "summary": "团队围绕 Agent架构设计 完成一次设计讨论，结论是保持轻量 Agent + RAG MVP，并补充对应 mock 数据与证据输出。"
+  },
+  {
+    "record_id": "episode-002",
+    "time_start": "2026-05-02 10:00",
+    "time_end": "2026-05-02 11:00",
+    "summary": "团队围绕 混合检索 完成一次设计讨论，结论是保持轻量 Agent + RAG MVP，并补充对应 mock 数据与证据输出。"
+  },
+  {
+    "record_id": "episode-003",
+    "time_start": "2026-05-03 10:00",
+    "time_end": "2026-05-03 11:00",
+    "summary": "团队围绕 BM25 完成一次设计讨论，结论是保持轻量 Agent + RAG MVP，并补充对应 mock 数据与证据输出。"
+  },
+  {
+    "record_id": "episode-004",
+    "time_start": "2026-05-04 10:00",
+    "time_end": "2026-05-04 11:00",
+    "summary": "团队围绕 Embedding Retrieval 完成一次设计讨论，结论是保持轻量 Agent + RAG MVP，并补充对应 mock 数据与证据输出。"
+  },
+  {
+    "record_id": "episode-005",
+    "time_start": "2026-05-05 10:00",
+    "time_end": "2026-05-05 11:00",
+    "summary": "团队围绕 Rerank 完成一次设计讨论，结论是保持轻量 Agent + RAG MVP，并补充对应 mock 数据与证据输出。"
+  },
+  {
+    "record_id": "episode-006",
+    "time_start": "2026-05-06 10:00",
+    "time_end": "2026-05-06 11:00",
+    "summary": "团队围绕 Memory设计 完成一次设计讨论，结论是保持轻量 Agent + RAG MVP，并补充对应 mock 数据与证据输出。"
+  },
+  {
+    "record_id": "episode-007",
+    "time_start": "2026-05-07 10:00",
+    "time_end": "2026-05-07 11:00",
+    "summary": "团队围绕 LangGraph工作流 完成一次设计讨论，结论是保持轻量 Agent + RAG MVP，并补充对应 mock 数据与证据输出。"
+  },
+  {
+    "record_id": "episode-008",
+    "time_start": "2026-05-08 10:00",
+    "time_end": "2026-05-08 11:00",
+    "summary": "团队围绕 多Skill路由 完成一次设计讨论，结论是保持轻量 Agent + RAG MVP，并补充对应 mock 数据与证据输出。"
+  },
+  {
+    "record_id": "episode-009",
+    "time_start": "2026-05-09 10:00",
+    "time_end": "2026-05-09 11:00",
+    "summary": "团队围绕 实体抽取 完成一次设计讨论，结论是保持轻量 Agent + RAG MVP，并补充对应 mock 数据与证据输出。"
+  },
+  {
+    "record_id": "episode-010",
+    "time_start": "2026-05-10 10:00",
+    "time_end": "2026-05-10 11:00",
+    "summary": "团队围绕 长期记忆管理 完成一次设计讨论，结论是保持轻量 Agent + RAG MVP，并补充对应 mock 数据与证据输出。"
+  },
+  {
+    "record_id": "episode-011",
+    "time_start": "2026-05-11 10:00",
+    "time_end": "2026-05-11 11:00",
+    "summary": "团队围绕 检索优化 完成一次设计讨论，结论是保持轻量 Agent + RAG MVP，并补充对应 mock 数据与证据输出。"
+  },
+  {
+    "record_id": "episode-012",
+    "time_start": "2026-05-12 10:00",
+    "time_end": "2026-05-12 11:00",
+    "summary": "团队围绕 Prompt设计 完成一次设计讨论，结论是保持轻量 Agent + RAG MVP，并补充对应 mock 数据与证据输出。"
+  }
+]

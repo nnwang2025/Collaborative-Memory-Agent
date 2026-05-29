@@ -1,0 +1,39 @@
+# Python environments
+venv/
+.venv/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# IDE/editor
+.idea/
+.vscode/
+
+# OS files
+.DS_Store
+
+# Test/type caches
+.pytest_cache/
+.mypy_cache/
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
+
+# Runtime/generated storage
+data/vector_store/
+storage/
+logs/
+tmp/
+temp/
+
+# Local vector DB artifacts from earlier experiments
+db/
+db_md/

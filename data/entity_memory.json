@@ -1,0 +1,98 @@
+[
+  {
+    "entity": "CoordinatorAgent",
+    "aliases": ["Coordinator Agent"],
+    "type": "agent",
+    "summary": "负责 route_score 计算、Skill 路由和答案聚合。"
+  },
+  {
+    "entity": "MemorySkill",
+    "aliases": ["memory_skill"],
+    "type": "skill",
+    "summary": "负责历史讨论、长期记忆、Decision Memory 和 Semantic Memory 检索。"
+  },
+  {
+    "entity": "ProblemSkill",
+    "aliases": ["problem_skill"],
+    "type": "skill",
+    "summary": "负责 Issue、日志、Commit 和修复记录检索。"
+  },
+  {
+    "entity": "DependencySkill",
+    "aliases": ["dependency_skill"],
+    "type": "skill",
+    "summary": "负责 import、模块关系、类、函数和 AST 调用链分析。"
+  },
+  {
+    "entity": "EntrypointSkill",
+    "aliases": ["entrypoint_skill"],
+    "type": "skill",
+    "summary": "负责项目入口、main、启动流程和运行路径分析。"
+  },
+  {
+    "entity": "DocumentSkill",
+    "aliases": ["document_skill"],
+    "type": "skill",
+    "summary": "负责 docs Markdown 技术文档的关键词与 BM25 检索。"
+  },
+  {
+    "entity": "BM25",
+    "aliases": ["bm25"],
+    "type": "retrieval",
+    "summary": "用于关键词匹配、中文短文本和 Commit Message 召回。"
+  },
+  {
+    "entity": "Exact Match",
+    "aliases": ["exact match"],
+    "type": "retrieval",
+    "summary": "用于精确命中文件名、函数名、Issue ID、Commit Hash 和错误片段。"
+  },
+  {
+    "entity": "Embedding Retrieval",
+    "aliases": ["embedding", "vector retrieval"],
+    "type": "retrieval",
+    "summary": "用于模糊自然语言和语义相似问题召回。"
+  },
+  {
+    "entity": "Entity Retrieval",
+    "aliases": ["entity retrieval", "实体检索"],
+    "type": "retrieval",
+    "summary": "根据 Agent、Skill、模块、函数、Issue、Commit 和技术关键词召回证据。"
+  },
+  {
+    "entity": "Rerank",
+    "aliases": ["reranker", "重排"],
+    "type": "retrieval",
+    "summary": "用于对多路召回结果按实体重合度、来源可信度和上下文相关性重新排序。"
+  },
+  {
+    "entity": "Semantic Memory",
+    "aliases": ["semantic memory"],
+    "type": "memory",
+    "summary": "保存沉淀后的项目技术知识。"
+  },
+  {
+    "entity": "Episodic Memory",
+    "aliases": ["episodic memory"],
+    "type": "memory",
+    "summary": "保存历史事件、讨论过程和阶段性研发上下文。"
+  },
+  {
+    "entity": "Entity Memory",
+    "aliases": ["entity memory"],
+    "type": "memory",
+    "summary": "保存项目实体，包括 Agent、Skill、模块、函数和技术关键词。"
+  },
+  {
+    "entity": "Relationship Memory",
+    "aliases": ["relationship memory"],
+    "type": "memory",
+    "summary": "保存实体之间的依赖、路由、读取和包含关系。"
+  },
+  {
+    "entity": "Decision Memory",
+    "aliases": ["decision memory"],
+    "type": "memory",
+    "summary": "保存技术决策、替代方案、决策原因和后续计划。"
+  }
+]

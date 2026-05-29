@@ -1,0 +1,744 @@
+[
+  {
+    "time": "2026-04-01 21:30",
+    "speaker": "user",
+    "topic": "internship",
+    "emotion": "anxiety",
+    "content": "我准备找深圳的大模型应用开发实习。"
+  },
+  {
+    "time": "2026-04-01 21:31",
+    "speaker": "assistant",
+    "topic": "internship",
+    "emotion": "guidance",
+    "content": "你目前更适合从Agent+RAG项目切入。"
+  },
+  {
+    "time": "2026-04-05 22:10",
+    "speaker": "user",
+    "topic": "project",
+    "emotion": "worry",
+    "content": "我担心项目太toy，怕面试官觉得它只是普通RAG demo。"
+  },
+  {
+    "time": "2026-04-05 22:11",
+    "speaker": "assistant",
+    "topic": "project",
+    "emotion": "guidance",
+    "content": "重点是做出Workflow、Memory、Retrieval和工程化，让项目不像toy。"
+  },
+  {
+    "time": "2026-04-10 20:00",
+    "speaker": "user",
+    "topic": "reranker",
+    "emotion": "curiosity",
+    "content": "我之前问过Reranker是不是必须加？"
+  },
+  {
+    "time": "2026-04-10 20:01",
+    "speaker": "assistant",
+    "topic": "reranker",
+    "emotion": "guidance",
+    "content": "第一版可以不加，但后续加BGE-Reranker能让Top-K检索结果排序更稳定。"
+  },
+  {
+    "time": "2026-04-01 20:00",
+    "speaker": "user",
+    "topic": "reranker",
+    "emotion": "planning",
+    "content": "Reranker是不是必须加？"
+  },
+  {
+    "time": "2026-04-01 20:01",
+    "speaker": "assistant",
+    "topic": "reranker",
+    "emotion": "guidance",
+    "content": "第一版可以不加，后续用BGE-Reranker优化Top-K排序。"
+  },
+  {
+    "time": "2026-04-02 01:00",
+    "speaker": "user",
+    "topic": "backend",
+    "emotion": "curiosity",
+    "content": "AI应用岗会问后端吗？"
+  },
+  {
+    "time": "2026-04-02 01:01",
+    "speaker": "assistant",
+    "topic": "backend",
+    "emotion": "guidance",
+    "content": "会问FastAPI、HTTP、Redis、Docker、接口设计，但不会像Java后端那么深。"
+  },
+  {
+    "time": "2026-04-02 06:00",
+    "speaker": "user",
+    "topic": "backend",
+    "emotion": "confusion",
+    "content": "AI应用岗会问后端吗？"
+  },
+  {
+    "time": "2026-04-02 06:01",
+    "speaker": "assistant",
+    "topic": "backend",
+    "emotion": "guidance",
+    "content": "会问FastAPI、HTTP、Redis、Docker、接口设计，但不会像Java后端那么深。"
+  },
+  {
+    "time": "2026-04-02 11:00",
+    "speaker": "user",
+    "topic": "internship",
+    "emotion": "anxiety",
+    "content": "我想找深圳AI应用开发实习。"
+  },
+  {
+    "time": "2026-04-02 11:01",
+    "speaker": "assistant",
+    "topic": "internship",
+    "emotion": "guidance",
+    "content": "深圳AI应用岗位更偏Agent、RAG和工程落地。"
+  },
+  {
+    "time": "2026-04-02 16:00",
+    "speaker": "user",
+    "topic": "rag",
+    "emotion": "curiosity",
+    "content": "RAG到底是什么？"
+  },
+  {
+    "time": "2026-04-02 16:01",
+    "speaker": "assistant",
+    "topic": "rag",
+    "emotion": "guidance",
+    "content": "RAG是先检索相关内容，再让大模型基于上下文回答。"
+  },
+  {
+    "time": "2026-04-02 21:00",
+    "speaker": "user",
+    "topic": "internship",
+    "emotion": "confusion",
+    "content": "我想找深圳AI应用开发实习。"
+  },
+  {
+    "time": "2026-04-02 21:01",
+    "speaker": "assistant",
+    "topic": "internship",
+    "emotion": "guidance",
+    "content": "深圳AI应用岗位更偏Agent、RAG和工程落地。"
+  },
+  {
+    "time": "2026-04-03 02:00",
+    "speaker": "user",
+    "topic": "rag",
+    "emotion": "worry",
+    "content": "RAG到底是什么？"
+  },
+  {
+    "time": "2026-04-03 02:01",
+    "speaker": "assistant",
+    "topic": "rag",
+    "emotion": "guidance",
+    "content": "RAG是先检索相关内容，再让大模型基于上下文回答。"
+  },
+  {
+    "time": "2026-04-03 07:00",
+    "speaker": "user",
+    "topic": "leetcode",
+    "emotion": "confusion",
+    "content": "我力扣刷得很慢怎么办？"
+  },
+  {
+    "time": "2026-04-03 07:01",
+    "speaker": "assistant",
+    "topic": "leetcode",
+    "emotion": "guidance",
+    "content": "先刷Hot100高频题，重点掌握模板和思路复述。"
+  },
+  {
+    "time": "2026-04-03 12:00",
+    "speaker": "user",
+    "topic": "backend",
+    "emotion": "confusion",
+    "content": "AI应用岗会问后端吗？"
+  },
+  {
+    "time": "2026-04-03 12:01",
+    "speaker": "assistant",
+    "topic": "backend",
+    "emotion": "guidance",
+    "content": "会问FastAPI、HTTP、Redis、Docker、接口设计，但不会像Java后端那么深。"
+  },
+  {
+    "time": "2026-04-03 17:00",
+    "speaker": "user",
+    "topic": "internship",
+    "emotion": "anxiety",
+    "content": "我想找深圳AI应用开发实习。"
+  },
+  {
+    "time": "2026-04-03 17:01",
+    "speaker": "assistant",
+    "topic": "internship",
+    "emotion": "guidance",
+    "content": "深圳AI应用岗位更偏Agent、RAG和工程落地。"
+  },
+  {
+    "time": "2026-04-03 22:00",
+    "speaker": "user",
+    "topic": "rag",
+    "emotion": "confusion",
+    "content": "RAG到底是什么？"
+  },
+  {
+    "time": "2026-04-03 22:01",
+    "speaker": "assistant",
+    "topic": "rag",
+    "emotion": "guidance",
+    "content": "RAG是先检索相关内容，再让大模型基于上下文回答。"
+  },
+  {
+    "time": "2026-04-04 03:00",
+    "speaker": "user",
+    "topic": "project",
+    "emotion": "curiosity",
+    "content": "我担心项目太toy。"
+  },
+  {
+    "time": "2026-04-04 03:01",
+    "speaker": "assistant",
+    "topic": "project",
+    "emotion": "guidance",
+    "content": "项目重点是Workflow、Memory、Retrieval和工程化。"
+  },
+  {
+    "time": "2026-04-04 08:00",
+    "speaker": "user",
+    "topic": "agent",
+    "emotion": "worry",
+    "content": "Agent和RAG有什么区别？"
+  },
+  {
+    "time": "2026-04-04 08:01",
+    "speaker": "assistant",
+    "topic": "agent",
+    "emotion": "guidance",
+    "content": "Agent更强调决策、工具调用、记忆管理和任务流程。"
+  },
+  {
+    "time": "2026-04-04 13:00",
+    "speaker": "user",
+    "topic": "leetcode",
+    "emotion": "planning",
+    "content": "我力扣刷得很慢怎么办？"
+  },
+  {
+    "time": "2026-04-04 13:01",
+    "speaker": "assistant",
+    "topic": "leetcode",
+    "emotion": "guidance",
+    "content": "先刷Hot100高频题，重点掌握模板和思路复述。"
+  },
+  {
+    "time": "2026-04-04 18:00",
+    "speaker": "user",
+    "topic": "backend",
+    "emotion": "worry",
+    "content": "AI应用岗会问后端吗？"
+  },
+  {
+    "time": "2026-04-04 18:01",
+    "speaker": "assistant",
+    "topic": "backend",
+    "emotion": "guidance",
+    "content": "会问FastAPI、HTTP、Redis、Docker、接口设计，但不会像Java后端那么深。"
+  },
+  {
+    "time": "2026-04-04 23:00",
+    "speaker": "user",
+    "topic": "backend",
+    "emotion": "confusion",
+    "content": "AI应用岗会问后端吗？"
+  },
+  {
+    "time": "2026-04-04 23:01",
+    "speaker": "assistant",
+    "topic": "backend",
+    "emotion": "guidance",
+    "content": "会问FastAPI、HTTP、Redis、Docker、接口设计，但不会像Java后端那么深。"
+  },
+  {
+    "time": "2026-04-05 04:00",
+    "speaker": "user",
+    "topic": "rag",
+    "emotion": "anxiety",
+    "content": "RAG到底是什么？"
+  },
+  {
+    "time": "2026-04-05 04:01",
+    "speaker": "assistant",
+    "topic": "rag",
+    "emotion": "guidance",
+    "content": "RAG是先检索相关内容，再让大模型基于上下文回答。"
+  },
+  {
+    "time": "2026-04-05 09:00",
+    "speaker": "user",
+    "topic": "reranker",
+    "emotion": "planning",
+    "content": "Reranker是不是必须加？"
+  },
+  {
+    "time": "2026-04-05 09:01",
+    "speaker": "assistant",
+    "topic": "reranker",
+    "emotion": "guidance",
+    "content": "第一版可以不加，后续用BGE-Reranker优化Top-K排序。"
+  },
+  {
+    "time": "2026-04-05 14:00",
+    "speaker": "user",
+    "topic": "plan",
+    "emotion": "curiosity",
+    "content": "我一个月能做完两个项目吗？"
+  },
+  {
+    "time": "2026-04-05 14:01",
+    "speaker": "assistant",
+    "topic": "plan",
+    "emotion": "guidance",
+    "content": "先集中做第一个Conversation Memory Agent，再做第二个Multi-Agent项目。"
+  },
+  {
+    "time": "2026-04-05 19:00",
+    "speaker": "user",
+    "topic": "internship",
+    "emotion": "curiosity",
+    "content": "我想找深圳AI应用开发实习。"
+  },
+  {
+    "time": "2026-04-05 19:01",
+    "speaker": "assistant",
+    "topic": "internship",
+    "emotion": "guidance",
+    "content": "深圳AI应用岗位更偏Agent、RAG和工程落地。"
+  },
+  {
+    "time": "2026-04-06 00:00",
+    "speaker": "user",
+    "topic": "project",
+    "emotion": "curiosity",
+    "content": "我担心项目太toy。"
+  },
+  {
+    "time": "2026-04-06 00:01",
+    "speaker": "assistant",
+    "topic": "project",
+    "emotion": "guidance",
+    "content": "项目重点是Workflow、Memory、Retrieval和工程化。"
+  },
+  {
+    "time": "2026-04-06 05:00",
+    "speaker": "user",
+    "topic": "resume",
+    "emotion": "curiosity",
+    "content": "简历项目怎么写才不像套壳？"
+  },
+  {
+    "time": "2026-04-06 05:01",
+    "speaker": "assistant",
+    "topic": "resume",
+    "emotion": "guidance",
+    "content": "要写清楚问题、方案、技术链路和可量化优化点。"
+  },
+  {
+    "time": "2026-04-06 10:00",
+    "speaker": "user",
+    "topic": "reranker",
+    "emotion": "anxiety",
+    "content": "Reranker是不是必须加？"
+  },
+  {
+    "time": "2026-04-06 10:01",
+    "speaker": "assistant",
+    "topic": "reranker",
+    "emotion": "guidance",
+    "content": "第一版可以不加，后续用BGE-Reranker优化Top-K排序。"
+  },
+  {
+    "time": "2026-04-06 15:00",
+    "speaker": "user",
+    "topic": "resume",
+    "emotion": "worry",
+    "content": "简历项目怎么写才不像套壳？"
+  },
+  {
+    "time": "2026-04-06 15:01",
+    "speaker": "assistant",
+    "topic": "resume",
+    "emotion": "guidance",
+    "content": "要写清楚问题、方案、技术链路和可量化优化点。"
+  },
+  {
+    "time": "2026-04-06 20:00",
+    "speaker": "user",
+    "topic": "backend",
+    "emotion": "anxiety",
+    "content": "AI应用岗会问后端吗？"
+  },
+  {
+    "time": "2026-04-06 20:01",
+    "speaker": "assistant",
+    "topic": "backend",
+    "emotion": "guidance",
+    "content": "会问FastAPI、HTTP、Redis、Docker、接口设计，但不会像Java后端那么深。"
+  },
+  {
+    "time": "2026-04-07 01:00",
+    "speaker": "user",
+    "topic": "resume",
+    "emotion": "anxiety",
+    "content": "简历项目怎么写才不像套壳？"
+  },
+  {
+    "time": "2026-04-07 01:01",
+    "speaker": "assistant",
+    "topic": "resume",
+    "emotion": "guidance",
+    "content": "要写清楚问题、方案、技术链路和可量化优化点。"
+  },
+  {
+    "time": "2026-04-07 06:00",
+    "speaker": "user",
+    "topic": "emotion",
+    "emotion": "curiosity",
+    "content": "我感觉自己代码能力一般。"
+  },
+  {
+    "time": "2026-04-07 06:01",
+    "speaker": "assistant",
+    "topic": "emotion",
+    "emotion": "guidance",
+    "content": "先跑通项目，再逐步理解核心模块，不要一开始追求全懂。"
+  },
+  {
+    "time": "2026-04-07 11:00",
+    "speaker": "user",
+    "topic": "internship",
+    "emotion": "anxiety",
+    "content": "我想找深圳AI应用开发实习。"
+  },
+  {
+    "time": "2026-04-07 11:01",
+    "speaker": "assistant",
+    "topic": "internship",
+    "emotion": "guidance",
+    "content": "深圳AI应用岗位更偏Agent、RAG和工程落地。"
+  },
+  {
+    "time": "2026-04-07 16:00",
+    "speaker": "user",
+    "topic": "agent",
+    "emotion": "anxiety",
+    "content": "Agent和RAG有什么区别？"
+  },
+  {
+    "time": "2026-04-07 16:01",
+    "speaker": "assistant",
+    "topic": "agent",
+    "emotion": "guidance",
+    "content": "Agent更强调决策、工具调用、记忆管理和任务流程。"
+  },
+  {
+    "time": "2026-04-07 21:00",
+    "speaker": "user",
+    "topic": "resume",
+    "emotion": "anxiety",
+    "content": "简历项目怎么写才不像套壳？"
+  },
+  {
+    "time": "2026-04-07 21:01",
+    "speaker": "assistant",
+    "topic": "resume",
+    "emotion": "guidance",
+    "content": "要写清楚问题、方案、技术链路和可量化优化点。"
+  },
+  {
+    "time": "2026-04-08 02:00",
+    "speaker": "user",
+    "topic": "plan",
+    "emotion": "anxiety",
+    "content": "我一个月能做完两个项目吗？"
+  },
+  {
+    "time": "2026-04-08 02:01",
+    "speaker": "assistant",
+    "topic": "plan",
+    "emotion": "guidance",
+    "content": "先集中做第一个Conversation Memory Agent，再做第二个Multi-Agent项目。"
+  },
+  {
+    "time": "2026-04-08 07:00",
+    "speaker": "user",
+    "topic": "reranker",
+    "emotion": "confusion",
+    "content": "Reranker是不是必须加？"
+  },
+  {
+    "time": "2026-04-08 07:01",
+    "speaker": "assistant",
+    "topic": "reranker",
+    "emotion": "guidance",
+    "content": "第一版可以不加，后续用BGE-Reranker优化Top-K排序。"
+  },
+  {
+    "time": "2026-04-08 12:00",
+    "speaker": "user",
+    "topic": "leetcode",
+    "emotion": "planning",
+    "content": "我力扣刷得很慢怎么办？"
+  },
+  {
+    "time": "2026-04-08 12:01",
+    "speaker": "assistant",
+    "topic": "leetcode",
+    "emotion": "guidance",
+    "content": "先刷Hot100高频题，重点掌握模板和思路复述。"
+  },
+  {
+    "time": "2026-04-08 17:00",
+    "speaker": "user",
+    "topic": "internship",
+    "emotion": "planning",
+    "content": "我想找深圳AI应用开发实习。"
+  },
+  {
+    "time": "2026-04-08 17:01",
+    "speaker": "assistant",
+    "topic": "internship",
+    "emotion": "guidance",
+    "content": "深圳AI应用岗位更偏Agent、RAG和工程落地。"
+  },
+  {
+    "time": "2026-04-08 22:00",
+    "speaker": "user",
+    "topic": "internship",
+    "emotion": "worry",
+    "content": "我想找深圳AI应用开发实习。"
+  },
+  {
+    "time": "2026-04-08 22:01",
+    "speaker": "assistant",
+    "topic": "internship",
+    "emotion": "guidance",
+    "content": "深圳AI应用岗位更偏Agent、RAG和工程落地。"
+  },
+  {
+    "time": "2026-04-09 03:00",
+    "speaker": "user",
+    "topic": "leetcode",
+    "emotion": "worry",
+    "content": "我力扣刷得很慢怎么办？"
+  },
+  {
+    "time": "2026-04-09 03:01",
+    "speaker": "assistant",
+    "topic": "leetcode",
+    "emotion": "guidance",
+    "content": "先刷Hot100高频题，重点掌握模板和思路复述。"
+  },
+  {
+    "time": "2026-04-09 08:00",
+    "speaker": "user",
+    "topic": "emotion",
+    "emotion": "curiosity",
+    "content": "我感觉自己代码能力一般。"
+  },
+  {
+    "time": "2026-04-09 08:01",
+    "speaker": "assistant",
+    "topic": "emotion",
+    "emotion": "guidance",
+    "content": "先跑通项目，再逐步理解核心模块，不要一开始追求全懂。"
+  },
+  {
+    "time": "2026-04-09 13:00",
+    "speaker": "user",
+    "topic": "emotion",
+    "emotion": "planning",
+    "content": "我感觉自己代码能力一般。"
+  },
+  {
+    "time": "2026-04-09 13:01",
+    "speaker": "assistant",
+    "topic": "emotion",
+    "emotion": "guidance",
+    "content": "先跑通项目，再逐步理解核心模块，不要一开始追求全懂。"
+  },
+  {
+    "time": "2026-04-09 18:00",
+    "speaker": "user",
+    "topic": "internship",
+    "emotion": "confusion",
+    "content": "我想找深圳AI应用开发实习。"
+  },
+  {
+    "time": "2026-04-09 18:01",
+    "speaker": "assistant",
+    "topic": "internship",
+    "emotion": "guidance",
+    "content": "深圳AI应用岗位更偏Agent、RAG和工程落地。"
+  },
+  {
+    "time": "2026-04-09 23:00",
+    "speaker": "user",
+    "topic": "resume",
+    "emotion": "planning",
+    "content": "简历项目怎么写才不像套壳？"
+  },
+  {
+    "time": "2026-04-09 23:01",
+    "speaker": "assistant",
+    "topic": "resume",
+    "emotion": "guidance",
+    "content": "要写清楚问题、方案、技术链路和可量化优化点。"
+  },
+  {
+    "time": "2026-04-10 04:00",
+    "speaker": "user",
+    "topic": "project",
+    "emotion": "confusion",
+    "content": "我担心项目太toy。"
+  },
+  {
+    "time": "2026-04-10 04:01",
+    "speaker": "assistant",
+    "topic": "project",
+    "emotion": "guidance",
+    "content": "项目重点是Workflow、Memory、Retrieval和工程化。"
+  },
+  {
+    "time": "2026-04-10 09:00",
+    "speaker": "user",
+    "topic": "reranker",
+    "emotion": "anxiety",
+    "content": "Reranker是不是必须加？"
+  },
+  {
+    "time": "2026-04-10 09:01",
+    "speaker": "assistant",
+    "topic": "reranker",
+    "emotion": "guidance",
+    "content": "第一版可以不加，后续用BGE-Reranker优化Top-K排序。"
+  },
+  {
+    "time": "2026-04-10 14:00",
+    "speaker": "user",
+    "topic": "internship",
+    "emotion": "worry",
+    "content": "我想找深圳AI应用开发实习。"
+  },
+  {
+    "time": "2026-04-10 14:01",
+    "speaker": "assistant",
+    "topic": "internship",
+    "emotion": "guidance",
+    "content": "深圳AI应用岗位更偏Agent、RAG和工程落地。"
+  },
+  {
+    "time": "2026-04-10 19:00",
+    "speaker": "user",
+    "topic": "resume",
+    "emotion": "worry",
+    "content": "简历项目怎么写才不像套壳？"
+  },
+  {
+    "time": "2026-04-10 19:01",
+    "speaker": "assistant",
+    "topic": "resume",
+    "emotion": "guidance",
+    "content": "要写清楚问题、方案、技术链路和可量化优化点。"
+  },
+  {
+    "time": "2026-04-11 00:00",
+    "speaker": "user",
+    "topic": "agent",
+    "emotion": "planning",
+    "content": "Agent和RAG有什么区别？"
+  },
+  {
+    "time": "2026-04-11 00:01",
+    "speaker": "assistant",
+    "topic": "agent",
+    "emotion": "guidance",
+    "content": "Agent更强调决策、工具调用、记忆管理和任务流程。"
+  },
+  {
+    "time": "2026-04-11 05:00",
+    "speaker": "user",
+    "topic": "resume",
+    "emotion": "anxiety",
+    "content": "简历项目怎么写才不像套壳？"
+  },
+  {
+    "time": "2026-04-11 05:01",
+    "speaker": "assistant",
+    "topic": "resume",
+    "emotion": "guidance",
+    "content": "要写清楚问题、方案、技术链路和可量化优化点。"
+  },
+  {
+    "time": "2026-04-11 10:00",
+    "speaker": "user",
+    "topic": "rag",
+    "emotion": "worry",
+    "content": "RAG到底是什么？"
+  },
+  {
+    "time": "2026-04-11 10:01",
+    "speaker": "assistant",
+    "topic": "rag",
+    "emotion": "guidance",
+    "content": "RAG是先检索相关内容，再让大模型基于上下文回答。"
+  },
+  {
+    "time": "2026-04-11 15:00",
+    "speaker": "user",
+    "topic": "backend",
+    "emotion": "curiosity",
+    "content": "AI应用岗会问后端吗？"
+  },
+  {
+    "time": "2026-04-11 15:01",
+    "speaker": "assistant",
+    "topic": "backend",
+    "emotion": "guidance",
+    "content": "会问FastAPI、HTTP、Redis、Docker、接口设计，但不会像Java后端那么深。"
+  },
+  {
+    "time": "2026-04-11 20:00",
+    "speaker": "user",
+    "topic": "reranker",
+    "emotion": "confusion",
+    "content": "Reranker是不是必须加？"
+  },
+  {
+    "time": "2026-04-11 20:01",
+    "speaker": "assistant",
+    "topic": "reranker",
+    "emotion": "guidance",
+    "content": "第一版可以不加，后续用BGE-Reranker优化Top-K排序。"
+  },
+  {
+    "time": "2026-04-12 01:00",
+    "speaker": "user",
+    "topic": "reranker",
+    "emotion": "curiosity",
+    "content": "Reranker是不是必须加？"
+  },
+  {
+    "time": "2026-04-12 01:01",
+    "speaker": "assistant",
+    "topic": "reranker",
+    "emotion": "guidance",
+    "content": "第一版可以不加，后续用BGE-Reranker优化Top-K排序。"
+  }
+]

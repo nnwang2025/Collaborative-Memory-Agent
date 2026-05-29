@@ -1,0 +1,112 @@
+[
+  {
+    "id": "decision-agent-rag-lightweight",
+    "title": "采用 Coordinator Agent + 多 Skill 的轻量架构",
+    "decision": "Collaborative Memory Agent 采用 Coordinator Agent + 多 Skill + RAG 的轻量 MVP 架构",
+    "alternatives": [
+      "复杂多智能体平台",
+      "单一向量库问答",
+      "纯规则检索"
+    ],
+    "reason": [
+      "项目目标是研发协作长期记忆，MVP 阶段需要先保证可运行和可解释",
+      "不同问题适合交给不同 Skill，但不需要拆成多个独立 Agent",
+      "Coordinator 能统一路由、聚合证据和控制输出格式",
+      "本地 mock 数据足以验证核心闭环"
+    ],
+    "future_plan": "后续可在保持轻量接口的前提下接入 LangGraph workflow 和真实研发系统",
+    "related_entities": [
+      "Coordinator Agent",
+      "Skill",
+      "RAG",
+      "MVP",
+      "Collaborative Memory Agent"
+    ],
+    "source_files": [
+      "docs/architecture.md",
+      "data/chats/project_chats.json"
+    ]
+  },
+  {
+    "id": "decision-hybrid-retrieval",
+    "title": "采用混合检索",
+    "decision": "检索层采用 Exact Match、BM25、Entity Retrieval、Embedding Retrieval 和 Rerank 的混合检索",
+    "alternatives": [
+      "纯 Embedding Retrieval",
+      "单一 BM25",
+      "只靠关键词搜索"
+    ],
+    "reason": [
+      "研发问题同时包含精确实体、文件名、函数名、Issue 和模糊自然语言",
+      "BM25 适合短文本和关键词召回",
+      "Embedding Retrieval 适合模糊语义查询",
+      "Rerank 可以综合实体重合度、来源可信度和上下文相关性"
+    ],
+    "future_plan": "后续引入更稳定的 reranker 与评测集，持续优化召回质量",
+    "related_entities": [
+      "BM25",
+      "Embedding Retrieval",
+      "Rerank",
+      "Entity Retrieval",
+      "Exact Match"
+    ],
+    "source_files": [
+      "docs/retrieval-design.md",
+      "data/issues/project_issues.json"
+    ]
+  },
+  {
+    "id": "decision-memory-layering",
+    "title": "长期记忆分层设计",
+    "decision": "长期记忆采用 Semantic、Episodic、Entity、Relationship 和 Decision Memory 分层",
+    "alternatives": [
+      "只保存原始聊天",
+      "只保存文档切片",
+      "单表 memory_records"
+    ],
+    "reason": [
+      "历史事件、技术知识、实体和关系的查询方式不同",
+      "Decision Memory 能稳定回答为什么采用某个方案",
+      "Entity Memory 支持模块、函数、Issue、Commit 的关联回溯",
+      "Relationship Memory 为后续知识图谱和调用链分析预留空间"
+    ],
+    "future_plan": "后续由 Memory Manager 统一管理写入、去重、更新和证据绑定",
+    "related_entities": [
+      "Memory Manager",
+      "Decision Memory",
+      "Entity Memory",
+      "Relationship Memory"
+    ],
+    "source_files": [
+      "docs/memory-design.md",
+      "data/chats/project_chats.json"
+    ]
+  },
+  {
+    "id": "decision-answer-format",
+    "title": "回答先总结再给证据",
+    "decision": "Answer Agent 输出先给结论总结，再列关键证据、来源文件、关联实体、置信度和路由结果",
+    "alternatives": [
+      "只罗列搜索结果",
+      "只生成自然语言结论"
+    ],
+    "reason": [
+      "研发协作场景需要可追溯答案",
+      "只罗列证据阅读成本高",
+      "只给结论容易缺少可信来源",
+      "固定格式便于 CLI、API 和后续 UI 消费"
+    ],
+    "future_plan": "后续按问题类型继续增强摘要模板和证据压缩策略",
+    "related_entities": [
+      "Answer Agent",
+      "Evidence",
+      "Prompt设计",
+      "置信度",
+      "路由结果"
+    ],
+    "source_files": [
+      "docs/prompt-and-answer.md",
+      "src/agents/answer_agent.py"
+    ]
+  }
+]

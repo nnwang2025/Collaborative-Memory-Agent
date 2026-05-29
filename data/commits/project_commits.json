@@ -1,0 +1,784 @@
+[
+  {
+    "commit": "cma0001",
+    "author": "zhou",
+    "message": "fix(memory): improve agent架构设计 for collaborative memory agent",
+    "files": [
+      "src/skills/memory_skill.py",
+      "data/decision_memory.json"
+    ],
+    "summary": "zhou 围绕 Agent架构设计 修改了 src/skills/memory_skill.py, data/decision_memory.json。Coordinator Agent 负责意图识别、route_score 计算和 Skill 聚合。",
+    "related_issue": "CMA-101",
+    "related_entities": [
+      "Agent架构设计",
+      "memory",
+      "Collaborative Memory Agent"
+    ]
+  },
+  {
+    "commit": "cma0002",
+    "author": "chen",
+    "message": "refactor(retrieval): improve 混合检索 for collaborative memory agent",
+    "files": [
+      "src/skills/utils.py",
+      "src/skills/document_skill.py"
+    ],
+    "summary": "chen 围绕 混合检索 修改了 src/skills/utils.py, src/skills/document_skill.py。系统同时使用 Exact Match、BM25、Entity Retrieval、Embedding Retrieval 和 Rerank。",
+    "related_issue": "CMA-102",
+    "related_entities": [
+      "混合检索",
+      "retrieval",
+      "Collaborative Memory Agent"
+    ]
+  },
+  {
+    "commit": "cma0003",
+    "author": "wang",
+    "message": "docs(document): improve bm25 for collaborative memory agent",
+    "files": [
+      "docs/retrieval-design.md",
+      "docs/memory-design.md"
+    ],
+    "summary": "wang 围绕 BM25 修改了 docs/retrieval-design.md, docs/memory-design.md。BM25 用于处理中文关键词、Issue 标题、Commit Message 和短文本召回。",
+    "related_issue": "CMA-103",
+    "related_entities": [
+      "BM25",
+      "document",
+      "Collaborative Memory Agent"
+    ]
+  },
+  {
+    "commit": "cma0004",
+    "author": "li",
+    "message": "test(dependency): improve embedding retrieval for collaborative memory agent",
+    "files": [
+      "src/skills/dependency_skill.py"
+    ],
+    "summary": "li 围绕 Embedding Retrieval 修改了 src/skills/dependency_skill.py。Embedding Retrieval 用于处理模糊自然语言和语义相似问题。",
+    "related_issue": "CMA-104",
+    "related_entities": [
+      "Embedding Retrieval",
+      "dependency",
+      "Collaborative Memory Agent"
+    ]
+  },
+  {
+    "commit": "cma0005",
+    "author": "lin",
+    "message": "feat(answer): improve rerank for collaborative memory agent",
+    "files": [
+      "src/agents/answer_agent.py"
+    ],
+    "summary": "lin 围绕 Rerank 修改了 src/agents/answer_agent.py。Rerank 根据实体重合度、来源可信度和时间线重新排序候选证据。",
+    "related_issue": "CMA-105",
+    "related_entities": [
+      "Rerank",
+      "answer",
+      "Collaborative Memory Agent"
+    ]
+  },
+  {
+    "commit": "cma0006",
+    "author": "zhou",
+    "message": "fix(mock-data): improve memory设计 for collaborative memory agent",
+    "files": [
+      "data/chats/project_chats.json",
+      "data/issues/project_issues.json"
+    ],
+    "summary": "zhou 围绕 Memory设计 修改了 data/chats/project_chats.json, data/issues/project_issues.json。长期记忆被拆分为 Semantic、Episodic、Entity、Relationship 和 Decision Memory。",
+    "related_issue": "CMA-106",
+    "related_entities": [
+      "Memory设计",
+      "mock-data",
+      "Collaborative Memory Agent"
+    ]
+  },
+  {
+    "commit": "cma0007",
+    "author": "chen",
+    "message": "refactor(workflow): improve langgraph工作流 for collaborative memory agent",
+    "files": [
+      "modules/graph.py",
+      "docs/langgraph-workflow.md"
+    ],
+    "summary": "chen 围绕 LangGraph工作流 修改了 modules/graph.py, docs/langgraph-workflow.md。后续计划把 Coordinator 的路由与聚合升级成更清晰的 LangGraph workflow。",
+    "related_issue": "CMA-107",
+    "related_entities": [
+      "LangGraph工作流",
+      "workflow",
+      "Collaborative Memory Agent"
+    ]
+  },
+  {
+    "commit": "cma0008",
+    "author": "wang",
+    "message": "docs(coordinator): improve 多skill路由 for collaborative memory agent",
+    "files": [
+      "src/agents/coordinator_agent.py"
+    ],
+    "summary": "wang 围绕 多Skill路由 修改了 src/agents/coordinator_agent.py。memory、problem、dependency、entrypoint、document Skill 分别处理不同研发协作问题。",
+    "related_issue": "CMA-108",
+    "related_entities": [
+      "多Skill路由",
+      "coordinator",
+      "Collaborative Memory Agent"
+    ]
+  },
+  {
+    "commit": "cma0009",
+    "author": "li",
+    "message": "test(memory): improve 实体抽取 for collaborative memory agent",
+    "files": [
+      "src/skills/memory_skill.py",
+      "data/decision_memory.json"
+    ],
+    "summary": "li 围绕 实体抽取 修改了 src/skills/memory_skill.py, data/decision_memory.json。实体抽取会识别模块、文件、函数、Issue、Commit、技术关键词和项目角色。",
+    "related_issue": "CMA-109",
+    "related_entities": [
+      "实体抽取",
+      "memory",
+      "Collaborative Memory Agent"
+    ]
+  },
+  {
+    "commit": "cma0010",
+    "author": "lin",
+    "message": "feat(retrieval): improve 长期记忆管理 for collaborative memory agent",
+    "files": [
+      "src/skills/utils.py",
+      "src/skills/document_skill.py"
+    ],
+    "summary": "lin 围绕 长期记忆管理 修改了 src/skills/utils.py, src/skills/document_skill.py。Memory Manager 统一管理记忆写入、更新、去重、证据绑定和冷启动加载。",
+    "related_issue": "CMA-110",
+    "related_entities": [
+      "长期记忆管理",
+      "retrieval",
+      "Collaborative Memory Agent"
+    ]
+  },
+  {
+    "commit": "cma0011",
+    "author": "zhou",
+    "message": "fix(document): improve 检索优化 for collaborative memory agent",
+    "files": [
+      "docs/retrieval-design.md",
+      "docs/memory-design.md"
+    ],
+    "summary": "zhou 围绕 检索优化 修改了 docs/retrieval-design.md, docs/memory-design.md。检索优化重点是降低无关聊天命中，提高决策记忆和项目文档的权重。",
+    "related_issue": "CMA-111",
+    "related_entities": [
+      "检索优化",
+      "document",
+      "Collaborative Memory Agent"
+    ]
+  },
+  {
+    "commit": "cma0012",
+    "author": "chen",
+    "message": "refactor(dependency): improve prompt设计 for collaborative memory agent",
+    "files": [
+      "src/skills/dependency_skill.py"
+    ],
+    "summary": "chen 围绕 Prompt设计 修改了 src/skills/dependency_skill.py。Prompt 需要约束回答先总结再给证据，避免只罗列搜索结果。",
+    "related_issue": "CMA-112",
+    "related_entities": [
+      "Prompt设计",
+      "dependency",
+      "Collaborative Memory Agent"
+    ]
+  },
+  {
+    "commit": "cma0013",
+    "author": "wang",
+    "message": "docs(answer): improve agent架构设计 for collaborative memory agent",
+    "files": [
+      "src/agents/answer_agent.py"
+    ],
+    "summary": "wang 围绕 Agent架构设计 修改了 src/agents/answer_agent.py。Coordinator Agent 负责意图识别、route_score 计算和 Skill 聚合。",
+    "related_issue": "CMA-113",
+    "related_entities": [
+      "Agent架构设计",
+      "answer",
+      "Collaborative Memory Agent"
+    ]
+  },
+  {
+    "commit": "cma0014",
+    "author": "li",
+    "message": "test(mock-data): improve 混合检索 for collaborative memory agent",
+    "files": [
+      "data/chats/project_chats.json",
+      "data/issues/project_issues.json"
+    ],
+    "summary": "li 围绕 混合检索 修改了 data/chats/project_chats.json, data/issues/project_issues.json。系统同时使用 Exact Match、BM25、Entity Retrieval、Embedding Retrieval 和 Rerank。",
+    "related_issue": "CMA-114",
+    "related_entities": [
+      "混合检索",
+      "mock-data",
+      "Collaborative Memory Agent"
+    ]
+  },
+  {
+    "commit": "cma0015",
+    "author": "lin",
+    "message": "feat(workflow): improve bm25 for collaborative memory agent",
+    "files": [
+      "modules/graph.py",
+      "docs/langgraph-workflow.md"
+    ],
+    "summary": "lin 围绕 BM25 修改了 modules/graph.py, docs/langgraph-workflow.md。BM25 用于处理中文关键词、Issue 标题、Commit Message 和短文本召回。",
+    "related_issue": "CMA-115",
+    "related_entities": [
+      "BM25",
+      "workflow",
+      "Collaborative Memory Agent"
+    ]
+  },
+  {
+    "commit": "cma0016",
+    "author": "zhou",
+    "message": "fix(coordinator): improve embedding retrieval for collaborative memory agent",
+    "files": [
+      "src/agents/coordinator_agent.py"
+    ],
+    "summary": "zhou 围绕 Embedding Retrieval 修改了 src/agents/coordinator_agent.py。Embedding Retrieval 用于处理模糊自然语言和语义相似问题。",
+    "related_issue": "CMA-116",
+    "related_entities": [
+      "Embedding Retrieval",
+      "coordinator",
+      "Collaborative Memory Agent"
+    ]
+  },
+  {
+    "commit": "cma0017",
+    "author": "chen",
+    "message": "refactor(memory): improve rerank for collaborative memory agent",
+    "files": [
+      "src/skills/memory_skill.py",
+      "data/decision_memory.json"
+    ],
+    "summary": "chen 围绕 Rerank 修改了 src/skills/memory_skill.py, data/decision_memory.json。Rerank 根据实体重合度、来源可信度和时间线重新排序候选证据。",
+    "related_issue": "CMA-117",
+    "related_entities": [
+      "Rerank",
+      "memory",
+      "Collaborative Memory Agent"
+    ]
+  },
+  {
+    "commit": "cma0018",
+    "author": "wang",
+    "message": "docs(retrieval): improve memory设计 for collaborative memory agent",
+    "files": [
+      "src/skills/utils.py",
+      "src/skills/document_skill.py"
+    ],
+    "summary": "wang 围绕 Memory设计 修改了 src/skills/utils.py, src/skills/document_skill.py。长期记忆被拆分为 Semantic、Episodic、Entity、Relationship 和 Decision Memory。",
+    "related_issue": "CMA-118",
+    "related_entities": [
+      "Memory设计",
+      "retrieval",
+      "Collaborative Memory Agent"
+    ]
+  },
+  {
+    "commit": "cma0019",
+    "author": "li",
+    "message": "test(document): improve langgraph工作流 for collaborative memory agent",
+    "files": [
+      "docs/retrieval-design.md",
+      "docs/memory-design.md"
+    ],
+    "summary": "li 围绕 LangGraph工作流 修改了 docs/retrieval-design.md, docs/memory-design.md。后续计划把 Coordinator 的路由与聚合升级成更清晰的 LangGraph workflow。",
+    "related_issue": "CMA-119",
+    "related_entities": [
+      "LangGraph工作流",
+      "document",
+      "Collaborative Memory Agent"
+    ]
+  },
+  {
+    "commit": "cma0020",
+    "author": "lin",
+    "message": "feat(dependency): improve 多skill路由 for collaborative memory agent",
+    "files": [
+      "src/skills/dependency_skill.py"
+    ],
+    "summary": "lin 围绕 多Skill路由 修改了 src/skills/dependency_skill.py。memory、problem、dependency、entrypoint、document Skill 分别处理不同研发协作问题。",
+    "related_issue": "CMA-120",
+    "related_entities": [
+      "多Skill路由",
+      "dependency",
+      "Collaborative Memory Agent"
+    ]
+  },
+  {
+    "commit": "cma0021",
+    "author": "zhou",
+    "message": "fix(answer): improve 实体抽取 for collaborative memory agent",
+    "files": [
+      "src/agents/answer_agent.py"
+    ],
+    "summary": "zhou 围绕 实体抽取 修改了 src/agents/answer_agent.py。实体抽取会识别模块、文件、函数、Issue、Commit、技术关键词和项目角色。",
+    "related_issue": "CMA-101",
+    "related_entities": [
+      "实体抽取",
+      "answer",
+      "Collaborative Memory Agent"
+    ]
+  },
+  {
+    "commit": "cma0022",
+    "author": "chen",
+    "message": "refactor(mock-data): improve 长期记忆管理 for collaborative memory agent",
+    "files": [
+      "data/chats/project_chats.json",
+      "data/issues/project_issues.json"
+    ],
+    "summary": "chen 围绕 长期记忆管理 修改了 data/chats/project_chats.json, data/issues/project_issues.json。Memory Manager 统一管理记忆写入、更新、去重、证据绑定和冷启动加载。",
+    "related_issue": "CMA-102",
+    "related_entities": [
+      "长期记忆管理",
+      "mock-data",
+      "Collaborative Memory Agent"
+    ]
+  },
+  {
+    "commit": "cma0023",
+    "author": "wang",
+    "message": "docs(workflow): improve 检索优化 for collaborative memory agent",
+    "files": [
+      "modules/graph.py",
+      "docs/langgraph-workflow.md"
+    ],
+    "summary": "wang 围绕 检索优化 修改了 modules/graph.py, docs/langgraph-workflow.md。检索优化重点是降低无关聊天命中，提高决策记忆和项目文档的权重。",
+    "related_issue": "CMA-103",
+    "related_entities": [
+      "检索优化",
+      "workflow",
+      "Collaborative Memory Agent"
+    ]
+  },
+  {
+    "commit": "cma0024",
+    "author": "li",
+    "message": "test(coordinator): improve prompt设计 for collaborative memory agent",
+    "files": [
+      "src/agents/coordinator_agent.py"
+    ],
+    "summary": "li 围绕 Prompt设计 修改了 src/agents/coordinator_agent.py。Prompt 需要约束回答先总结再给证据，避免只罗列搜索结果。",
+    "related_issue": "CMA-104",
+    "related_entities": [
+      "Prompt设计",
+      "coordinator",
+      "Collaborative Memory Agent"
+    ]
+  },
+  {
+    "commit": "cma0025",
+    "author": "lin",
+    "message": "feat(memory): improve agent架构设计 for collaborative memory agent",
+    "files": [
+      "src/skills/memory_skill.py",
+      "data/decision_memory.json"
+    ],
+    "summary": "lin 围绕 Agent架构设计 修改了 src/skills/memory_skill.py, data/decision_memory.json。Coordinator Agent 负责意图识别、route_score 计算和 Skill 聚合。",
+    "related_issue": "CMA-105",
+    "related_entities": [
+      "Agent架构设计",
+      "memory",
+      "Collaborative Memory Agent"
+    ]
+  },
+  {
+    "commit": "cma0026",
+    "author": "zhou",
+    "message": "fix(retrieval): improve 混合检索 for collaborative memory agent",
+    "files": [
+      "src/skills/utils.py",
+      "src/skills/document_skill.py"
+    ],
+    "summary": "zhou 围绕 混合检索 修改了 src/skills/utils.py, src/skills/document_skill.py。系统同时使用 Exact Match、BM25、Entity Retrieval、Embedding Retrieval 和 Rerank。",
+    "related_issue": "CMA-106",
+    "related_entities": [
+      "混合检索",
+      "retrieval",
+      "Collaborative Memory Agent"
+    ]
+  },
+  {
+    "commit": "cma0027",
+    "author": "chen",
+    "message": "refactor(document): improve bm25 for collaborative memory agent",
+    "files": [
+      "docs/retrieval-design.md",
+      "docs/memory-design.md"
+    ],
+    "summary": "chen 围绕 BM25 修改了 docs/retrieval-design.md, docs/memory-design.md。BM25 用于处理中文关键词、Issue 标题、Commit Message 和短文本召回。",
+    "related_issue": "CMA-107",
+    "related_entities": [
+      "BM25",
+      "document",
+      "Collaborative Memory Agent"
+    ]
+  },
+  {
+    "commit": "cma0028",
+    "author": "wang",
+    "message": "docs(dependency): improve embedding retrieval for collaborative memory agent",
+    "files": [
+      "src/skills/dependency_skill.py"
+    ],
+    "summary": "wang 围绕 Embedding Retrieval 修改了 src/skills/dependency_skill.py。Embedding Retrieval 用于处理模糊自然语言和语义相似问题。",
+    "related_issue": "CMA-108",
+    "related_entities": [
+      "Embedding Retrieval",
+      "dependency",
+      "Collaborative Memory Agent"
+    ]
+  },
+  {
+    "commit": "cma0029",
+    "author": "li",
+    "message": "test(answer): improve rerank for collaborative memory agent",
+    "files": [
+      "src/agents/answer_agent.py"
+    ],
+    "summary": "li 围绕 Rerank 修改了 src/agents/answer_agent.py。Rerank 根据实体重合度、来源可信度和时间线重新排序候选证据。",
+    "related_issue": "CMA-109",
+    "related_entities": [
+      "Rerank",
+      "answer",
+      "Collaborative Memory Agent"
+    ]
+  },
+  {
+    "commit": "cma0030",
+    "author": "lin",
+    "message": "feat(mock-data): improve memory设计 for collaborative memory agent",
+    "files": [
+      "data/chats/project_chats.json",
+      "data/issues/project_issues.json"
+    ],
+    "summary": "lin 围绕 Memory设计 修改了 data/chats/project_chats.json, data/issues/project_issues.json。长期记忆被拆分为 Semantic、Episodic、Entity、Relationship 和 Decision Memory。",
+    "related_issue": "CMA-110",
+    "related_entities": [
+      "Memory设计",
+      "mock-data",
+      "Collaborative Memory Agent"
+    ]
+  },
+  {
+    "commit": "cma0031",
+    "author": "zhou",
+    "message": "fix(workflow): improve langgraph工作流 for collaborative memory agent",
+    "files": [
+      "modules/graph.py",
+      "docs/langgraph-workflow.md"
+    ],
+    "summary": "zhou 围绕 LangGraph工作流 修改了 modules/graph.py, docs/langgraph-workflow.md。后续计划把 Coordinator 的路由与聚合升级成更清晰的 LangGraph workflow。",
+    "related_issue": "CMA-111",
+    "related_entities": [
+      "LangGraph工作流",
+      "workflow",
+      "Collaborative Memory Agent"
+    ]
+  },
+  {
+    "commit": "cma0032",
+    "author": "chen",
+    "message": "refactor(coordinator): improve 多skill路由 for collaborative memory agent",
+    "files": [
+      "src/agents/coordinator_agent.py"
+    ],
+    "summary": "chen 围绕 多Skill路由 修改了 src/agents/coordinator_agent.py。memory、problem、dependency、entrypoint、document Skill 分别处理不同研发协作问题。",
+    "related_issue": "CMA-112",
+    "related_entities": [
+      "多Skill路由",
+      "coordinator",
+      "Collaborative Memory Agent"
+    ]
+  },
+  {
+    "commit": "cma0033",
+    "author": "wang",
+    "message": "docs(memory): improve 实体抽取 for collaborative memory agent",
+    "files": [
+      "src/skills/memory_skill.py",
+      "data/decision_memory.json"
+    ],
+    "summary": "wang 围绕 实体抽取 修改了 src/skills/memory_skill.py, data/decision_memory.json。实体抽取会识别模块、文件、函数、Issue、Commit、技术关键词和项目角色。",
+    "related_issue": "CMA-113",
+    "related_entities": [
+      "实体抽取",
+      "memory",
+      "Collaborative Memory Agent"
+    ]
+  },
+  {
+    "commit": "cma0034",
+    "author": "li",
+    "message": "test(retrieval): improve 长期记忆管理 for collaborative memory agent",
+    "files": [
+      "src/skills/utils.py",
+      "src/skills/document_skill.py"
+    ],
+    "summary": "li 围绕 长期记忆管理 修改了 src/skills/utils.py, src/skills/document_skill.py。Memory Manager 统一管理记忆写入、更新、去重、证据绑定和冷启动加载。",
+    "related_issue": "CMA-114",
+    "related_entities": [
+      "长期记忆管理",
+      "retrieval",
+      "Collaborative Memory Agent"
+    ]
+  },
+  {
+    "commit": "cma0035",
+    "author": "lin",
+    "message": "feat(document): improve 检索优化 for collaborative memory agent",
+    "files": [
+      "docs/retrieval-design.md",
+      "docs/memory-design.md"
+    ],
+    "summary": "lin 围绕 检索优化 修改了 docs/retrieval-design.md, docs/memory-design.md。检索优化重点是降低无关聊天命中，提高决策记忆和项目文档的权重。",
+    "related_issue": "CMA-115",
+    "related_entities": [
+      "检索优化",
+      "document",
+      "Collaborative Memory Agent"
+    ]
+  },
+  {
+    "commit": "cma0036",
+    "author": "zhou",
+    "message": "fix(dependency): improve prompt设计 for collaborative memory agent",
+    "files": [
+      "src/skills/dependency_skill.py"
+    ],
+    "summary": "zhou 围绕 Prompt设计 修改了 src/skills/dependency_skill.py。Prompt 需要约束回答先总结再给证据，避免只罗列搜索结果。",
+    "related_issue": "CMA-116",
+    "related_entities": [
+      "Prompt设计",
+      "dependency",
+      "Collaborative Memory Agent"
+    ]
+  },
+  {
+    "commit": "cma0037",
+    "author": "chen",
+    "message": "refactor(answer): improve agent架构设计 for collaborative memory agent",
+    "files": [
+      "src/agents/answer_agent.py"
+    ],
+    "summary": "chen 围绕 Agent架构设计 修改了 src/agents/answer_agent.py。Coordinator Agent 负责意图识别、route_score 计算和 Skill 聚合。",
+    "related_issue": "CMA-117",
+    "related_entities": [
+      "Agent架构设计",
+      "answer",
+      "Collaborative Memory Agent"
+    ]
+  },
+  {
+    "commit": "cma0038",
+    "author": "wang",
+    "message": "docs(mock-data): improve 混合检索 for collaborative memory agent",
+    "files": [
+      "data/chats/project_chats.json",
+      "data/issues/project_issues.json"
+    ],
+    "summary": "wang 围绕 混合检索 修改了 data/chats/project_chats.json, data/issues/project_issues.json。系统同时使用 Exact Match、BM25、Entity Retrieval、Embedding Retrieval 和 Rerank。",
+    "related_issue": "CMA-118",
+    "related_entities": [
+      "混合检索",
+      "mock-data",
+      "Collaborative Memory Agent"
+    ]
+  },
+  {
+    "commit": "cma0039",
+    "author": "li",
+    "message": "test(workflow): improve bm25 for collaborative memory agent",
+    "files": [
+      "modules/graph.py",
+      "docs/langgraph-workflow.md"
+    ],
+    "summary": "li 围绕 BM25 修改了 modules/graph.py, docs/langgraph-workflow.md。BM25 用于处理中文关键词、Issue 标题、Commit Message 和短文本召回。",
+    "related_issue": "CMA-119",
+    "related_entities": [
+      "BM25",
+      "workflow",
+      "Collaborative Memory Agent"
+    ]
+  },
+  {
+    "commit": "cma0040",
+    "author": "lin",
+    "message": "feat(coordinator): improve embedding retrieval for collaborative memory agent",
+    "files": [
+      "src/agents/coordinator_agent.py"
+    ],
+    "summary": "lin 围绕 Embedding Retrieval 修改了 src/agents/coordinator_agent.py。Embedding Retrieval 用于处理模糊自然语言和语义相似问题。",
+    "related_issue": "CMA-120",
+    "related_entities": [
+      "Embedding Retrieval",
+      "coordinator",
+      "Collaborative Memory Agent"
+    ]
+  },
+  {
+    "commit": "cma0041",
+    "author": "zhou",
+    "message": "fix(memory): improve rerank for collaborative memory agent",
+    "files": [
+      "src/skills/memory_skill.py",
+      "data/decision_memory.json"
+    ],
+    "summary": "zhou 围绕 Rerank 修改了 src/skills/memory_skill.py, data/decision_memory.json。Rerank 根据实体重合度、来源可信度和时间线重新排序候选证据。",
+    "related_issue": "CMA-101",
+    "related_entities": [
+      "Rerank",
+      "memory",
+      "Collaborative Memory Agent"
+    ]
+  },
+  {
+    "commit": "cma0042",
+    "author": "chen",
+    "message": "refactor(retrieval): improve memory设计 for collaborative memory agent",
+    "files": [
+      "src/skills/utils.py",
+      "src/skills/document_skill.py"
+    ],
+    "summary": "chen 围绕 Memory设计 修改了 src/skills/utils.py, src/skills/document_skill.py。长期记忆被拆分为 Semantic、Episodic、Entity、Relationship 和 Decision Memory。",
+    "related_issue": "CMA-102",
+    "related_entities": [
+      "Memory设计",
+      "retrieval",
+      "Collaborative Memory Agent"
+    ]
+  },
+  {
+    "commit": "cma0043",
+    "author": "wang",
+    "message": "docs(document): improve langgraph工作流 for collaborative memory agent",
+    "files": [
+      "docs/retrieval-design.md",
+      "docs/memory-design.md"
+    ],
+    "summary": "wang 围绕 LangGraph工作流 修改了 docs/retrieval-design.md, docs/memory-design.md。后续计划把 Coordinator 的路由与聚合升级成更清晰的 LangGraph workflow。",
+    "related_issue": "CMA-103",
+    "related_entities": [
+      "LangGraph工作流",
+      "document",
+      "Collaborative Memory Agent"
+    ]
+  },
+  {
+    "commit": "cma0044",
+    "author": "li",
+    "message": "test(dependency): improve 多skill路由 for collaborative memory agent",
+    "files": [
+      "src/skills/dependency_skill.py"
+    ],
+    "summary": "li 围绕 多Skill路由 修改了 src/skills/dependency_skill.py。memory、problem、dependency、entrypoint、document Skill 分别处理不同研发协作问题。",
+    "related_issue": "CMA-104",
+    "related_entities": [
+      "多Skill路由",
+      "dependency",
+      "Collaborative Memory Agent"
+    ]
+  },
+  {
+    "commit": "cma0045",
+    "author": "lin",
+    "message": "feat(answer): improve 实体抽取 for collaborative memory agent",
+    "files": [
+      "src/agents/answer_agent.py"
+    ],
+    "summary": "lin 围绕 实体抽取 修改了 src/agents/answer_agent.py。实体抽取会识别模块、文件、函数、Issue、Commit、技术关键词和项目角色。",
+    "related_issue": "CMA-105",
+    "related_entities": [
+      "实体抽取",
+      "answer",
+      "Collaborative Memory Agent"
+    ]
+  },
+  {
+    "commit": "cma0046",
+    "author": "zhou",
+    "message": "fix(mock-data): improve 长期记忆管理 for collaborative memory agent",
+    "files": [
+      "data/chats/project_chats.json",
+      "data/issues/project_issues.json"
+    ],
+    "summary": "zhou 围绕 长期记忆管理 修改了 data/chats/project_chats.json, data/issues/project_issues.json。Memory Manager 统一管理记忆写入、更新、去重、证据绑定和冷启动加载。",
+    "related_issue": "CMA-106",
+    "related_entities": [
+      "长期记忆管理",
+      "mock-data",
+      "Collaborative Memory Agent"
+    ]
+  },
+  {
+    "commit": "cma0047",
+    "author": "chen",
+    "message": "refactor(workflow): improve 检索优化 for collaborative memory agent",
+    "files": [
+      "modules/graph.py",
+      "docs/langgraph-workflow.md"
+    ],
+    "summary": "chen 围绕 检索优化 修改了 modules/graph.py, docs/langgraph-workflow.md。检索优化重点是降低无关聊天命中，提高决策记忆和项目文档的权重。",
+    "related_issue": "CMA-107",
+    "related_entities": [
+      "检索优化",
+      "workflow",
+      "Collaborative Memory Agent"
+    ]
+  },
+  {
+    "commit": "cma0048",
+    "author": "wang",
+    "message": "docs(coordinator): improve prompt设计 for collaborative memory agent",
+    "files": [
+      "src/agents/coordinator_agent.py"
+    ],
+    "summary": "wang 围绕 Prompt设计 修改了 src/agents/coordinator_agent.py。Prompt 需要约束回答先总结再给证据，避免只罗列搜索结果。",
+    "related_issue": "CMA-108",
+    "related_entities": [
+      "Prompt设计",
+      "coordinator",
+      "Collaborative Memory Agent"
+    ]
+  },
+  {
+    "commit": "cma0049",
+    "author": "li",
+    "message": "test(memory): improve agent架构设计 for collaborative memory agent",
+    "files": [
+      "src/skills/memory_skill.py",
+      "data/decision_memory.json"
+    ],
+    "summary": "li 围绕 Agent架构设计 修改了 src/skills/memory_skill.py, data/decision_memory.json。Coordinator Agent 负责意图识别、route_score 计算和 Skill 聚合。",
+    "related_issue": "CMA-109",
+    "related_entities": [
+      "Agent架构设计",
+      "memory",
+      "Collaborative Memory Agent"
+    ]
+  },
+  {
+    "commit": "cma0050",
+    "author": "lin",
+    "message": "feat(retrieval): improve 混合检索 for collaborative memory agent",
+    "files": [
+      "src/skills/utils.py",
+      "src/skills/document_skill.py"
+    ],
+    "summary": "lin 围绕 混合检索 修改了 src/skills/utils.py, src/skills/document_skill.py。系统同时使用 Exact Match、BM25、Entity Retrieval、Embedding Retrieval 和 Rerank。",
+    "related_issue": "CMA-110",
+    "related_entities": [
+      "混合检索",
+      "retrieval",
+      "Collaborative Memory Agent"
+    ]
+  }
+]

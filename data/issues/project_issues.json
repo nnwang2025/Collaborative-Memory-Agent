@@ -1,0 +1,322 @@
+[
+  {
+    "issue_id": "CMA-101",
+    "title": "Agent架构设计优化：Coordinator Agent 负责意图识别",
+    "type": "retrieval",
+    "status": "closed",
+    "module": "memory_skill",
+    "discussion": "团队讨论了 Agent架构设计 在 Collaborative Memory Agent 中的实现边界。Coordinator Agent 负责意图识别、route_score 计算和 Skill 聚合。",
+    "decision": "保留轻量 MVP 架构，围绕 Agent架构设计 做小范围增强，并要求输出保留证据来源。",
+    "fix": "补充 mock 数据、技术文档和 Skill 逻辑，使 Agent架构设计 的检索与回答更稳定。",
+    "related_commit": "cma0001",
+    "related_entities": [
+      "Agent架构设计",
+      "Collaborative Memory Agent",
+      "Agent + RAG"
+    ]
+  },
+  {
+    "issue_id": "CMA-102",
+    "title": "混合检索优化：系统同时使用 Exact Match、BM25、",
+    "type": "memory",
+    "status": "closed",
+    "module": "document_skill",
+    "discussion": "团队讨论了 混合检索 在 Collaborative Memory Agent 中的实现边界。系统同时使用 Exact Match、BM25、Entity Retrieval、Embedding Retrieval 和 Rerank。",
+    "decision": "保留轻量 MVP 架构，围绕 混合检索 做小范围增强，并要求输出保留证据来源。",
+    "fix": "补充 mock 数据、技术文档和 Skill 逻辑，使 混合检索 的检索与回答更稳定。",
+    "related_commit": "cma0002",
+    "related_entities": [
+      "混合检索",
+      "Collaborative Memory Agent",
+      "Agent + RAG"
+    ]
+  },
+  {
+    "issue_id": "CMA-103",
+    "title": "BM25优化：BM25 用于处理中文关键词、Issue 标题、",
+    "type": "workflow",
+    "status": "closed",
+    "module": "dependency_skill",
+    "discussion": "团队讨论了 BM25 在 Collaborative Memory Agent 中的实现边界。BM25 用于处理中文关键词、Issue 标题、Commit Message 和短文本召回。",
+    "decision": "保留轻量 MVP 架构，围绕 BM25 做小范围增强，并要求输出保留证据来源。",
+    "fix": "补充 mock 数据、技术文档和 Skill 逻辑，使 BM25 的检索与回答更稳定。",
+    "related_commit": "cma0003",
+    "related_entities": [
+      "BM25",
+      "Collaborative Memory Agent",
+      "Agent + RAG"
+    ]
+  },
+  {
+    "issue_id": "CMA-104",
+    "title": "Embedding Retrieval优化：Embedding Retrieval 用于处理",
+    "type": "design",
+    "status": "closed",
+    "module": "answer_agent",
+    "discussion": "团队讨论了 Embedding Retrieval 在 Collaborative Memory Agent 中的实现边界。Embedding Retrieval 用于处理模糊自然语言和语义相似问题。",
+    "decision": "保留轻量 MVP 架构，围绕 Embedding Retrieval 做小范围增强，并要求输出保留证据来源。",
+    "fix": "补充 mock 数据、技术文档和 Skill 逻辑，使 Embedding Retrieval 的检索与回答更稳定。",
+    "related_commit": "cma0004",
+    "related_entities": [
+      "Embedding Retrieval",
+      "Collaborative Memory Agent",
+      "Agent + RAG"
+    ]
+  },
+  {
+    "issue_id": "CMA-105",
+    "title": "Rerank优化：Rerank 根据实体重合度、来源可信度和时间线",
+    "type": "retrieval",
+    "status": "closed",
+    "module": "retrieval",
+    "discussion": "团队讨论了 Rerank 在 Collaborative Memory Agent 中的实现边界。Rerank 根据实体重合度、来源可信度和时间线重新排序候选证据。",
+    "decision": "保留轻量 MVP 架构，围绕 Rerank 做小范围增强，并要求输出保留证据来源。",
+    "fix": "补充 mock 数据、技术文档和 Skill 逻辑，使 Rerank 的检索与回答更稳定。",
+    "related_commit": "cma0005",
+    "related_entities": [
+      "Rerank",
+      "Collaborative Memory Agent",
+      "Agent + RAG"
+    ]
+  },
+  {
+    "issue_id": "CMA-106",
+    "title": "Memory设计优化：长期记忆被拆分为 Semantic、Episod",
+    "type": "memory",
+    "status": "closed",
+    "module": "coordinator_agent",
+    "discussion": "团队讨论了 Memory设计 在 Collaborative Memory Agent 中的实现边界。长期记忆被拆分为 Semantic、Episodic、Entity、Relationship 和 Decision Memory。",
+    "decision": "保留轻量 MVP 架构，围绕 Memory设计 做小范围增强，并要求输出保留证据来源。",
+    "fix": "补充 mock 数据、技术文档和 Skill 逻辑，使 Memory设计 的检索与回答更稳定。",
+    "related_commit": "cma0006",
+    "related_entities": [
+      "Memory设计",
+      "Collaborative Memory Agent",
+      "Agent + RAG"
+    ]
+  },
+  {
+    "issue_id": "CMA-107",
+    "title": "LangGraph工作流优化：后续计划把 Coordinator 的路由与聚合",
+    "type": "workflow",
+    "status": "closed",
+    "module": "memory_skill",
+    "discussion": "团队讨论了 LangGraph工作流 在 Collaborative Memory Agent 中的实现边界。后续计划把 Coordinator 的路由与聚合升级成更清晰的 LangGraph workflow。",
+    "decision": "保留轻量 MVP 架构，围绕 LangGraph工作流 做小范围增强，并要求输出保留证据来源。",
+    "fix": "补充 mock 数据、技术文档和 Skill 逻辑，使 LangGraph工作流 的检索与回答更稳定。",
+    "related_commit": "cma0007",
+    "related_entities": [
+      "LangGraph工作流",
+      "Collaborative Memory Agent",
+      "Agent + RAG"
+    ]
+  },
+  {
+    "issue_id": "CMA-108",
+    "title": "多Skill路由优化：memory、problem、dependenc",
+    "type": "design",
+    "status": "closed",
+    "module": "document_skill",
+    "discussion": "团队讨论了 多Skill路由 在 Collaborative Memory Agent 中的实现边界。memory、problem、dependency、entrypoint、document Skill 分别处理不同研发协作问题。",
+    "decision": "保留轻量 MVP 架构，围绕 多Skill路由 做小范围增强，并要求输出保留证据来源。",
+    "fix": "补充 mock 数据、技术文档和 Skill 逻辑，使 多Skill路由 的检索与回答更稳定。",
+    "related_commit": "cma0008",
+    "related_entities": [
+      "多Skill路由",
+      "Collaborative Memory Agent",
+      "Agent + RAG"
+    ]
+  },
+  {
+    "issue_id": "CMA-109",
+    "title": "实体抽取优化：实体抽取会识别模块、文件、函数、Issue、Co",
+    "type": "retrieval",
+    "status": "closed",
+    "module": "dependency_skill",
+    "discussion": "团队讨论了 实体抽取 在 Collaborative Memory Agent 中的实现边界。实体抽取会识别模块、文件、函数、Issue、Commit、技术关键词和项目角色。",
+    "decision": "保留轻量 MVP 架构，围绕 实体抽取 做小范围增强，并要求输出保留证据来源。",
+    "fix": "补充 mock 数据、技术文档和 Skill 逻辑，使 实体抽取 的检索与回答更稳定。",
+    "related_commit": "cma0009",
+    "related_entities": [
+      "实体抽取",
+      "Collaborative Memory Agent",
+      "Agent + RAG"
+    ]
+  },
+  {
+    "issue_id": "CMA-110",
+    "title": "长期记忆管理优化：Memory Manager 统一管理记忆写入、",
+    "type": "memory",
+    "status": "closed",
+    "module": "answer_agent",
+    "discussion": "团队讨论了 长期记忆管理 在 Collaborative Memory Agent 中的实现边界。Memory Manager 统一管理记忆写入、更新、去重、证据绑定和冷启动加载。",
+    "decision": "保留轻量 MVP 架构，围绕 长期记忆管理 做小范围增强，并要求输出保留证据来源。",
+    "fix": "补充 mock 数据、技术文档和 Skill 逻辑，使 长期记忆管理 的检索与回答更稳定。",
+    "related_commit": "cma0010",
+    "related_entities": [
+      "长期记忆管理",
+      "Collaborative Memory Agent",
+      "Agent + RAG"
+    ]
+  },
+  {
+    "issue_id": "CMA-111",
+    "title": "检索优化优化：检索优化重点是降低无关聊天命中，提高决策记忆和项",
+    "type": "workflow",
+    "status": "closed",
+    "module": "retrieval",
+    "discussion": "团队讨论了 检索优化 在 Collaborative Memory Agent 中的实现边界。检索优化重点是降低无关聊天命中，提高决策记忆和项目文档的权重。",
+    "decision": "保留轻量 MVP 架构，围绕 检索优化 做小范围增强，并要求输出保留证据来源。",
+    "fix": "补充 mock 数据、技术文档和 Skill 逻辑，使 检索优化 的检索与回答更稳定。",
+    "related_commit": "cma0011",
+    "related_entities": [
+      "检索优化",
+      "Collaborative Memory Agent",
+      "Agent + RAG"
+    ]
+  },
+  {
+    "issue_id": "CMA-112",
+    "title": "Prompt设计优化：Prompt 需要约束回答先总结再给证据，避免只",
+    "type": "design",
+    "status": "closed",
+    "module": "coordinator_agent",
+    "discussion": "团队讨论了 Prompt设计 在 Collaborative Memory Agent 中的实现边界。Prompt 需要约束回答先总结再给证据，避免只罗列搜索结果。",
+    "decision": "保留轻量 MVP 架构，围绕 Prompt设计 做小范围增强，并要求输出保留证据来源。",
+    "fix": "补充 mock 数据、技术文档和 Skill 逻辑，使 Prompt设计 的检索与回答更稳定。",
+    "related_commit": "cma0012",
+    "related_entities": [
+      "Prompt设计",
+      "Collaborative Memory Agent",
+      "Agent + RAG"
+    ]
+  },
+  {
+    "issue_id": "CMA-113",
+    "title": "Agent架构设计优化：Coordinator Agent 负责意图识别",
+    "type": "retrieval",
+    "status": "closed",
+    "module": "memory_skill",
+    "discussion": "团队讨论了 Agent架构设计 在 Collaborative Memory Agent 中的实现边界。Coordinator Agent 负责意图识别、route_score 计算和 Skill 聚合。",
+    "decision": "保留轻量 MVP 架构，围绕 Agent架构设计 做小范围增强，并要求输出保留证据来源。",
+    "fix": "补充 mock 数据、技术文档和 Skill 逻辑，使 Agent架构设计 的检索与回答更稳定。",
+    "related_commit": "cma0013",
+    "related_entities": [
+      "Agent架构设计",
+      "Collaborative Memory Agent",
+      "Agent + RAG"
+    ]
+  },
+  {
+    "issue_id": "CMA-114",
+    "title": "混合检索优化：系统同时使用 Exact Match、BM25、",
+    "type": "memory",
+    "status": "closed",
+    "module": "document_skill",
+    "discussion": "团队讨论了 混合检索 在 Collaborative Memory Agent 中的实现边界。系统同时使用 Exact Match、BM25、Entity Retrieval、Embedding Retrieval 和 Rerank。",
+    "decision": "保留轻量 MVP 架构，围绕 混合检索 做小范围增强，并要求输出保留证据来源。",
+    "fix": "补充 mock 数据、技术文档和 Skill 逻辑，使 混合检索 的检索与回答更稳定。",
+    "related_commit": "cma0014",
+    "related_entities": [
+      "混合检索",
+      "Collaborative Memory Agent",
+      "Agent + RAG"
+    ]
+  },
+  {
+    "issue_id": "CMA-115",
+    "title": "BM25优化：BM25 用于处理中文关键词、Issue 标题、",
+    "type": "workflow",
+    "status": "closed",
+    "module": "dependency_skill",
+    "discussion": "团队讨论了 BM25 在 Collaborative Memory Agent 中的实现边界。BM25 用于处理中文关键词、Issue 标题、Commit Message 和短文本召回。",
+    "decision": "保留轻量 MVP 架构，围绕 BM25 做小范围增强，并要求输出保留证据来源。",
+    "fix": "补充 mock 数据、技术文档和 Skill 逻辑，使 BM25 的检索与回答更稳定。",
+    "related_commit": "cma0015",
+    "related_entities": [
+      "BM25",
+      "Collaborative Memory Agent",
+      "Agent + RAG"
+    ]
+  },
+  {
+    "issue_id": "CMA-116",
+    "title": "Embedding Retrieval优化：Embedding Retrieval 用于处理",
+    "type": "design",
+    "status": "closed",
+    "module": "answer_agent",
+    "discussion": "团队讨论了 Embedding Retrieval 在 Collaborative Memory Agent 中的实现边界。Embedding Retrieval 用于处理模糊自然语言和语义相似问题。",
+    "decision": "保留轻量 MVP 架构，围绕 Embedding Retrieval 做小范围增强，并要求输出保留证据来源。",
+    "fix": "补充 mock 数据、技术文档和 Skill 逻辑，使 Embedding Retrieval 的检索与回答更稳定。",
+    "related_commit": "cma0016",
+    "related_entities": [
+      "Embedding Retrieval",
+      "Collaborative Memory Agent",
+      "Agent + RAG"
+    ]
+  },
+  {
+    "issue_id": "CMA-117",
+    "title": "Rerank优化：Rerank 根据实体重合度、来源可信度和时间线",
+    "type": "retrieval",
+    "status": "open",
+    "module": "retrieval",
+    "discussion": "团队讨论了 Rerank 在 Collaborative Memory Agent 中的实现边界。Rerank 根据实体重合度、来源可信度和时间线重新排序候选证据。",
+    "decision": "保留轻量 MVP 架构，围绕 Rerank 做小范围增强，并要求输出保留证据来源。",
+    "fix": "补充 mock 数据、技术文档和 Skill 逻辑，使 Rerank 的检索与回答更稳定。",
+    "related_commit": "cma0017",
+    "related_entities": [
+      "Rerank",
+      "Collaborative Memory Agent",
+      "Agent + RAG"
+    ]
+  },
+  {
+    "issue_id": "CMA-118",
+    "title": "Memory设计优化：长期记忆被拆分为 Semantic、Episod",
+    "type": "memory",
+    "status": "open",
+    "module": "coordinator_agent",
+    "discussion": "团队讨论了 Memory设计 在 Collaborative Memory Agent 中的实现边界。长期记忆被拆分为 Semantic、Episodic、Entity、Relationship 和 Decision Memory。",
+    "decision": "保留轻量 MVP 架构，围绕 Memory设计 做小范围增强，并要求输出保留证据来源。",
+    "fix": "补充 mock 数据、技术文档和 Skill 逻辑，使 Memory设计 的检索与回答更稳定。",
+    "related_commit": "cma0018",
+    "related_entities": [
+      "Memory设计",
+      "Collaborative Memory Agent",
+      "Agent + RAG"
+    ]
+  },
+  {
+    "issue_id": "CMA-119",
+    "title": "LangGraph工作流优化：后续计划把 Coordinator 的路由与聚合",
+    "type": "workflow",
+    "status": "open",
+    "module": "memory_skill",
+    "discussion": "团队讨论了 LangGraph工作流 在 Collaborative Memory Agent 中的实现边界。后续计划把 Coordinator 的路由与聚合升级成更清晰的 LangGraph workflow。",
+    "decision": "保留轻量 MVP 架构，围绕 LangGraph工作流 做小范围增强，并要求输出保留证据来源。",
+    "fix": "补充 mock 数据、技术文档和 Skill 逻辑，使 LangGraph工作流 的检索与回答更稳定。",
+    "related_commit": "cma0019",
+    "related_entities": [
+      "LangGraph工作流",
+      "Collaborative Memory Agent",
+      "Agent + RAG"
+    ]
+  },
+  {
+    "issue_id": "CMA-120",
+    "title": "多Skill路由优化：memory、problem、dependenc",
+    "type": "design",
+    "status": "open",
+    "module": "document_skill",
+    "discussion": "团队讨论了 多Skill路由 在 Collaborative Memory Agent 中的实现边界。memory、problem、dependency、entrypoint、document Skill 分别处理不同研发协作问题。",
+    "decision": "保留轻量 MVP 架构，围绕 多Skill路由 做小范围增强，并要求输出保留证据来源。",
+    "fix": "补充 mock 数据、技术文档和 Skill 逻辑，使 多Skill路由 的检索与回答更稳定。",
+    "related_commit": "cma0020",
+    "related_entities": [
+      "多Skill路由",
+      "Collaborative Memory Agent",
+      "Agent + RAG"
+    ]
+  }
+]

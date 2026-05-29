@@ -1,0 +1,50 @@
+[
+  {
+    "source": "Coordinator Agent",
+    "relation": "routes_to",
+    "target": "MemorySkill",
+    "evidence": "src/agents/coordinator_agent.py"
+  },
+  {
+    "source": "Coordinator Agent",
+    "relation": "routes_to",
+    "target": "DocumentSkill",
+    "evidence": "src/skills/registry.py"
+  },
+  {
+    "source": "MemorySkill",
+    "relation": "reads",
+    "target": "Decision Memory",
+    "evidence": "data/decision_memory.json"
+  },
+  {
+    "source": "DocumentSkill",
+    "relation": "retrieves_from",
+    "target": "docs/*.md",
+    "evidence": "docs/retrieval-design.md"
+  },
+  {
+    "source": "Hybrid Retrieval",
+    "relation": "contains",
+    "target": "BM25",
+    "evidence": "docs/retrieval-design.md"
+  },
+  {
+    "source": "Hybrid Retrieval",
+    "relation": "contains",
+    "target": "Embedding Retrieval",
+    "evidence": "docs/retrieval-design.md"
+  },
+  {
+    "source": "Hybrid Retrieval",
+    "relation": "contains",
+    "target": "Rerank",
+    "evidence": "docs/retrieval-design.md"
+  },
+  {
+    "source": "Answer Agent",
+    "relation": "uses",
+    "target": "Evidence Builder",
+    "evidence": "docs/prompt-and-answer.md"
+  }
+]
