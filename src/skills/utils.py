@@ -188,3 +188,43 @@ def format_skill_result(answer, evidence, sources, entities):
         "sources": sorted(set(sources)),
         "entities": sorted(set(entities)),
     }
+
+
+# ---------------------------------------------------------------------------
+# Hybrid retrieval bridge (FAISS vector + BM25 + entity → RRF)
+# ---------------------------------------------------------------------------
+
+_hybrid_available: bool | None = None
+
+
+def is_hybrid_available() -> bool:
+    """Check whether the FAISS-based hybrid retriever can be used."""
+    global _hybrid_available
+    if _hybrid_available is None:
+        try:
+            from src.retrieval import HybridRetriever  # noqa: F401
+            _hybrid_available = True
+        except Exception:
+            _hybrid_available = False
+    return _hybrid_available
+
+
+def hybrid_rank(query, docs, top_k=10):
+    """Drop-in replacement for ``bm25_rank`` that adds vector search.
+
+    Runs BM25 + entity scoring on *docs*, fuses with dense (FAISS)
+    results from the full project index via Reciprocal Rank Fusion,
+    and returns the top-k documents.
+
+    Falls back to plain BM25 if the hybrid index is not available
+    (e.g. first run before indexing, or missing dependency).
+    """
+    if not is_hybrid_available():
+        return bm25_rank(query, docs)[:top_k]
+
+    from src.retrieval import hybrid_rank as _hr
+
+    try:
+        return _hr(query, docs, top_k=top_k)
+    except Exception:
+        return bm25_rank(query, docs)[:top_k]

@@ -65,7 +65,43 @@ class MemorySkill:
         q = question or ""
         return self._is_decision_query(q) and any(signal in q for signal in ["哪些", "历史上", "所有", "列表"])
 
+    @staticmethod
+    def _normalize_hybrid_hit(hit: dict) -> dict:
+        """Convert a hybrid-retriever doc to the legacy format expected downstream.
+
+        Hybrid docs have ``metadata.source`` / ``metadata.record_id``;
+        legacy docs have top-level ``source`` / ``record``.  This method
+        adds the top-level keys so the rest of the skill works unchanged.
+        """
+        meta = hit.get("metadata", {})
+        if "source" not in hit:
+            hit["source"] = meta.get("source", hit.get("id", "unknown"))
+        if "record" not in hit:
+            hit["record"] = meta.get("record_id", hit.get("id", "0"))
+        # Ensure score exists
+        if "score" not in hit:
+            hit["score"] = float(hit.get("rrf_score", 0) * 100)
+        return hit
+
     def _rank_docs(self, question, docs, decision_boost=0):
+        # --- Primary: hybrid retrieval (FAISS vector + BM25 + entity → RRF) ---
+        from src.skills.utils import hybrid_rank
+
+        try:
+            hybrid_hits = hybrid_rank(question, docs, top_k=20)
+            for hit in hybrid_hits:
+                self._normalize_hybrid_hit(hit)
+                # Boost decision memory matches
+                meta = hit.get("metadata", {})
+                source = meta.get("source", hit.get("source", ""))
+                if "decision_memory" in source:
+                    hit["score"] = hit.get("score", 0) + decision_boost
+            if hybrid_hits:
+                return hybrid_hits
+        except Exception:
+            pass
+
+        # --- Fallback: keyword + BM25 + entity (original pipeline) ---
         hits = []
         for doc in docs:
             score = keyword_score(question, doc["content"]) + entity_score(question, doc["content"], doc["source"])
