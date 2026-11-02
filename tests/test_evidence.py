@@ -304,7 +304,8 @@ class RealGitEndToEndTests(unittest.TestCase):
         self.ingest()
         result = subprocess.run([os.sys.executable, "-X", "utf8", "main.py", "--linear", "--dataset-kind", "live", "--project-id", "git-project"],
                                 input="为什么选择B方案 decision\nexit\n", text=True, encoding="utf-8", capture_output=True, check=True,
-                                env={**os.environ, "PYTHONIOENCODING": "utf-8"}, timeout=20)
+                                env={**os.environ, "PYTHONIOENCODING": "utf-8",
+                                     "PYTHON_DOTENV_DISABLED": "1"}, timeout=20)
         self.assertIn("ev_", result.stdout)
         untouched = self.root / "dry-run.sqlite3"
         subprocess.run([os.sys.executable, "-X", "utf8", "-m", "src.ingest", "--git", str(self.repo),

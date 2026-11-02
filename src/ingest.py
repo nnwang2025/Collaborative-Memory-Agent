@@ -137,12 +137,16 @@ def normalize_record(
 def ingest_git_history(
     repo_path: str | Path,
     days: int | None = None,
-    max_commits: int = 100,
+    max_commits: int | None = 100,
     *, project_id: str, repository_uri: str | None = None,
+    since_commit: str | None = None, branch: str | None = None,
 ) -> List[dict]:
     """Parse ``git log`` into structured commit records.
 
     Each record includes: hash, author, date, message, changed files.
+    ``since_commit`` enables an incremental ``sha..branch`` range.  The
+    default remains the historic 100-commit cap for the legacy CLI; the V2
+    connector passes an explicit None for a complete scan.
     """
     repo = Path(repo_path).resolve()
     # Accept worktrees too; use actual repository location, never just basename.
@@ -150,14 +154,14 @@ def ingest_git_history(
                    capture_output=True, check=True, timeout=10)
     source_uri = repository_uri or repo.as_uri()
 
-    cmd = [
-        "git", "-C", str(repo), "log",
-        f"--max-count={max_commits}",
-        "--format=%H%x00%an%x00%ae%x00%cI%x00%B%x00",
-    ]
-
+    cmd = ["git", "-C", str(repo), "log"]
+    if max_commits is not None:
+        cmd.append(f"--max-count={max_commits}")
+    cmd.append("--format=%H%x00%an%x00%ae%x00%cI%x00%B%x00")
     if days is not None:
         cmd.append(f"--since={days} days ago")
+    revision = branch or "HEAD"
+    cmd.append(f"{since_commit}..{revision}" if since_commit else revision)
     result = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8",
                             errors="strict", check=True, timeout=30)
 
@@ -209,6 +213,19 @@ def _get_commit_files(repo: Path, commit_hash: str) -> List[str]:
 # Markdown / plain text directory
 # ---------------------------------------------------------------------------
 
+_SECRET_SUFFIXES = {".env", ".pem", ".key", ".p12", ".pfx", ".crt", ".cer", ".der"}
+_SECRET_NAMES = {".env", "id_rsa", "id_dsa", "id_ecdsa", "id_ed25519", "credentials", "secrets"}
+
+
+def _is_secret_like(path: Path) -> bool:
+    name = path.name.lower()
+    return (name in _SECRET_NAMES
+            or path.suffix.lower() in _SECRET_SUFFIXES
+            or name.startswith(".env.")
+            or "credential" in name
+            or "secret" in name)
+
+
 def ingest_directory(
     dir_path: str | Path,
     pattern: str = "*.md",
@@ -241,6 +258,8 @@ def ingest_directory(
 
     for file_path in sorted(glob_fn(pattern)):
         if file_path.is_dir() or file_path.is_symlink() or any(p in {".git", ".venv", "venv", "__pycache__"} for p in file_path.relative_to(root).parts):
+            continue
+        if _is_secret_like(file_path):
             continue
 
         # Auto-detect category from extension unless the caller supplied one.
@@ -419,6 +438,146 @@ def ingest_csv(
                 extra_meta=extra_meta,
             ))
 
+    return records
+
+
+# ---------------------------------------------------------------------------
+# JSON / JSONL structured records
+# ---------------------------------------------------------------------------
+
+def _nested_get(record: dict, path: str | None):
+    if not path:
+        return record
+    value = record
+    for part in str(path).split("."):
+        if not isinstance(value, dict):
+            return None
+        value = value.get(part)
+    return value
+
+
+def _flatten_json(value) -> str:
+    if value is None:
+        return ""
+    if isinstance(value, str):
+        return value
+    if isinstance(value, (int, float, bool)):
+        return str(value)
+    if isinstance(value, list):
+        return " | ".join(_flatten_json(item) for item in value)
+    if isinstance(value, dict):
+        return " | ".join(f"{key}: {_flatten_json(item)}" for key, item in value.items())
+    return str(value)
+
+
+def _load_json_records(path: Path, record_path: str | None):
+    """Return ``(record, locator, line_number)`` tuples; never executes data."""
+    text = path.read_text(encoding="utf-8")
+    if path.suffix.lower() in {".jsonl", ".ndjson"}:
+        records = []
+        for number, line in enumerate(text.splitlines(), start=1):
+            if not line.strip():
+                continue
+            try:
+                value = json.loads(line)
+            except json.JSONDecodeError as exc:
+                raise ValueError(f"Invalid JSONL at {path.name} line {number}") from exc
+            if not isinstance(value, dict):
+                raise ValueError(f"JSONL record at {path.name} line {number} must be an object")
+            records.append((value, {"line": number}, number))
+        return records
+    try:
+        value = json.loads(text)
+    except json.JSONDecodeError as exc:
+        raise ValueError(f"Invalid JSON in {path.name}") from exc
+    if record_path:
+        value = _nested_get(value, record_path)
+    elif isinstance(value, dict):
+        for key in ("records", "items", "data", "issues", "commits", "logs", "messages"):
+            if isinstance(value.get(key), list):
+                value = value[key]
+                break
+        else:
+            value = [value]
+    if not isinstance(value, list):
+        raise ValueError(f"JSON {path.name} must contain an array of records or a configured record_path")
+    records = []
+    for index, item in enumerate(value):
+        if not isinstance(item, dict):
+            raise ValueError(f"JSON record {index} in {path.name} must be an object")
+        records.append((item, {"json_index": index}, index + 1))
+    return records
+
+
+def ingest_json_records(
+    json_path: str | Path,
+    *,
+    project_id: str,
+    category: str,
+    record_path: str | None = None,
+    id_field: str = "id",
+    content_fields: list[str] | None = None,
+    time_field: str | None = None,
+    source_type: str | None = None,
+) -> List[dict]:
+    """Import JSON arrays, configured JSON object paths, or JSONL lines.
+
+    A stable ID field is required.  Row-position fallback would make deletion
+    reconciliation unsafe, so it is deliberately rejected here.
+    """
+    path = Path(json_path).resolve()
+    if not path.exists():
+        raise FileNotFoundError(str(path))
+    if not category or not str(category).strip():
+        raise ValueError("JSON import requires an explicit category")
+    resolved_source_type = source_type or source_type_for_category(category)
+    records = []
+    seen_ids = set()
+    for record, locator_extra, ordinal in _load_json_records(path, record_path):
+        raw_id = _nested_get(record, id_field)
+        if raw_id is None or not str(raw_id).strip():
+            raise ValueError(f"Missing JSON ID field {id_field!r} at record {ordinal} in {path.name}")
+        record_id = str(raw_id).strip()
+        if record_id in seen_ids:
+            raise ValueError(f"Duplicate JSON record ID {record_id!r} in {path.name}")
+        seen_ids.add(record_id)
+
+        if content_fields:
+            body = "\n".join(f"{field}: {_flatten_json(_nested_get(record, field))}"
+                             for field in content_fields
+                             if _nested_get(record, field) not in (None, ""))
+        else:
+            body = ""
+            for key in ("content", "message", "description", "title", "summary", "text"):
+                value = record.get(key)
+                if value not in (None, ""):
+                    body = _flatten_json(value)
+                    break
+            if not body:
+                body = _flatten_json(record)
+        if not body.strip():
+            body = _flatten_json(record)
+        if not body.strip():
+            continue
+
+        raw_time = _nested_get(record, time_field) if time_field else None
+        event_time = _parse_event_time(raw_time, row_number=ordinal,
+                                       column=time_field or "time_field")
+        locator = {"json_path": path.as_uri(), **locator_extra}
+        extra_meta = {
+            "json_record": record,
+            "identity_basis": "field",
+            "structured_import": True,
+            "source_format": "jsonl" if path.suffix.lower() in {".jsonl", ".ndjson"} else "json",
+            "event_time_status": "recorded" if event_time else "unknown",
+            "event_time_raw": str(raw_time).strip() if raw_time not in (None, "") else None,
+        }
+        records.append(normalize_record(
+            content=body.strip(), source=path.as_uri(), category=category,
+            record_id=record_id, project_id=project_id,
+            source_type=resolved_source_type, event_time=event_time,
+            locator=locator, extra_meta=extra_meta,
+        ))
     return records
 
 

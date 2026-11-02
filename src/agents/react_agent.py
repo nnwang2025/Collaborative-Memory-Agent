@@ -26,6 +26,7 @@ import urllib.request
 import sqlite3
 import threading
 import time
+import uuid
 from contextvars import ContextVar
 from typing import Dict, List, Optional
 from pydantic import ValidationError
@@ -38,8 +39,11 @@ from src.llm_config import (
     resolve_base_url,
     resolve_model_name,
 )
+from src.runtime.errors import RunCancelled
 from src.skills.registry import SkillRegistry
-from src.investigation_context import InvestigationContext, ContextLimitError, select_excerpt, task_coverage
+from src.context_budget import ContextBudget, TokenCounter, build_policy
+from src.investigation_context import (Excerpt, InvestigationContext, ContextLimitError,
+    select_excerpt, task_coverage)
 from src.investigation import (Budget, Claim, EvidenceLedger, EvidenceRef, FinishAction,
     InvestigationResult, ModelReply, Observation, TokenUsage, ToolAction, ToolError,
     TraceStep, TOOLS, parse_action, protocol_diagnostic, protocol_feedback)
@@ -226,7 +230,8 @@ class ToolExecutor:
         """Run a tool and return structured results."""
         start = time.monotonic()
         def error(code, retryable, message):
-            return {"tool": tool_name, "evidence": [], "sources": [], "error": ToolError(
+            return {"tool": tool_name, "evidence": [], "sources": [],
+                    "retrieval_diagnostics": {}, "error": ToolError(
                 error_code=code, retryable=retryable, message=message, tool_name=tool_name,
                 elapsed_ms=(time.monotonic() - start) * 1000).model_dump()}
         try:
@@ -257,13 +262,38 @@ class ToolExecutor:
                             items.append(dict(item))
                             present.add(key)
                     for item in items:
-                        item["excerpt"] = select_excerpt(legacy_evidence(item), query).model_dump()
+                        parent = legacy_evidence(item)
+                        excerpt = None
+                        for chunk in item.get("matched_chunks") or []:
+                            if chunk.get("locator_status") != "exact":
+                                continue
+                            try:
+                                excerpt = Excerpt(
+                                    evidence_id=parent.evidence_id,
+                                    content_hash=parent.content_hash,
+                                    project_id=parent.project_id,
+                                    dataset_kind=parent.dataset_kind,
+                                    text=chunk["text"],
+                                    char_start=chunk["char_start"],
+                                    char_end=chunk["char_end"],
+                                    line_start=chunk["line_start"],
+                                    line_end=chunk["line_end"],
+                                ).verify(parent)
+                                break
+                            except (KeyError, TypeError, ValueError):
+                                continue
+                        item["excerpt"] = (excerpt or select_excerpt(parent, query)).model_dump()
+                        item["excerpt_basis"] = (
+                            "exact_chunk_locator" if excerpt is not None
+                            else "parent_evidence_fallback")
                 returned_keys = {(item["evidence_id"], item["content_hash"]) for item in items}
                 memories = [m for m in result.get("decision_memories", []) if all(
                     (r["evidence_id"], r["content_hash"]) in returned_keys for r in m["evidence_refs"])]
                 output["value"] = {"tool": tool_name, "skill": _TOOL_SKILL_MAP[tool_name],
                     "query": query, "evidence": items,
-                    "sources": result.get("sources", []), "decision_memories": memories}
+                    "sources": result.get("sources", []), "decision_memories": memories,
+                    "retrieval_diagnostics": dict(
+                        result.get("retrieval_diagnostics") or {})}
             except (TimeoutError, ConnectionError, sqlite3.OperationalError):
                 output["value"] = error("temporary_tool_error", True, "工具暂时不可用，可有限重试。")
             except Exception:
@@ -291,11 +321,16 @@ class ReActAgent:
         Maximum Think-Act-Observe cycles (default 5).
     """
 
-    def __init__(self, max_iterations: int = 5, *, scope=None, db_path=None, live_dir=None, budget=None):
+    def __init__(self, max_iterations: int = 5, *, scope=None, db_path=None, live_dir=None,
+                 budget=None, observer=None, cancel_check=None):
         self.max_iterations = max_iterations
         self.executor = ToolExecutor(scope=scope, db_path=db_path, live_dir=live_dir)
         self.answer_agent = AnswerAgent()
         self.budget = budget or Budget(max_model_rounds=max_iterations)
+        # Optional runtime hooks.  Defaults preserve the standalone Agent: no
+        # persistence, no cancellation, no change to investigation semantics.
+        self.observer = observer
+        self.cancel_check = cancel_check
 
         # Pre-warm hybrid retriever (model before faiss – avoids segfault)
         try:
@@ -310,6 +345,24 @@ class ReActAgent:
         self.model = resolve_model_name(self.base_url)
         self.api_key = _resolve_api_key(self.base_url)
         self.credential_source = _shared_credential_source(self.base_url)
+
+    # ------------------------------------------------------------------
+    # Runtime observation / cooperative control
+    # ------------------------------------------------------------------
+    def _emit(self, event_type: str, payload=None):
+        """Best-effort lifecycle event; never changes investigation behavior."""
+        if self.observer is None:
+            return
+        try:
+            self.observer.emit(event_type, payload or {})
+        except Exception:
+            pass
+
+    def _cancelled(self) -> bool:
+        try:
+            return bool(self.cancel_check and self.cancel_check())
+        except Exception:
+            return False
 
     # ------------------------------------------------------------------
     # LLM call
@@ -373,16 +426,28 @@ class ReActAgent:
         """Compatibility entry point; structured callers use run_result()."""
         return self.run_result(question).answer
 
-    def run_result(self, question: str) -> InvestigationResult:
-        """One isolated investigation; no mutable run state lives on the agent."""
+    def run_result(self, question: str, *, conversation_context: str | None = None) -> InvestigationResult:
+        """One isolated investigation; no mutable run state lives on the agent.
+
+        ``conversation_context`` is a bounded, runtime-built session hint.  It is
+        appended to the user turn as non-evidence context; claims still require
+        evidence retrieved and validated in this run.
+        """
         from src.evidence import EvidenceScope
         budget = self.budget
         scope = EvidenceScope.model_validate(self.executor.registry.scope.model_dump())
         ledger = EvidenceLedger(scope)
         started = time.monotonic()
         deadline = started + budget.deadline_seconds
+        user_content = question
+        if conversation_context:
+            user_content = (
+                f"{question}\n\n"
+                "[会话上下文：仅用于理解追问，不是事实来源；任何结论必须由本次运行重新取得并校验Evidence]\n"
+                f"{conversation_context}\n[会话上下文结束]"
+            )
         messages = [{"role": "system", "content": REACT_SYSTEM_PROMPT},
-                    {"role": "user", "content": question}]
+                    {"role": "user", "content": user_content}]
         trace = []
         calls = 0
         usage = TokenUsage(estimated=False)
@@ -397,6 +462,17 @@ class ReActAgent:
         live = scope.dataset_kind == "live"
         context = InvestigationContext()
         context_usage = {}
+        context_trace = []
+        token_counter = TokenCounter(self.model, budget.context_tokenizer)
+        context_policy = build_policy(
+            model=self.model, max_tokens=budget.max_tokens,
+            max_output_tokens=budget.max_output_tokens,
+            context_window_tokens=budget.context_window_tokens,
+            safety_margin_tokens=budget.context_safety_margin_tokens,
+            tokenizer_mode=budget.context_tokenizer,
+            max_context_bytes=budget.max_context_bytes,
+            max_excerpts=budget.context_max_excerpts,
+            max_excerpts_per_evidence=budget.context_max_excerpts_per_evidence)
         runtime_gaps = []
         time_relaxations = 0
         # A conservative signal, not semantic proof. Model can escalate, never clear it.
@@ -406,6 +482,7 @@ class ReActAgent:
         ledger.gaps = list(gaps)
         failures, successful_calls = 0, 0
         signatures = set()
+        emitted_conflicts = set()
         offline = not self.api_key
         offline_actions = []
         if offline:
@@ -415,6 +492,15 @@ class ReActAgent:
                                             use_langgraph=False, enable_conversation_memory=False)
             reverse = {value: key for key, value in _TOOL_SKILL_MAP.items()}
             offline_actions = [ToolAction(tool=reverse[name], query=question) for name in coordinator.route(question)]
+            self._emit("model_skipped", {"reason": "no_credential", "mode": "offline_fallback"})
+        def emit_conflicts():
+            for conflict in ledger.conflicts:
+                signature = (conflict.description,
+                             tuple((ref.evidence_id, ref.content_hash) for ref in conflict.refs))
+                if signature in emitted_conflicts:
+                    continue
+                emitted_conflicts.add(signature)
+                self._emit("conflict_detected", conflict.model_dump())
         def exhausted():
             return time.monotonic() >= deadline or usage.input_tokens + usage.output_tokens >= budget.max_tokens
         def budget_detail():
@@ -438,6 +524,8 @@ class ReActAgent:
             decision += 1
             if truncation_recovery_pending:
                 truncation_recovery_pending = False
+            if self._cancelled():
+                raise RunCancelled("run cancelled before model decision")
             if exhausted():
                 reason = "budget"
                 stop_detail = budget_detail()
@@ -449,28 +537,86 @@ class ReActAgent:
                 action = offline_actions.pop(0) if offline_actions else FinishAction()
             else:
                 request_messages = messages
+                token_estimate = token_counter.count_messages(messages)
+                byte_estimate = len(json.dumps(messages, ensure_ascii=False).encode("utf-8"))
                 if live:
+                    remaining_total = budget.max_tokens - usage.input_tokens - usage.output_tokens
+                    request_budget = ContextBudget(
+                        context_policy, token_counter,
+                        remaining_total_tokens=max(0, remaining_total))
                     try:
-                        request_messages, context_usage = context.request(messages, ledger, trace, decision_memories,
-                            task_coverage(question, ledger, decision_memories.values(), conflicts=ledger.conflicts,
-                                          gaps=runtime_gaps), budget.max_context_bytes,
-                            gaps=runtime_gaps + (["当前有效性未知。"] if requires_current else []))
+                        request_messages, context_usage = context.request(
+                            messages, ledger, trace, decision_memories,
+                            task_coverage(question, ledger, decision_memories.values(),
+                                          conflicts=ledger.conflicts,
+                                          gaps=runtime_gaps),
+                            budget.max_context_bytes,
+                            gaps=runtime_gaps + (["当前有效性未知。"] if requires_current else []),
+                            claims=claims, question=question,
+                            context_budget=request_budget, model=self.model)
                         step.context_usage = context_usage
-                    except ContextLimitError:
-                        reason, stop_detail = "budget", "context_byte_budget"
-                        runtime_gaps.append("单次请求上下文字节预算不足；保留证据索引和工具状态，调查未完成。")
-                        context_usage = {"limit_bytes": budget.max_context_bytes, "status": "mandatory_state_overflow",
-                                         "unit": "utf8_bytes_not_model_tokens"}
-                        step.context_usage = context_usage
+                        step.context_selection = {
+                            "candidate_evidence_count": context_usage.get(
+                                "candidate_evidence_count"),
+                            "selected_evidence_count": context_usage.get(
+                                "selected_evidence_count"),
+                            "deduped_evidence_count": context_usage.get(
+                                "deduped_evidence_count"),
+                            "pruned_count": context_usage.get("pruned_count"),
+                            "pruning_reasons": context_usage.get("pruning_reasons"),
+                            "important_conflicts_retained": context_usage.get(
+                                "important_conflicts_retained"),
+                        }
+                        token_estimate = context_usage["estimated_input_tokens"]
+                        byte_estimate = context_usage["input_bytes"]
+                    except ContextLimitError as error:
+                        reason = "budget"
+                        detail = dict(getattr(error, "detail", {}) or {})
+                        limit_reason = str(
+                            (detail.get("context_limit") or {}).get("reason", ""))
+                        byte_limited = "byte" in limit_reason
+                        stop_detail = "context_byte_budget" if byte_limited else "context_token_budget"
+                        if not detail:
+                            detail = {"context_limit": {
+                                "code": "context_limit",
+                                "reason": "mandatory_state_exceeds_budget"},
+                                "limit_bytes": budget.max_context_bytes,
+                                "unit": "utf8_bytes_not_model_tokens"}
+                        detail["round"] = decision
+                        detail["context_limit"]["context_schema_version"] = \
+                            detail.get("context_schema_version")
+                        context_usage = detail
+                        step.context_usage = detail
+                        context_trace.append(detail)
+                        self._emit("context_limit", detail)
+                        runtime_gaps.append(
+                            "单次请求上下文预算不足；保留证据索引、任务范围和工具失败状态，"
+                            "调查未完成。")
                         break
-                # UTF-8 bytes deliberately overestimate ordinary tokenization.
-                estimate = len(json.dumps(request_messages, ensure_ascii=False).encode("utf-8"))
+                if live:
+                    context_trace.append(context_usage)
+                    self._emit("context_selected", {
+                        **context_usage, "round": decision,
+                        "step_index": step.step_index,
+                    })
+                # UTF-8 bytes deliberately overestimate ordinary tokenization and
+                # remain the auxiliary total-budget unit used by Phase 2 callers.
+                estimate = byte_estimate
                 remaining_tokens = budget.max_tokens - usage.input_tokens - usage.output_tokens
                 if remaining_tokens <= estimate:
                     reason = "budget"
                     stop_detail = "token_budget"
                     break
                 output_limit = min(budget.max_output_tokens, remaining_tokens - estimate)
+                if live:
+                    window_output_cap = (context_policy.model_context_window
+                                         - token_estimate
+                                         - context_policy.safety_margin_tokens)
+                    output_limit = min(output_limit, window_output_cap)
+                if output_limit <= 0:
+                    reason = "budget"
+                    stop_detail = "context_token_budget"
+                    break
                 if truncation_retry_limit is not None:
                     output_limit = min(max(output_limit, truncation_retry_limit),
                                        remaining_tokens - estimate)
@@ -479,11 +625,22 @@ class ReActAgent:
                 step.requested_output_tokens = output_limit
                 token = _model_limits.set((min(budget.model_timeout, deadline - time.monotonic()),
                                            output_limit))
+                if self._cancelled():
+                    _model_limits.reset(token)
+                    raise RunCancelled("run cancelled before model request")
+                self._emit("model_requested", {
+                    "round": decision, "model": self.model,
+                    "requested_output_tokens": output_limit,
+                    "estimated_input_tokens": token_estimate,
+                    "input_bytes": estimate,
+                    "tokenizer_mode": context_usage.get("tokenizer_mode")
+                        if live else "estimated",
+                })
                 try:
                     reply = self._call_llm(request_messages)
                     text = reply.text if isinstance(reply, ModelReply) else reply
                     consumed = reply.usage if isinstance(reply, ModelReply) and reply.usage is not None else TokenUsage(
-                        input_tokens=estimate, output_tokens=len(str(text).encode("utf-8")), estimated=True)
+                        input_tokens=token_estimate, output_tokens=len(str(text).encode("utf-8")), estimated=True)
                     step.response_chars = len(text)
                     if isinstance(reply, ModelReply):
                         step.finish_reason = reply.finish_reason
@@ -492,15 +649,26 @@ class ReActAgent:
                     usage.output_tokens += consumed.output_tokens
                     usage.estimated = usage.estimated or consumed.estimated
                     step.usage = consumed
+                    self._emit("model_completed", {
+                        "round": decision, "status": "ok",
+                        "finish_reason": step.finish_reason,
+                        "usage": consumed.model_dump(),
+                        "response_chars": len(text),
+                    })
                 except Exception as exc:
-                    usage.input_tokens += estimate
+                    usage.input_tokens += token_estimate
                     usage.estimated = True
-                    step.usage = TokenUsage(input_tokens=estimate, estimated=True)
+                    step.usage = TokenUsage(input_tokens=token_estimate, estimated=True)
                     step.elapsed_ms = (time.monotonic() - step_started) * 1000
                     diagnostic = model_error_diagnostic(exc, self.api_key)
                     diagnostic["credential_source"] = self.credential_source
                     add_error(step, "model_error", model_error_message(diagnostic),
                               diagnostic=diagnostic)
+                    self._emit("model_completed", {
+                        "round": decision, "status": "error",
+                        "error": diagnostic,
+                        "message": model_error_message(diagnostic),
+                    })
                     reason = "budget" if exhausted() else "insufficient"
                     stop_detail = budget_detail() if exhausted() else "model_error"
                     gaps.append("模型调用失败，调查未完成。")
@@ -543,12 +711,23 @@ class ReActAgent:
                             break
                     # Never echo raw model output, which may contain private source text.
                     messages.append({"role": "user", "content": json.dumps(protocol_feedback(diagnostic), ensure_ascii=False)})
-                    if live: messages = messages[:2] + messages[-1:]
+                    # Phase 3: the structured context builder selects and prunes
+                    # history; do not unconditionally drop middle rounds here.
+                    self._emit("retry_scheduled", {
+                        "kind": "protocol_repair", "round": decision,
+                        "category": step.protocol_category,
+                    })
                     continue
                 protocol_failures = 0
             step.action = action.action
             if isinstance(action, FinishAction):
                 requires_current = requires_current or action.requires_current_status
+                self._emit("claim_submitted", {
+                    "count": len(action.claims),
+                    "gap_count": len(action.gaps),
+                    "conflict_count": len(action.conflicts),
+                    "requires_current_status": bool(action.requires_current_status),
+                })
                 try:
                     claims, gaps, conflicts, claim_counts = self.answer_agent.compose_investigation(
                         ledger, action, refetch, requires_current)
@@ -568,6 +747,13 @@ class ReActAgent:
                         "claims_discarded_by_conflict": 0,
                         "claims_retained_with_unresolved_conflict": 0,
                     }
+                self._emit("claim_verified", {
+                    "counts": dict(claim_counts),
+                    "accepted": len(claims),
+                    "conflicts": len(conflicts),
+                    "stop_detail": stop_detail,
+                })
+                emit_conflicts()
                 possible_sources = action.possible_sources or possible_sources
                 reason = finish_termination_reason(conflicts, gaps, claims, failures, successful_calls)
                 step.elapsed_ms = (time.monotonic() - step_started) * 1000
@@ -584,7 +770,6 @@ class ReActAgent:
                 add_error(step, "duplicate_call", "重复调用未执行，请调整工具或查询。", action.tool)
                 messages.append({"role": "user", "content": json.dumps({"error_code": "duplicate_call",
                     "gaps": ledger.gaps, "possible_sources": list(TOOLS)}, ensure_ascii=False)})
-                if live: messages = messages[:2] + messages[-1:]
                 continue
             signatures.add(signature)
             observation = Observation(tool_name=action.tool, gaps=list(ledger.gaps), conflicts=list(ledger.conflicts))
@@ -593,7 +778,16 @@ class ReActAgent:
                     reason = "budget"
                     stop_detail = budget_detail() if exhausted() else "tool_call_budget"
                     break
+                if self._cancelled():
+                    raise RunCancelled("run cancelled before tool call")
                 calls += 1
+                tool_call_id = uuid.uuid4().hex
+                trace_step_index = len(trace) + 1
+                self._emit("tool_started", {
+                    "tool_call_id": tool_call_id, "tool_name": action.tool,
+                    "query": action.query, "filters": step.filters,
+                    "attempt": attempt, "trace_step_index": trace_step_index,
+                })
                 tool_started = time.monotonic()
                 try:
                     result = self.executor.execute(action.tool, action.query, filters=action.filters,
@@ -602,9 +796,33 @@ class ReActAgent:
                     result = {"error": ToolError(error_code="tool_error", retryable=False,
                         message="工具失败，未记录原始异常。", tool_name=action.tool,
                         elapsed_ms=(time.monotonic() - tool_started) * 1000).model_dump()}
-                attempt_step = TraceStep(step_index=len(trace) + 1, action="tool_attempt", tool_name=action.tool,
+                attempt_step = TraceStep(step_index=trace_step_index, action="tool_attempt", tool_name=action.tool,
                     query=action.query, filters=step.filters, elapsed_ms=(time.monotonic() - tool_started) * 1000)
+                retrieval_diagnostics = dict(result.get("retrieval_diagnostics") or {})
+                attempt_step.retrieval_diagnostics = retrieval_diagnostics
                 trace.append(attempt_step)
+                if result.get("error"):
+                    error = ToolError.model_validate(result["error"])
+                    self._emit("tool_failed", {
+                        "tool_call_id": tool_call_id, "tool_name": action.tool,
+                        "trace_step_index": trace_step_index,
+                        "elapsed_ms": attempt_step.elapsed_ms,
+                        "error": error.model_dump(),
+                    })
+                else:
+                    self._emit("tool_completed", {
+                        "tool_call_id": tool_call_id, "tool_name": action.tool,
+                        "trace_step_index": trace_step_index,
+                        "elapsed_ms": attempt_step.elapsed_ms,
+                        "result_summary": {
+                            "evidence_count": len(result.get("evidence") or []),
+                            "decision_memory_count": len(result.get("decision_memories") or []),
+                            "retrieval_mode": retrieval_diagnostics.get("effective_mode"),
+                            "index_version": retrieval_diagnostics.get("index_version"),
+                            "fallback_reason": retrieval_diagnostics.get("fallback_reason"),
+                            "empty_after_filtering": retrieval_diagnostics.get("empty_after_filtering"),
+                        },
+                    })
                 if exhausted():
                     reason = "budget"
                     stop_detail = budget_detail()
@@ -614,6 +832,11 @@ class ReActAgent:
                     observation.error = ToolError.model_validate(result["error"])
                     attempt_step.errors.append(observation.error)
                     if observation.error.retryable and attempt < budget.max_retries:
+                        self._emit("retry_scheduled", {
+                            "kind": "tool_retry", "tool_name": action.tool,
+                            "next_attempt": attempt + 1,
+                            "reason": observation.error.error_code,
+                        })
                         continue
                     break
                 # One bounded read-only recovery: search ONLY undated records, never
@@ -627,6 +850,16 @@ class ReActAgent:
                     relaxed = action.filters.model_copy(update={"after": None, "before": None, "undated_only": True})
                     time_relaxations += 1
                     calls += 1
+                    if self._cancelled():
+                        raise RunCancelled("run cancelled before recovery tool call")
+                    recovery_call_id = uuid.uuid4().hex
+                    recovery_step_index = len(trace) + 1
+                    self._emit("tool_started", {
+                        "tool_call_id": recovery_call_id, "tool_name": action.tool,
+                        "query": action.query, "filters": relaxed.model_dump(),
+                        "attempt": attempt, "trace_step_index": recovery_step_index,
+                        "recovery_kind": "undated_time_relaxation",
+                    })
                     observation.time_relaxation = {"original_filters": step.filters, "effective_filters": relaxed.model_dump(),
                                                    "time_relation": "unknown_not_in_original_range"}
                     runtime_gaps.append("时间过滤无结果，已仅补查日期未知资料；其是否处于原时间范围仍未知。")
@@ -637,10 +870,34 @@ class ReActAgent:
                     except Exception:
                         result = {"error": ToolError(error_code="tool_error", retryable=False,
                             message="日期未知补查失败。", tool_name=action.tool, elapsed_ms=0).model_dump()}
-                    attempt_step = TraceStep(step_index=len(trace) + 1, action="tool_attempt", tool_name=action.tool,
+                    attempt_step = TraceStep(step_index=recovery_step_index, action="tool_attempt", tool_name=action.tool,
                         query=action.query, filters=relaxed.model_dump(), recovery_kind="undated_time_relaxation",
                         elapsed_ms=(time.monotonic() - tool_started) * 1000)
+                    retrieval_diagnostics = dict(result.get("retrieval_diagnostics") or {})
+                    attempt_step.retrieval_diagnostics = retrieval_diagnostics
                     trace.append(attempt_step)
+                    if result.get("error"):
+                        error = ToolError.model_validate(result["error"])
+                        self._emit("tool_failed", {
+                            "tool_call_id": recovery_call_id, "tool_name": action.tool,
+                            "trace_step_index": recovery_step_index,
+                            "elapsed_ms": attempt_step.elapsed_ms,
+                            "error": error.model_dump(),
+                        })
+                    else:
+                        self._emit("tool_completed", {
+                            "tool_call_id": recovery_call_id, "tool_name": action.tool,
+                            "trace_step_index": recovery_step_index,
+                            "elapsed_ms": attempt_step.elapsed_ms,
+                            "result_summary": {
+                                "evidence_count": len(result.get("evidence") or []),
+                                "retrieval_mode": retrieval_diagnostics.get("effective_mode"),
+                                "index_version": retrieval_diagnostics.get("index_version"),
+                                "fallback_reason": retrieval_diagnostics.get("fallback_reason"),
+                                "empty_after_filtering": retrieval_diagnostics.get("empty_after_filtering"),
+                                "recovery_kind": "undated_time_relaxation",
+                            },
+                        })
                     if exhausted():
                         reason, stop_detail = "budget", budget_detail()
                         break
@@ -651,10 +908,25 @@ class ReActAgent:
                         break
                 try:
                     items = result.get("evidence", [])
+                    observation.retrieval_diagnostics = retrieval_diagnostics
+                    if (live and not items
+                            and retrieval_diagnostics.get("empty_after_filtering")):
+                        runtime_gaps.append(
+                            "检索候选均未通过相关性阈值，返回空结果；未取得可引用证据。")
                     new_refs = ledger.register(items, action.tool)
                     successful_calls += bool(items)
                     observation.error = None
                     observation.new_evidence = new_refs
+                    if new_refs:
+                        self._emit("evidence_observed", {
+                            "tool_name": action.tool,
+                            "refs": [ref.model_dump() for ref in new_refs],
+                            "retrieval_mode": retrieval_diagnostics.get("effective_mode"),
+                            "index_version": retrieval_diagnostics.get("index_version"),
+                            "source_revision": retrieval_diagnostics.get("source_revision"),
+                            "fallback_reason": retrieval_diagnostics.get("fallback_reason"),
+                        })
+                    emit_conflicts()
                     observation.evidence = context.observe(items) if live else [{"evidence_id": item["evidence_id"], "content_hash": item["content_hash"],
                         "project_id": item.get("project_id"), "dataset_kind": item.get("dataset_kind"),
                         "source_type": item.get("source_type"),
@@ -692,7 +964,8 @@ class ReActAgent:
             observation.gaps = list(dict.fromkeys(observation.gaps + runtime_gaps))
             messages.append({"role": "assistant", "content": action.model_dump_json()})
             messages.append({"role": "user", "content": observation.model_dump_json()})
-            if live: messages = messages[:2] + messages[-2:]
+            # Phase 3 keeps the full turn list; InvestigationContext selects the
+            # latest observation and deterministic summaries for the request.
             step.elapsed_ms = (time.monotonic() - step_started) * 1000
             conflicts = list(ledger.conflicts)
             if reason == "budget":
@@ -760,4 +1033,5 @@ class ReActAgent:
             content_hash=e.evidence.content_hash) for e in ledger.entries], gaps=list(dict.fromkeys(gaps)),
             conflicts=conflicts, trace=trace, usage=usage, possible_sources=possible_sources,
             mode="offline_fallback" if offline else "react", decision_memories=memory_records,
-            task_coverage=coverage, context_usage=context_usage)
+            task_coverage=coverage, context_usage=context_usage,
+            context_trace=context_trace)

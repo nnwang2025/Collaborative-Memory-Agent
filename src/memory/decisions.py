@@ -138,13 +138,17 @@ class DecisionStore:
                        (decision_id, scope.project_id, scope.dataset_kind, title.strip(), timestamp(self.clock()), None, 0))
             return self._topic(db, decision_id, scope)
 
-    def _validate_refs(self, scope, refs):
+    def _validate_refs(self, scope, refs, *, require_active=False):
         validated = []
         for value in refs:
             ref = DecisionEvidence.model_validate(value.model_dump() if isinstance(value, DecisionEvidence) else value)
             evidence = self.evidence.get(ref.evidence_id, scope, ref.content_hash)
             if evidence is None:
                 raise ValueError("Evidence reference is missing, out of scope, or has wrong hash")
+            if require_active:
+                state = self.evidence.current_state(ref.evidence_id, scope, ref.content_hash)
+                if state is not None and (state["state"] != "active" or not state["matches"]):
+                    raise ValueError("A new proposal cannot rely on deleted, orphaned, or superseded Evidence")
             validated.append((ref, evidence))
         if not validated or not any(r.relation_type == "supports" for r, _ in validated):
             raise ValueError("A proposal requires supporting Evidence")
@@ -157,7 +161,7 @@ class DecisionStore:
             raise ValueError("Proposal statement must contain 1-4000 characters")
         event = timestamp(event_time) if event_time is not None else None
         values = refs if refs is not None else [r.model_dump() for r in result.evidence_refs]
-        checked = self._validate_refs(result.scope, values)
+        checked = self._validate_refs(result.scope, values, require_active=True)
         actual = {(r.evidence_id, r.content_hash) for r in result.evidence_refs}
         if any((r.evidence_id, r.content_hash) not in actual for r, _ in checked):
             raise ValueError("Proposal references were not obtained in the submitted investigation")

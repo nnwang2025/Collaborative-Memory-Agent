@@ -1,0 +1,4787 @@
+{
+  "task_set_version": "cma-v4-tasks-v1",
+  "scoring_version": "cma-v4-scoring-v1",
+  "annotation_status": "synthetic_authored_pending_independent_human_review",
+  "labels": {
+    "v4-single-source-01": {
+      "task_id": "v4-single-source-01",
+      "category": "single_source",
+      "question": "ingest-gateway 的写入放大根因是什么？请引用日志。",
+      "project_id": "v4-atlas-observability",
+      "dataset_kind": "live",
+      "known_at": null,
+      "required_evidence_groups": [
+        {
+          "group_id": "log_error",
+          "any_of": [
+            {
+              "evidence_id": "ev_7f106b51b6255f3855a0891dc63607994eeed510b7c80afbf253a9bc7ac1c5eb",
+              "content_hash": "aa309c3087cc1e2abe29d6d912144aac4ee2eb324d76c2f54419af54209b068e"
+            }
+          ]
+        },
+        {
+          "group_id": "issue_triage",
+          "any_of": [
+            {
+              "evidence_id": "ev_eae5c627e9e49311d2734bc744988712d6c7893071aecf70fe1cf3e86e2f2419",
+              "content_hash": "6bd156d03e9c837d6bcf8fcdea37a79593400ff46b508dc58b82b589fe01350d"
+            }
+          ]
+        }
+      ],
+      "expected_facts": [
+        {
+          "fact_id": "component",
+          "fact_type": "component",
+          "statement": "组件名称",
+          "required": true,
+          "values": [
+            "ingest-gateway"
+          ]
+        },
+        {
+          "fact_id": "log_id",
+          "fact_type": "issue_id",
+          "statement": "日志记录标识",
+          "required": true,
+          "values": [
+            "log-atlas-00"
+          ]
+        },
+        {
+          "fact_id": "root_cause",
+          "fact_type": "text",
+          "statement": "根因解释",
+          "required": true,
+          "marker_groups": [
+            [
+              "上游批次过小，固",
+              "上游批次过小，固定开销占比过高"
+            ]
+          ]
+        },
+        {
+          "fact_id": "issue_id",
+          "fact_type": "issue_id",
+          "statement": "可选关联 Issue",
+          "required": false,
+          "values": [
+            "issue-ATLAS-1400"
+          ]
+        }
+      ],
+      "acceptable_alternative_evidence": [],
+      "expected_decision_state": null,
+      "expected_conflicts": [],
+      "forbidden_inferences": [],
+      "expected_abstention": {
+        "required": false,
+        "expected_termination": [
+          "sufficient"
+        ],
+        "must_disclose": []
+      },
+      "expected_limitations": [],
+      "scoring_rubric": {
+        "deterministic": [
+          "evidence_recall",
+          "citation_validity",
+          "structured_fact_accuracy",
+          "termination"
+        ],
+        "manual": [
+          "task_success",
+          "semantic_support",
+          "conflict_interpretation"
+        ]
+      },
+      "difficulty": "easy",
+      "task_set_version": "cma-v4-tasks-v1",
+      "annotation_status": "synthetic_authored_pending_independent_human_review",
+      "human_review_rules": [
+        "Check that required facts are supported by cited Evidence, not merely present as strings.",
+        "Check that alternative Evidence is genuinely equivalent for this question.",
+        "Do not mark task_success from deterministic metrics alone."
+      ]
+    },
+    "v4-single-source-02": {
+      "task_id": "v4-single-source-02",
+      "category": "single_source",
+      "question": "alert-deduper 的重复告警根因是什么？请引用日志。",
+      "project_id": "v4-atlas-observability",
+      "dataset_kind": "live",
+      "known_at": null,
+      "required_evidence_groups": [
+        {
+          "group_id": "log_error",
+          "any_of": [
+            {
+              "evidence_id": "ev_1cff47c9ad77223eb821094a342d6d663955cdbc83ed783e2b02b0a0d9c02c6a",
+              "content_hash": "676ebe36d2727508da158fb5ca98e111f30e7010dd75d77d05529b02930d1845"
+            }
+          ]
+        },
+        {
+          "group_id": "issue_triage",
+          "any_of": [
+            {
+              "evidence_id": "ev_29b12933fe6b98ce888065d53f07f7405dc5af9375e097c5d0f921b3e4f41958",
+              "content_hash": "2d90e5a3faac0f81717134ae3260c6fd01e6572d5ab91ee7efc275011c4914e0"
+            }
+          ]
+        }
+      ],
+      "expected_facts": [
+        {
+          "fact_id": "component",
+          "fact_type": "component",
+          "statement": "组件名称",
+          "required": true,
+          "values": [
+            "alert-deduper"
+          ]
+        },
+        {
+          "fact_id": "log_id",
+          "fact_type": "issue_id",
+          "statement": "日志记录标识",
+          "required": true,
+          "values": [
+            "log-atlas-03"
+          ]
+        },
+        {
+          "fact_id": "root_cause",
+          "fact_type": "text",
+          "statement": "根因解释",
+          "required": true,
+          "marker_groups": [
+            [
+              "告警去重窗口过短",
+              "告警去重窗口过短导致重复通知"
+            ]
+          ]
+        },
+        {
+          "fact_id": "issue_id",
+          "fact_type": "issue_id",
+          "statement": "可选关联 Issue",
+          "required": false,
+          "values": [
+            "issue-ATLAS-1511"
+          ]
+        }
+      ],
+      "acceptable_alternative_evidence": [],
+      "expected_decision_state": null,
+      "expected_conflicts": [],
+      "forbidden_inferences": [],
+      "expected_abstention": {
+        "required": false,
+        "expected_termination": [
+          "sufficient"
+        ],
+        "must_disclose": []
+      },
+      "expected_limitations": [],
+      "scoring_rubric": {
+        "deterministic": [
+          "evidence_recall",
+          "citation_validity",
+          "structured_fact_accuracy",
+          "termination"
+        ],
+        "manual": [
+          "task_success",
+          "semantic_support",
+          "conflict_interpretation"
+        ]
+      },
+      "difficulty": "easy",
+      "task_set_version": "cma-v4-tasks-v1",
+      "annotation_status": "synthetic_authored_pending_independent_human_review",
+      "human_review_rules": [
+        "Check that required facts are supported by cited Evidence, not merely present as strings.",
+        "Check that alternative Evidence is genuinely equivalent for this question.",
+        "Do not mark task_success from deterministic metrics alone."
+      ]
+    },
+    "v4-single-source-03": {
+      "task_id": "v4-single-source-03",
+      "category": "single_source",
+      "question": "index-builder 的索引构建变慢根因是什么？请引用日志。",
+      "project_id": "v4-zephyr-indexer",
+      "dataset_kind": "live",
+      "known_at": null,
+      "required_evidence_groups": [
+        {
+          "group_id": "log_error",
+          "any_of": [
+            {
+              "evidence_id": "ev_7b53bd8da395f6e65b9d61087e282eb5575504d7e5752eb4939e60471b792050",
+              "content_hash": "6ae905056598ea9e0e275ab4a774786ba4117d8d867944555de27bb97c2b070e"
+            }
+          ]
+        },
+        {
+          "group_id": "issue_triage",
+          "any_of": [
+            {
+              "evidence_id": "ev_e519e3b11cbd13b5a6e263251f59ea30d9cfe3687898a297abf06a6ed3097d7c",
+              "content_hash": "e0e949a93f16bef523a9377e737183d77ec67ffc4b07c6749ded079e0484c590"
+            }
+          ]
+        }
+      ],
+      "expected_facts": [
+        {
+          "fact_id": "component",
+          "fact_type": "component",
+          "statement": "组件名称",
+          "required": true,
+          "values": [
+            "index-builder"
+          ]
+        },
+        {
+          "fact_id": "log_id",
+          "fact_type": "issue_id",
+          "statement": "日志记录标识",
+          "required": true,
+          "values": [
+            "log-zephyr-06"
+          ]
+        },
+        {
+          "fact_id": "root_cause",
+          "fact_type": "text",
+          "statement": "根因解释",
+          "required": true,
+          "marker_groups": [
+            [
+              "构建分片过少导致",
+              "构建分片过少导致单分片过大"
+            ]
+          ]
+        },
+        {
+          "fact_id": "issue_id",
+          "fact_type": "issue_id",
+          "statement": "可选关联 Issue",
+          "required": false,
+          "values": [
+            "issue-ZEPHYR-1622"
+          ]
+        }
+      ],
+      "acceptable_alternative_evidence": [],
+      "expected_decision_state": null,
+      "expected_conflicts": [],
+      "forbidden_inferences": [],
+      "expected_abstention": {
+        "required": false,
+        "expected_termination": [
+          "sufficient"
+        ],
+        "must_disclose": []
+      },
+      "expected_limitations": [],
+      "scoring_rubric": {
+        "deterministic": [
+          "evidence_recall",
+          "citation_validity",
+          "structured_fact_accuracy",
+          "termination"
+        ],
+        "manual": [
+          "task_success",
+          "semantic_support",
+          "conflict_interpretation"
+        ]
+      },
+      "difficulty": "easy",
+      "task_set_version": "cma-v4-tasks-v1",
+      "annotation_status": "synthetic_authored_pending_independent_human_review",
+      "human_review_rules": [
+        "Check that required facts are supported by cited Evidence, not merely present as strings.",
+        "Check that alternative Evidence is genuinely equivalent for this question.",
+        "Do not mark task_success from deterministic metrics alone."
+      ]
+    },
+    "v4-single-source-04": {
+      "task_id": "v4-single-source-04",
+      "category": "single_source",
+      "question": "search-client 的重试次数不足根因是什么？请引用日志。",
+      "project_id": "v4-zephyr-indexer",
+      "dataset_kind": "live",
+      "known_at": null,
+      "required_evidence_groups": [
+        {
+          "group_id": "log_error",
+          "any_of": [
+            {
+              "evidence_id": "ev_216479ea15d116f57af6d9377b17789ca9dcff3a7eb575b19311eeb61463c881",
+              "content_hash": "34d74b4506199c3c9cb370a63332f762745c63d8d87a2153ea95af20406a8cdf"
+            }
+          ]
+        },
+        {
+          "group_id": "issue_triage",
+          "any_of": [
+            {
+              "evidence_id": "ev_92096a4bd443310718734760639414d9641baa31bc10f7c44924a7abc754bfb9",
+              "content_hash": "ebbaccec4d988cfb14ad0ebcdcf946794f7ab9eb083356547db998be77cc4299"
+            }
+          ]
+        }
+      ],
+      "expected_facts": [
+        {
+          "fact_id": "component",
+          "fact_type": "component",
+          "statement": "组件名称",
+          "required": true,
+          "values": [
+            "search-client"
+          ]
+        },
+        {
+          "fact_id": "log_id",
+          "fact_type": "issue_id",
+          "statement": "日志记录标识",
+          "required": true,
+          "values": [
+            "log-zephyr-09"
+          ]
+        },
+        {
+          "fact_id": "root_cause",
+          "fact_type": "text",
+          "statement": "根因解释",
+          "required": true,
+          "marker_groups": [
+            [
+              "瞬断时没有第二次",
+              "瞬断时没有第二次重试机会"
+            ]
+          ]
+        },
+        {
+          "fact_id": "issue_id",
+          "fact_type": "issue_id",
+          "statement": "可选关联 Issue",
+          "required": false,
+          "values": [
+            "issue-ZEPHYR-1733"
+          ]
+        }
+      ],
+      "acceptable_alternative_evidence": [],
+      "expected_decision_state": null,
+      "expected_conflicts": [],
+      "forbidden_inferences": [],
+      "expected_abstention": {
+        "required": false,
+        "expected_termination": [
+          "sufficient"
+        ],
+        "must_disclose": []
+      },
+      "expected_limitations": [],
+      "scoring_rubric": {
+        "deterministic": [
+          "evidence_recall",
+          "citation_validity",
+          "structured_fact_accuracy",
+          "termination"
+        ],
+        "manual": [
+          "task_success",
+          "semantic_support",
+          "conflict_interpretation"
+        ]
+      },
+      "difficulty": "easy",
+      "task_set_version": "cma-v4-tasks-v1",
+      "annotation_status": "synthetic_authored_pending_independent_human_review",
+      "human_review_rules": [
+        "Check that required facts are supported by cited Evidence, not merely present as strings.",
+        "Check that alternative Evidence is genuinely equivalent for this question.",
+        "Do not mark task_success from deterministic metrics alone."
+      ]
+    },
+    "v4-single-source-05": {
+      "task_id": "v4-single-source-05",
+      "category": "single_source",
+      "question": "pricing-engine 的金额舍入错误根因是什么？请引用日志。",
+      "project_id": "v4-orbit-billing",
+      "dataset_kind": "live",
+      "known_at": null,
+      "required_evidence_groups": [
+        {
+          "group_id": "log_error",
+          "any_of": [
+            {
+              "evidence_id": "ev_919f286a10259ed43227dd5b7e11284e5c9fc79fc820f305c635881aa86a6208",
+              "content_hash": "3cc251112180c4de362318e612c50a0eb140b53c87b706c3eff21a2fb43ce463"
+            }
+          ]
+        },
+        {
+          "group_id": "issue_triage",
+          "any_of": [
+            {
+              "evidence_id": "ev_b9b8a7dd916445b2dfe2175f4b896e7958da913c488db5ee5f6ab3bf65b22758",
+              "content_hash": "b277d26e9e01b74890406773b0b82c4c5e5baaad265deefadc178bb4f7a35003"
+            }
+          ]
+        }
+      ],
+      "expected_facts": [
+        {
+          "fact_id": "component",
+          "fact_type": "component",
+          "statement": "组件名称",
+          "required": true,
+          "values": [
+            "pricing-engine"
+          ]
+        },
+        {
+          "fact_id": "log_id",
+          "fact_type": "issue_id",
+          "statement": "日志记录标识",
+          "required": true,
+          "values": [
+            "log-orbit-12"
+          ]
+        },
+        {
+          "fact_id": "root_cause",
+          "fact_type": "text",
+          "statement": "根因解释",
+          "required": true,
+          "marker_groups": [
+            [
+              "中间计算过早舍入",
+              "中间计算过早舍入"
+            ]
+          ]
+        },
+        {
+          "fact_id": "issue_id",
+          "fact_type": "issue_id",
+          "statement": "可选关联 Issue",
+          "required": false,
+          "values": [
+            "issue-ORBIT-1844"
+          ]
+        }
+      ],
+      "acceptable_alternative_evidence": [],
+      "expected_decision_state": null,
+      "expected_conflicts": [],
+      "forbidden_inferences": [],
+      "expected_abstention": {
+        "required": false,
+        "expected_termination": [
+          "sufficient"
+        ],
+        "must_disclose": []
+      },
+      "expected_limitations": [],
+      "scoring_rubric": {
+        "deterministic": [
+          "evidence_recall",
+          "citation_validity",
+          "structured_fact_accuracy",
+          "termination"
+        ],
+        "manual": [
+          "task_success",
+          "semantic_support",
+          "conflict_interpretation"
+        ]
+      },
+      "difficulty": "easy",
+      "task_set_version": "cma-v4-tasks-v1",
+      "annotation_status": "synthetic_authored_pending_independent_human_review",
+      "human_review_rules": [
+        "Check that required facts are supported by cited Evidence, not merely present as strings.",
+        "Check that alternative Evidence is genuinely equivalent for this question.",
+        "Do not mark task_success from deterministic metrics alone."
+      ]
+    },
+    "v4-cross-source-01": {
+      "task_id": "v4-cross-source-01",
+      "category": "cross_source",
+      "question": "query-router 为什么采用 5？讨论理由与哪个提交相互印证？",
+      "project_id": "v4-atlas-observability",
+      "dataset_kind": "live",
+      "known_at": null,
+      "required_evidence_groups": [
+        {
+          "group_id": "chat_proposal",
+          "any_of": [
+            {
+              "evidence_id": "ev_3cae8d55e82fc3884921267f936dedb9b864962b0b70adf7151c3e49a389bceb",
+              "content_hash": "6f0274bb39eb860b9f2c9581218fadccb19506053d57f07300cfec0dd02f10ec"
+            }
+          ]
+        },
+        {
+          "group_id": "commit_fix",
+          "any_of": [
+            {
+              "evidence_id": "ev_eed0c6fb65c18e75d60c35bd92af131f0c371b76db3fbeae0c7f718750fbce1d",
+              "content_hash": "3f3ca2b8b35cdb102ad88b5c451210198ab0d0cdf461c5b0b0c7344cd452bdfe"
+            }
+          ]
+        }
+      ],
+      "expected_facts": [
+        {
+          "fact_id": "metric_value",
+          "fact_type": "version",
+          "statement": "配置值",
+          "required": true,
+          "values": [
+            "5"
+          ]
+        },
+        {
+          "fact_id": "commit",
+          "fact_type": "commit",
+          "statement": "修复提交",
+          "required": true,
+          "values": [
+            "a3ff87577b27f7f49ce2ce9dd340c3dc7d41075b",
+            "a3ff8757"
+          ]
+        },
+        {
+          "fact_id": "reason",
+          "fact_type": "text",
+          "statement": "采用理由",
+          "required": true,
+          "marker_groups": [
+            [
+              "跨分片查询默认超"
+            ]
+          ]
+        },
+        {
+          "fact_id": "meeting_id",
+          "fact_type": "issue_id",
+          "statement": "可选会议记录",
+          "required": false,
+          "values": [
+            "meeting-atlas-01"
+          ]
+        }
+      ],
+      "acceptable_alternative_evidence": [],
+      "expected_decision_state": null,
+      "expected_conflicts": [],
+      "forbidden_inferences": [],
+      "expected_abstention": {
+        "required": false,
+        "expected_termination": [
+          "sufficient"
+        ],
+        "must_disclose": []
+      },
+      "expected_limitations": [],
+      "scoring_rubric": {
+        "deterministic": [
+          "evidence_recall",
+          "citation_validity",
+          "structured_fact_accuracy",
+          "termination"
+        ],
+        "manual": [
+          "task_success",
+          "semantic_support",
+          "conflict_interpretation"
+        ]
+      },
+      "difficulty": "medium",
+      "task_set_version": "cma-v4-tasks-v1",
+      "annotation_status": "synthetic_authored_pending_independent_human_review",
+      "human_review_rules": [
+        "Check that required facts are supported by cited Evidence, not merely present as strings.",
+        "Check that alternative Evidence is genuinely equivalent for this question.",
+        "Do not mark task_success from deterministic metrics alone."
+      ]
+    },
+    "v4-cross-source-02": {
+      "task_id": "v4-cross-source-02",
+      "category": "cross_source",
+      "question": "rollout-controller 为什么采用 10？讨论理由与哪个提交相互印证？",
+      "project_id": "v4-atlas-observability",
+      "dataset_kind": "live",
+      "known_at": null,
+      "required_evidence_groups": [
+        {
+          "group_id": "chat_proposal",
+          "any_of": [
+            {
+              "evidence_id": "ev_364dd81797bdf7861cbd2887c2ab198b3d50ff61cf63c9dc21eee3ac3eaea024",
+              "content_hash": "23785c654cec930751803bee4fcb7529edba647202af34dcb3d4de45a6940a1f"
+            }
+          ]
+        },
+        {
+          "group_id": "commit_fix",
+          "any_of": [
+            {
+              "evidence_id": "ev_b71927fd8517c0e94dbd76efb18b28c9307e1e3fce2a2dfd2b7122e1674a1411",
+              "content_hash": "023f79efa0130af2f5b8b90fad63618621a47fe011fec00032ea2ada6f437cb0"
+            }
+          ]
+        }
+      ],
+      "expected_facts": [
+        {
+          "fact_id": "metric_value",
+          "fact_type": "version",
+          "statement": "配置值",
+          "required": true,
+          "values": [
+            "10"
+          ]
+        },
+        {
+          "fact_id": "commit",
+          "fact_type": "commit",
+          "statement": "修复提交",
+          "required": true,
+          "values": [
+            "2be2be2c68251f68510bc9b40f5e4f5970ad474f",
+            "2be2be2c"
+          ]
+        },
+        {
+          "fact_id": "reason",
+          "fact_type": "text",
+          "statement": "采用理由",
+          "required": true,
+          "marker_groups": [
+            [
+              "灰度控制器读取了"
+            ]
+          ]
+        },
+        {
+          "fact_id": "meeting_id",
+          "fact_type": "issue_id",
+          "statement": "可选会议记录",
+          "required": false,
+          "values": [
+            "meeting-atlas-04"
+          ]
+        }
+      ],
+      "acceptable_alternative_evidence": [],
+      "expected_decision_state": null,
+      "expected_conflicts": [],
+      "forbidden_inferences": [],
+      "expected_abstention": {
+        "required": false,
+        "expected_termination": [
+          "sufficient"
+        ],
+        "must_disclose": []
+      },
+      "expected_limitations": [],
+      "scoring_rubric": {
+        "deterministic": [
+          "evidence_recall",
+          "citation_validity",
+          "structured_fact_accuracy",
+          "termination"
+        ],
+        "manual": [
+          "task_success",
+          "semantic_support",
+          "conflict_interpretation"
+        ]
+      },
+      "difficulty": "medium",
+      "task_set_version": "cma-v4-tasks-v1",
+      "annotation_status": "synthetic_authored_pending_independent_human_review",
+      "human_review_rules": [
+        "Check that required facts are supported by cited Evidence, not merely present as strings.",
+        "Check that alternative Evidence is genuinely equivalent for this question.",
+        "Do not mark task_success from deterministic metrics alone."
+      ]
+    },
+    "v4-cross-source-03": {
+      "task_id": "v4-cross-source-03",
+      "category": "cross_source",
+      "question": "warmup-loader 为什么采用 8？讨论理由与哪个提交相互印证？",
+      "project_id": "v4-zephyr-indexer",
+      "dataset_kind": "live",
+      "known_at": null,
+      "required_evidence_groups": [
+        {
+          "group_id": "chat_proposal",
+          "any_of": [
+            {
+              "evidence_id": "ev_770aa6d3a33d1bb4f4f025a3475df3979bd3465f3ff68788ad7f83661cc55b7a",
+              "content_hash": "b36e57bcdd0551e9b322bf77a3a53c0d735b29945383e1bb1134a94aca00b238"
+            }
+          ]
+        },
+        {
+          "group_id": "commit_fix",
+          "any_of": [
+            {
+              "evidence_id": "ev_5fe32a76434d7225edbe1566bf66437bcc8f79c05ff5efddcb784d4611296994",
+              "content_hash": "84325bb7fbb2ae7a02a4daa95370bf460b118502d5c701b88e94ebfe1729f827"
+            }
+          ]
+        }
+      ],
+      "expected_facts": [
+        {
+          "fact_id": "metric_value",
+          "fact_type": "version",
+          "statement": "配置值",
+          "required": true,
+          "values": [
+            "8"
+          ]
+        },
+        {
+          "fact_id": "commit",
+          "fact_type": "commit",
+          "statement": "修复提交",
+          "required": true,
+          "values": [
+            "86ab0a2b934d53752c6b2fd49457174cb84b589d",
+            "86ab0a2b"
+          ]
+        },
+        {
+          "fact_id": "reason",
+          "fact_type": "text",
+          "statement": "采用理由",
+          "required": true,
+          "marker_groups": [
+            [
+              "预热并发不足导致"
+            ]
+          ]
+        },
+        {
+          "fact_id": "meeting_id",
+          "fact_type": "issue_id",
+          "statement": "可选会议记录",
+          "required": false,
+          "values": [
+            "meeting-zephyr-07"
+          ]
+        }
+      ],
+      "acceptable_alternative_evidence": [],
+      "expected_decision_state": null,
+      "expected_conflicts": [],
+      "forbidden_inferences": [],
+      "expected_abstention": {
+        "required": false,
+        "expected_termination": [
+          "sufficient"
+        ],
+        "must_disclose": []
+      },
+      "expected_limitations": [],
+      "scoring_rubric": {
+        "deterministic": [
+          "evidence_recall",
+          "citation_validity",
+          "structured_fact_accuracy",
+          "termination"
+        ],
+        "manual": [
+          "task_success",
+          "semantic_support",
+          "conflict_interpretation"
+        ]
+      },
+      "difficulty": "medium",
+      "task_set_version": "cma-v4-tasks-v1",
+      "annotation_status": "synthetic_authored_pending_independent_human_review",
+      "human_review_rules": [
+        "Check that required facts are supported by cited Evidence, not merely present as strings.",
+        "Check that alternative Evidence is genuinely equivalent for this question.",
+        "Do not mark task_success from deterministic metrics alone."
+      ]
+    },
+    "v4-cross-source-04": {
+      "task_id": "v4-cross-source-04",
+      "category": "cross_source",
+      "question": "segment-compactor 为什么采用 256？讨论理由与哪个提交相互印证？",
+      "project_id": "v4-zephyr-indexer",
+      "dataset_kind": "live",
+      "known_at": null,
+      "required_evidence_groups": [
+        {
+          "group_id": "chat_proposal",
+          "any_of": [
+            {
+              "evidence_id": "ev_26e8bbd529edddceaffae139de5a2df89323cad052eb11c7bf0266f54e8b92ca",
+              "content_hash": "a90ca748290f1364f87fa2c3ab9b162e5e9f003e4c26519ef5d309850b77d279"
+            }
+          ]
+        },
+        {
+          "group_id": "commit_fix",
+          "any_of": [
+            {
+              "evidence_id": "ev_01ae335b48a48cfb7a8f8d8cba1883d1deb9c76e1e8943ef990d6a2d7da5c99b",
+              "content_hash": "54dc1cc3214032fd2fc393a29d40b8ff708ac0286548e7bdf12307d3d4ff908e"
+            }
+          ]
+        }
+      ],
+      "expected_facts": [
+        {
+          "fact_id": "metric_value",
+          "fact_type": "version",
+          "statement": "配置值",
+          "required": true,
+          "values": [
+            "256"
+          ]
+        },
+        {
+          "fact_id": "commit",
+          "fact_type": "commit",
+          "statement": "修复提交",
+          "required": true,
+          "values": [
+            "2de08ab79cf8b083568ebad3ec9038d46380b716",
+            "2de08ab7"
+          ]
+        },
+        {
+          "fact_id": "reason",
+          "fact_type": "text",
+          "statement": "采用理由",
+          "required": true,
+          "marker_groups": [
+            [
+              "合并阈值过低导致"
+            ]
+          ]
+        },
+        {
+          "fact_id": "meeting_id",
+          "fact_type": "issue_id",
+          "statement": "可选会议记录",
+          "required": false,
+          "values": [
+            "meeting-zephyr-10"
+          ]
+        }
+      ],
+      "acceptable_alternative_evidence": [],
+      "expected_decision_state": null,
+      "expected_conflicts": [],
+      "forbidden_inferences": [],
+      "expected_abstention": {
+        "required": false,
+        "expected_termination": [
+          "sufficient"
+        ],
+        "must_disclose": []
+      },
+      "expected_limitations": [],
+      "scoring_rubric": {
+        "deterministic": [
+          "evidence_recall",
+          "citation_validity",
+          "structured_fact_accuracy",
+          "termination"
+        ],
+        "manual": [
+          "task_success",
+          "semantic_support",
+          "conflict_interpretation"
+        ]
+      },
+      "difficulty": "medium",
+      "task_set_version": "cma-v4-tasks-v1",
+      "annotation_status": "synthetic_authored_pending_independent_human_review",
+      "human_review_rules": [
+        "Check that required facts are supported by cited Evidence, not merely present as strings.",
+        "Check that alternative Evidence is genuinely equivalent for this question.",
+        "Do not mark task_success from deterministic metrics alone."
+      ]
+    },
+    "v4-cross-source-05": {
+      "task_id": "v4-cross-source-05",
+      "category": "cross_source",
+      "question": "invoice-renderer 为什么采用 250？讨论理由与哪个提交相互印证？",
+      "project_id": "v4-orbit-billing",
+      "dataset_kind": "live",
+      "known_at": null,
+      "required_evidence_groups": [
+        {
+          "group_id": "chat_proposal",
+          "any_of": [
+            {
+              "evidence_id": "ev_6b59d7ced68c0129e0cf0e133522ea30dfae6bdbb4e67eaf2b43af43ea805192",
+              "content_hash": "f05c6e08a300aac41e1da31ddb43cd546c22a1b2a612d2ac7454fed58bfdc058"
+            }
+          ]
+        },
+        {
+          "group_id": "commit_fix",
+          "any_of": [
+            {
+              "evidence_id": "ev_3f1c644031c28e39778a366f5c2f06c6408401723fb5bae6fd316fa2695e524c",
+              "content_hash": "75b815edcf0924954820c70b26e4bc2d18d253d1b4536fa2a5956ef1a7a94f81"
+            }
+          ]
+        }
+      ],
+      "expected_facts": [
+        {
+          "fact_id": "metric_value",
+          "fact_type": "version",
+          "statement": "配置值",
+          "required": true,
+          "values": [
+            "250"
+          ]
+        },
+        {
+          "fact_id": "commit",
+          "fact_type": "commit",
+          "statement": "修复提交",
+          "required": true,
+          "values": [
+            "0380bb9e3bdc8ce5c8a8c1917ba6d5689c7b312a",
+            "0380bb9e"
+          ]
+        },
+        {
+          "fact_id": "reason",
+          "fact_type": "text",
+          "statement": "采用理由",
+          "required": true,
+          "marker_groups": [
+            [
+              "单批账单数量过少"
+            ]
+          ]
+        },
+        {
+          "fact_id": "meeting_id",
+          "fact_type": "issue_id",
+          "statement": "可选会议记录",
+          "required": false,
+          "values": [
+            "meeting-orbit-13"
+          ]
+        }
+      ],
+      "acceptable_alternative_evidence": [],
+      "expected_decision_state": null,
+      "expected_conflicts": [],
+      "forbidden_inferences": [],
+      "expected_abstention": {
+        "required": false,
+        "expected_termination": [
+          "sufficient"
+        ],
+        "must_disclose": []
+      },
+      "expected_limitations": [],
+      "scoring_rubric": {
+        "deterministic": [
+          "evidence_recall",
+          "citation_validity",
+          "structured_fact_accuracy",
+          "termination"
+        ],
+        "manual": [
+          "task_success",
+          "semantic_support",
+          "conflict_interpretation"
+        ]
+      },
+      "difficulty": "medium",
+      "task_set_version": "cma-v4-tasks-v1",
+      "annotation_status": "synthetic_authored_pending_independent_human_review",
+      "human_review_rules": [
+        "Check that required facts are supported by cited Evidence, not merely present as strings.",
+        "Check that alternative Evidence is genuinely equivalent for this question.",
+        "Do not mark task_success from deterministic metrics alone."
+      ]
+    },
+    "v4-multi-step-01": {
+      "task_id": "v4-multi-step-01",
+      "category": "multi_step",
+      "question": "从 Issue issue-ATLAS-1474 追查 retention-worker 的修复提交与验证日志。",
+      "project_id": "v4-atlas-observability",
+      "dataset_kind": "live",
+      "known_at": null,
+      "required_evidence_groups": [
+        {
+          "group_id": "issue_fix",
+          "any_of": [
+            {
+              "evidence_id": "ev_4acf6fad8299112ca7d0ebf5ca0265851e51865456718f9ad2ed936c86d23398",
+              "content_hash": "7497654e8d721761d99c6c80a713afa88d0c5f8037ca761f628627efb3fa6c40"
+            }
+          ]
+        },
+        {
+          "group_id": "commit_fix",
+          "any_of": [
+            {
+              "evidence_id": "ev_803704739ca8b242737a95597c21b8ff2d6fb6df90cba61f04a3686c60e1af28",
+              "content_hash": "a34f4094eee262d0e74cbaadf7f71f5db8c956c46ae8c42a7cc6964d625caafd"
+            }
+          ]
+        },
+        {
+          "group_id": "log_recovery",
+          "any_of": [
+            {
+              "evidence_id": "ev_50112ada176e77caca4f8c32bc043af632c31a4e586de55b6d5799707ce56093",
+              "content_hash": "c2c529c4023429e0848609cd0c507e3ed5874ffcfaa03e9b1161d245230e3c29"
+            }
+          ]
+        }
+      ],
+      "expected_facts": [
+        {
+          "fact_id": "issue_id",
+          "fact_type": "issue_id",
+          "statement": "Issue 标识",
+          "required": true,
+          "values": [
+            "issue-ATLAS-1474"
+          ]
+        },
+        {
+          "fact_id": "commit",
+          "fact_type": "commit",
+          "statement": "修复提交",
+          "required": true,
+          "values": [
+            "c7ba02365bb4a02405920baa5d1a190197184b1c",
+            "c7ba0236"
+          ]
+        },
+        {
+          "fact_id": "metric_value",
+          "fact_type": "version",
+          "statement": "验证值",
+          "required": true,
+          "values": [
+            "14"
+          ]
+        },
+        {
+          "fact_id": "log_id",
+          "fact_type": "issue_id",
+          "statement": "可选恢复日志",
+          "required": false,
+          "values": [
+            "log-atlas-02"
+          ]
+        }
+      ],
+      "acceptable_alternative_evidence": [],
+      "expected_decision_state": null,
+      "expected_conflicts": [],
+      "forbidden_inferences": [],
+      "expected_abstention": {
+        "required": false,
+        "expected_termination": [
+          "sufficient"
+        ],
+        "must_disclose": []
+      },
+      "expected_limitations": [],
+      "scoring_rubric": {
+        "deterministic": [
+          "evidence_recall",
+          "citation_validity",
+          "structured_fact_accuracy",
+          "termination"
+        ],
+        "manual": [
+          "task_success",
+          "semantic_support",
+          "conflict_interpretation"
+        ]
+      },
+      "difficulty": "medium",
+      "task_set_version": "cma-v4-tasks-v1",
+      "annotation_status": "synthetic_authored_pending_independent_human_review",
+      "human_review_rules": [
+        "Check that required facts are supported by cited Evidence, not merely present as strings.",
+        "Check that alternative Evidence is genuinely equivalent for this question.",
+        "Do not mark task_success from deterministic metrics alone."
+      ]
+    },
+    "v4-multi-step-02": {
+      "task_id": "v4-multi-step-02",
+      "category": "multi_step",
+      "question": "从 Issue issue-ATLAS-1585 追查 tenant-quota 的修复提交与验证日志。",
+      "project_id": "v4-atlas-observability",
+      "dataset_kind": "live",
+      "known_at": null,
+      "required_evidence_groups": [
+        {
+          "group_id": "issue_fix",
+          "any_of": [
+            {
+              "evidence_id": "ev_b33d16e9cde5d618a65c76c4be89eb7bbff68cb0458ef1e6f82904c0076f5b2d",
+              "content_hash": "7837ec92be8acf8aa6c9691b24fcf8888706b87a78a6c9148f37ddd92285bd0d"
+            }
+          ]
+        },
+        {
+          "group_id": "commit_fix",
+          "any_of": [
+            {
+              "evidence_id": "ev_1aa8f29b176e39a7f976556413ebdeb125406c21bf6fd947ed2dcc0fedce9cbf",
+              "content_hash": "0bdacc30b25927d3b9dd23d760bbc6a4a397e8f0ad5dcabfc2734f36c41db8da"
+            }
+          ]
+        },
+        {
+          "group_id": "log_recovery",
+          "any_of": [
+            {
+              "evidence_id": "ev_e30b5ce9561b1744e3b4d046edb4fa9ace337b32d3344dc91bb916fc07a1f0e5",
+              "content_hash": "03e6ebc009659c8f2e62ab07b39dfa2d2b8979e445f1cfea344a385b032c2408"
+            }
+          ]
+        }
+      ],
+      "expected_facts": [
+        {
+          "fact_id": "issue_id",
+          "fact_type": "issue_id",
+          "statement": "Issue 标识",
+          "required": true,
+          "values": [
+            "issue-ATLAS-1585"
+          ]
+        },
+        {
+          "fact_id": "commit",
+          "fact_type": "commit",
+          "statement": "修复提交",
+          "required": true,
+          "values": [
+            "4299919649a6776bd4b2d080193cfb2b164d18ae",
+            "42999196"
+          ]
+        },
+        {
+          "fact_id": "metric_value",
+          "fact_type": "version",
+          "statement": "验证值",
+          "required": true,
+          "values": [
+            "2"
+          ]
+        },
+        {
+          "fact_id": "log_id",
+          "fact_type": "issue_id",
+          "statement": "可选恢复日志",
+          "required": false,
+          "values": [
+            "log-atlas-05"
+          ]
+        }
+      ],
+      "acceptable_alternative_evidence": [],
+      "expected_decision_state": null,
+      "expected_conflicts": [],
+      "forbidden_inferences": [],
+      "expected_abstention": {
+        "required": false,
+        "expected_termination": [
+          "sufficient"
+        ],
+        "must_disclose": []
+      },
+      "expected_limitations": [],
+      "scoring_rubric": {
+        "deterministic": [
+          "evidence_recall",
+          "citation_validity",
+          "structured_fact_accuracy",
+          "termination"
+        ],
+        "manual": [
+          "task_success",
+          "semantic_support",
+          "conflict_interpretation"
+        ]
+      },
+      "difficulty": "medium",
+      "task_set_version": "cma-v4-tasks-v1",
+      "annotation_status": "synthetic_authored_pending_independent_human_review",
+      "human_review_rules": [
+        "Check that required facts are supported by cited Evidence, not merely present as strings.",
+        "Check that alternative Evidence is genuinely equivalent for this question.",
+        "Do not mark task_success from deterministic metrics alone."
+      ]
+    },
+    "v4-multi-step-03": {
+      "task_id": "v4-multi-step-03",
+      "category": "multi_step",
+      "question": "从 Issue issue-ZEPHYR-1696 追查 cache-proxy 的修复提交与验证日志。",
+      "project_id": "v4-zephyr-indexer",
+      "dataset_kind": "live",
+      "known_at": null,
+      "required_evidence_groups": [
+        {
+          "group_id": "issue_fix",
+          "any_of": [
+            {
+              "evidence_id": "ev_6fe78012d723d5afef336f9988e0b10ec903ccd9a1660b06658bad571bbd05d5",
+              "content_hash": "af5ff91c2001b96dcb2d44200e592e8a75ce1997a4f63f95246758361556ce5f"
+            }
+          ]
+        },
+        {
+          "group_id": "commit_fix",
+          "any_of": [
+            {
+              "evidence_id": "ev_1c20acd9f65ee513553fd12e364161107129ce014b51cc3a41803d8573d8483a",
+              "content_hash": "78fd1bcbd5b4187b0337ac013962dc294f2fa8fb0ebc91ecf89434013e7b2b55"
+            }
+          ]
+        },
+        {
+          "group_id": "log_recovery",
+          "any_of": [
+            {
+              "evidence_id": "ev_de5c59838d81f2bcea2a782213ffc1b79a541b0a7e0f1b7a38b0fc80c39fbfb9",
+              "content_hash": "330b4843d16b4323ba279c75c0f97cddbe6cc5bd2bca7fb9ac2b565da7042c6a"
+            }
+          ]
+        }
+      ],
+      "expected_facts": [
+        {
+          "fact_id": "issue_id",
+          "fact_type": "issue_id",
+          "statement": "Issue 标识",
+          "required": true,
+          "values": [
+            "issue-ZEPHYR-1696"
+          ]
+        },
+        {
+          "fact_id": "commit",
+          "fact_type": "commit",
+          "statement": "修复提交",
+          "required": true,
+          "values": [
+            "fec9e8c12c2ab624b2e236480769b6afe1488bce",
+            "fec9e8c1"
+          ]
+        },
+        {
+          "fact_id": "metric_value",
+          "fact_type": "version",
+          "statement": "验证值",
+          "required": true,
+          "values": [
+            "600"
+          ]
+        },
+        {
+          "fact_id": "log_id",
+          "fact_type": "issue_id",
+          "statement": "可选恢复日志",
+          "required": false,
+          "values": [
+            "log-zephyr-08"
+          ]
+        }
+      ],
+      "acceptable_alternative_evidence": [],
+      "expected_decision_state": null,
+      "expected_conflicts": [],
+      "forbidden_inferences": [],
+      "expected_abstention": {
+        "required": false,
+        "expected_termination": [
+          "sufficient"
+        ],
+        "must_disclose": []
+      },
+      "expected_limitations": [],
+      "scoring_rubric": {
+        "deterministic": [
+          "evidence_recall",
+          "citation_validity",
+          "structured_fact_accuracy",
+          "termination"
+        ],
+        "manual": [
+          "task_success",
+          "semantic_support",
+          "conflict_interpretation"
+        ]
+      },
+      "difficulty": "medium",
+      "task_set_version": "cma-v4-tasks-v1",
+      "annotation_status": "synthetic_authored_pending_independent_human_review",
+      "human_review_rules": [
+        "Check that required facts are supported by cited Evidence, not merely present as strings.",
+        "Check that alternative Evidence is genuinely equivalent for this question.",
+        "Do not mark task_success from deterministic metrics alone."
+      ]
+    },
+    "v4-multi-step-04": {
+      "task_id": "v4-multi-step-04",
+      "category": "multi_step",
+      "question": "从 Issue issue-ZEPHYR-1807 追查 token-validator 的修复提交与验证日志。",
+      "project_id": "v4-zephyr-indexer",
+      "dataset_kind": "live",
+      "known_at": null,
+      "required_evidence_groups": [
+        {
+          "group_id": "issue_fix",
+          "any_of": [
+            {
+              "evidence_id": "ev_2b3b7ca3946a9167565ce23f8acf73c391d02fdda1c33364ba02550515941e45",
+              "content_hash": "5fd92ae2713e7276923dbf4f26a1ce5f85b6782f6aebbf798d8f6fc137d4338e"
+            }
+          ]
+        },
+        {
+          "group_id": "commit_fix",
+          "any_of": [
+            {
+              "evidence_id": "ev_59c67769631db4e682c1768313cde7ab62ec5b2c34b7c6d1d81c42322cf0f17a",
+              "content_hash": "914e90c3cfdd239430c5cdd7c2a098050b2a360990a224f7df7aedbb6d1fab09"
+            }
+          ]
+        },
+        {
+          "group_id": "log_recovery",
+          "any_of": [
+            {
+              "evidence_id": "ev_099cf64a1aad76061edbc20457c4e021370acf7cd9877e44d51b144cb3ce6cdb",
+              "content_hash": "89559b5309e79c38e80539e0320a5f7c065fa6dee8af4f47e1f3dada997a801a"
+            }
+          ]
+        }
+      ],
+      "expected_facts": [
+        {
+          "fact_id": "issue_id",
+          "fact_type": "issue_id",
+          "statement": "Issue 标识",
+          "required": true,
+          "values": [
+            "issue-ZEPHYR-1807"
+          ]
+        },
+        {
+          "fact_id": "commit",
+          "fact_type": "commit",
+          "statement": "修复提交",
+          "required": true,
+          "values": [
+            "89b1b86929b0a9b192b8d810d9c4dc6d46c95d40",
+            "89b1b869"
+          ]
+        },
+        {
+          "fact_id": "metric_value",
+          "fact_type": "version",
+          "statement": "验证值",
+          "required": true,
+          "values": [
+            "60"
+          ]
+        },
+        {
+          "fact_id": "log_id",
+          "fact_type": "issue_id",
+          "statement": "可选恢复日志",
+          "required": false,
+          "values": [
+            "log-zephyr-11"
+          ]
+        }
+      ],
+      "acceptable_alternative_evidence": [],
+      "expected_decision_state": null,
+      "expected_conflicts": [],
+      "forbidden_inferences": [],
+      "expected_abstention": {
+        "required": false,
+        "expected_termination": [
+          "sufficient"
+        ],
+        "must_disclose": []
+      },
+      "expected_limitations": [],
+      "scoring_rubric": {
+        "deterministic": [
+          "evidence_recall",
+          "citation_validity",
+          "structured_fact_accuracy",
+          "termination"
+        ],
+        "manual": [
+          "task_success",
+          "semantic_support",
+          "conflict_interpretation"
+        ]
+      },
+      "difficulty": "medium",
+      "task_set_version": "cma-v4-tasks-v1",
+      "annotation_status": "synthetic_authored_pending_independent_human_review",
+      "human_review_rules": [
+        "Check that required facts are supported by cited Evidence, not merely present as strings.",
+        "Check that alternative Evidence is genuinely equivalent for this question.",
+        "Do not mark task_success from deterministic metrics alone."
+      ]
+    },
+    "v4-multi-step-05": {
+      "task_id": "v4-multi-step-05",
+      "category": "multi_step",
+      "question": "从 Issue issue-ORBIT-1918 追查 ledger-writer 的修复提交与验证日志。",
+      "project_id": "v4-orbit-billing",
+      "dataset_kind": "live",
+      "known_at": null,
+      "required_evidence_groups": [
+        {
+          "group_id": "issue_fix",
+          "any_of": [
+            {
+              "evidence_id": "ev_1716b58456534dd27a0a8a5451d5248f9f2a9fdbaf5be08dc789b3aae2bcb2bd",
+              "content_hash": "6374fceccfa663f4c3611a4ee43e968df26a828caa2e88bcc40b7e745bd0718d"
+            }
+          ]
+        },
+        {
+          "group_id": "commit_fix",
+          "any_of": [
+            {
+              "evidence_id": "ev_d083cb30eca8f9064266fb9596768c44d5d59f4ca631ffcd621e3e591a734274",
+              "content_hash": "39df73201c8f3c1014f39d96413c1130efc7ef7b5a0c36051e1320aca7b896e1"
+            }
+          ]
+        },
+        {
+          "group_id": "log_recovery",
+          "any_of": [
+            {
+              "evidence_id": "ev_ffee2a1b6f165532ea8c306a8eb7947667f6cd3ab03b2ba32d2424e9cf2e08b8",
+              "content_hash": "acf3857541295158b3798e3da79fe5971d037dfdda84b4dffef2aad1dd360a78"
+            }
+          ]
+        }
+      ],
+      "expected_facts": [
+        {
+          "fact_id": "issue_id",
+          "fact_type": "issue_id",
+          "statement": "Issue 标识",
+          "required": true,
+          "values": [
+            "issue-ORBIT-1918"
+          ]
+        },
+        {
+          "fact_id": "commit",
+          "fact_type": "commit",
+          "statement": "修复提交",
+          "required": true,
+          "values": [
+            "cac65ea65c830e99622ffd26a2a2e4378a173327",
+            "cac65ea6"
+          ]
+        },
+        {
+          "fact_id": "metric_value",
+          "fact_type": "version",
+          "statement": "验证值",
+          "required": true,
+          "values": [
+            "500"
+          ]
+        },
+        {
+          "fact_id": "log_id",
+          "fact_type": "issue_id",
+          "statement": "可选恢复日志",
+          "required": false,
+          "values": [
+            "log-orbit-14"
+          ]
+        }
+      ],
+      "acceptable_alternative_evidence": [],
+      "expected_decision_state": null,
+      "expected_conflicts": [],
+      "forbidden_inferences": [],
+      "expected_abstention": {
+        "required": false,
+        "expected_termination": [
+          "sufficient"
+        ],
+        "must_disclose": []
+      },
+      "expected_limitations": [],
+      "scoring_rubric": {
+        "deterministic": [
+          "evidence_recall",
+          "citation_validity",
+          "structured_fact_accuracy",
+          "termination"
+        ],
+        "manual": [
+          "task_success",
+          "semantic_support",
+          "conflict_interpretation"
+        ]
+      },
+      "difficulty": "medium",
+      "task_set_version": "cma-v4-tasks-v1",
+      "annotation_status": "synthetic_authored_pending_independent_human_review",
+      "human_review_rules": [
+        "Check that required facts are supported by cited Evidence, not merely present as strings.",
+        "Check that alternative Evidence is genuinely equivalent for this question.",
+        "Do not mark task_success from deterministic metrics alone."
+      ]
+    },
+    "v4-decision-history-01": {
+      "task_id": "v4-decision-history-01",
+      "category": "decision_history",
+      "question": "截至 2025-01-18，系统已确认的 写入批次策略 是什么？当时是否已采用 2000？",
+      "project_id": "v4-atlas-observability",
+      "dataset_kind": "live",
+      "known_at": "2025-01-18T03:00:00+00:00",
+      "required_evidence_groups": [
+        {
+          "group_id": "doc_v2",
+          "any_of": [
+            {
+              "evidence_id": "ev_472b355fc537d7628481fd7d534ab638d166b0c7491d85513f8f29d8096e3833",
+              "content_hash": "d0f67f6d290cea5d4625a28fd663279b94b387d4ece39038015ba7e7c3a43e82"
+            }
+          ]
+        },
+        {
+          "group_id": "issue_triage",
+          "any_of": [
+            {
+              "evidence_id": "ev_eae5c627e9e49311d2734bc744988712d6c7893071aecf70fe1cf3e86e2f2419",
+              "content_hash": "6bd156d03e9c837d6bcf8fcdea37a79593400ff46b508dc58b82b589fe01350d"
+            }
+          ]
+        }
+      ],
+      "expected_facts": [
+        {
+          "fact_id": "historical_value",
+          "fact_type": "decision_state",
+          "statement": "截止时点已确认值",
+          "required": true,
+          "values": [
+            "500",
+            "dv_ec2e09cb916cd38a1fb2ae90aa77e9e7"
+          ]
+        },
+        {
+          "fact_id": "not_yet_new",
+          "fact_type": "decision_state",
+          "statement": "截止时点尚未确认新值",
+          "required": true,
+          "values": [
+            "尚未采用 2000",
+            "未确认 2000",
+            "未确认"
+          ]
+        },
+        {
+          "fact_id": "reviewer",
+          "fact_type": "person",
+          "statement": "可选历史确认人",
+          "required": false,
+          "values": [
+            "赵岚"
+          ]
+        }
+      ],
+      "acceptable_alternative_evidence": [],
+      "expected_decision_state": {
+        "decision_id": "dec_0524241a5a22c99e5d397f4f27611cf9",
+        "known_at": "2025-01-18T03:00:00+00:00",
+        "expected_current_version_id": "dv_ec2e09cb916cd38a1fb2ae90aa77e9e7",
+        "expected_version_ids": [
+          "dv_ec2e09cb916cd38a1fb2ae90aa77e9e7",
+          "dv_1262a0169fbb8b2f9ec3197420180560"
+        ],
+        "must_not_claim_confirmed": [
+          "dv_1262a0169fbb8b2f9ec3197420180560"
+        ]
+      },
+      "expected_conflicts": [],
+      "forbidden_inferences": [
+        [
+          "已确认 2000",
+          "2000 已正式确认",
+          "已正式采用 2000"
+        ]
+      ],
+      "expected_abstention": {
+        "required": false,
+        "expected_termination": [
+          "sufficient"
+        ],
+        "must_disclose": []
+      },
+      "expected_limitations": [],
+      "scoring_rubric": {
+        "deterministic": [
+          "evidence_recall",
+          "citation_validity",
+          "structured_fact_accuracy",
+          "termination"
+        ],
+        "manual": [
+          "task_success",
+          "semantic_support",
+          "conflict_interpretation"
+        ]
+      },
+      "difficulty": "medium",
+      "task_set_version": "cma-v4-tasks-v1",
+      "annotation_status": "synthetic_authored_pending_independent_human_review",
+      "human_review_rules": [
+        "Check that required facts are supported by cited Evidence, not merely present as strings.",
+        "Check that alternative Evidence is genuinely equivalent for this question.",
+        "Do not mark task_success from deterministic metrics alone."
+      ]
+    },
+    "v4-decision-history-02": {
+      "task_id": "v4-decision-history-02",
+      "category": "decision_history",
+      "question": "截至 2025-02-14，系统已确认的 告警去重策略 是什么？当时是否已采用 15？",
+      "project_id": "v4-atlas-observability",
+      "dataset_kind": "live",
+      "known_at": "2025-02-14T03:00:00+00:00",
+      "required_evidence_groups": [
+        {
+          "group_id": "doc_v2",
+          "any_of": [
+            {
+              "evidence_id": "ev_c66f59915abc4745137017cc262406dcd90a0583fab41dfd1fe29195dbfb9667",
+              "content_hash": "296e3afe918c9e601cf6e9d59bc1169bb8c46905cf0d4260dde3a642de184c04"
+            }
+          ]
+        },
+        {
+          "group_id": "issue_triage",
+          "any_of": [
+            {
+              "evidence_id": "ev_29b12933fe6b98ce888065d53f07f7405dc5af9375e097c5d0f921b3e4f41958",
+              "content_hash": "2d90e5a3faac0f81717134ae3260c6fd01e6572d5ab91ee7efc275011c4914e0"
+            }
+          ]
+        }
+      ],
+      "expected_facts": [
+        {
+          "fact_id": "historical_value",
+          "fact_type": "decision_state",
+          "statement": "截止时点已确认值",
+          "required": true,
+          "values": [
+            "5",
+            "dv_da578b55e46cdf9ea14c851af18938da"
+          ]
+        },
+        {
+          "fact_id": "not_yet_new",
+          "fact_type": "decision_state",
+          "statement": "截止时点尚未确认新值",
+          "required": true,
+          "values": [
+            "尚未采用 15",
+            "未确认 15",
+            "未确认"
+          ]
+        },
+        {
+          "fact_id": "reviewer",
+          "fact_type": "person",
+          "statement": "可选历史确认人",
+          "required": false,
+          "values": [
+            "赵岚"
+          ]
+        }
+      ],
+      "acceptable_alternative_evidence": [],
+      "expected_decision_state": {
+        "decision_id": "dec_0311985137f25ef52202beee09dc43bc",
+        "known_at": "2025-02-14T03:00:00+00:00",
+        "expected_current_version_id": "dv_da578b55e46cdf9ea14c851af18938da",
+        "expected_version_ids": [
+          "dv_da578b55e46cdf9ea14c851af18938da",
+          "dv_42a1fcbf1c1649373d320f05a6316a91"
+        ],
+        "must_not_claim_confirmed": [
+          "dv_42a1fcbf1c1649373d320f05a6316a91"
+        ]
+      },
+      "expected_conflicts": [],
+      "forbidden_inferences": [
+        [
+          "已确认 15",
+          "15 已正式确认",
+          "已正式采用 15"
+        ]
+      ],
+      "expected_abstention": {
+        "required": false,
+        "expected_termination": [
+          "sufficient"
+        ],
+        "must_disclose": []
+      },
+      "expected_limitations": [],
+      "scoring_rubric": {
+        "deterministic": [
+          "evidence_recall",
+          "citation_validity",
+          "structured_fact_accuracy",
+          "termination"
+        ],
+        "manual": [
+          "task_success",
+          "semantic_support",
+          "conflict_interpretation"
+        ]
+      },
+      "difficulty": "medium",
+      "task_set_version": "cma-v4-tasks-v1",
+      "annotation_status": "synthetic_authored_pending_independent_human_review",
+      "human_review_rules": [
+        "Check that required facts are supported by cited Evidence, not merely present as strings.",
+        "Check that alternative Evidence is genuinely equivalent for this question.",
+        "Do not mark task_success from deterministic metrics alone."
+      ]
+    },
+    "v4-decision-history-03": {
+      "task_id": "v4-decision-history-03",
+      "category": "decision_history",
+      "question": "截至 2025-03-13，系统已确认的 索引分片策略 是什么？当时是否已采用 12？",
+      "project_id": "v4-zephyr-indexer",
+      "dataset_kind": "live",
+      "known_at": "2025-03-13T03:00:00+00:00",
+      "required_evidence_groups": [
+        {
+          "group_id": "doc_v2",
+          "any_of": [
+            {
+              "evidence_id": "ev_a237927cb51e35807beb87af1b701c89e12c9d1940d7d76d4c5f154b89b27c74",
+              "content_hash": "e32fc4a5df9e2db714b068a92bc97901273c0f40cdfe4d1010c0737b22247c20"
+            }
+          ]
+        },
+        {
+          "group_id": "issue_triage",
+          "any_of": [
+            {
+              "evidence_id": "ev_e519e3b11cbd13b5a6e263251f59ea30d9cfe3687898a297abf06a6ed3097d7c",
+              "content_hash": "e0e949a93f16bef523a9377e737183d77ec67ffc4b07c6749ded079e0484c590"
+            }
+          ]
+        }
+      ],
+      "expected_facts": [
+        {
+          "fact_id": "historical_value",
+          "fact_type": "decision_state",
+          "statement": "截止时点已确认值",
+          "required": true,
+          "values": [
+            "8",
+            "dv_18a1f650d32e757ff0ff36d86db3e562"
+          ]
+        },
+        {
+          "fact_id": "not_yet_new",
+          "fact_type": "decision_state",
+          "statement": "截止时点尚未确认新值",
+          "required": true,
+          "values": [
+            "尚未采用 12",
+            "未确认 12",
+            "未确认"
+          ]
+        },
+        {
+          "fact_id": "reviewer",
+          "fact_type": "person",
+          "statement": "可选历史确认人",
+          "required": false,
+          "values": [
+            "唐宁"
+          ]
+        }
+      ],
+      "acceptable_alternative_evidence": [],
+      "expected_decision_state": {
+        "decision_id": "dec_1e92a43f21fae5dc32c8b25dd1022199",
+        "known_at": "2025-03-13T03:00:00+00:00",
+        "expected_current_version_id": "dv_18a1f650d32e757ff0ff36d86db3e562",
+        "expected_version_ids": [
+          "dv_18a1f650d32e757ff0ff36d86db3e562",
+          "dv_1163633d330726707d34ac16874d119b"
+        ],
+        "must_not_claim_confirmed": [
+          "dv_1163633d330726707d34ac16874d119b"
+        ]
+      },
+      "expected_conflicts": [],
+      "forbidden_inferences": [
+        [
+          "已确认 12",
+          "12 已正式确认",
+          "已正式采用 12"
+        ]
+      ],
+      "expected_abstention": {
+        "required": false,
+        "expected_termination": [
+          "sufficient"
+        ],
+        "must_disclose": []
+      },
+      "expected_limitations": [],
+      "scoring_rubric": {
+        "deterministic": [
+          "evidence_recall",
+          "citation_validity",
+          "structured_fact_accuracy",
+          "termination"
+        ],
+        "manual": [
+          "task_success",
+          "semantic_support",
+          "conflict_interpretation"
+        ]
+      },
+      "difficulty": "medium",
+      "task_set_version": "cma-v4-tasks-v1",
+      "annotation_status": "synthetic_authored_pending_independent_human_review",
+      "human_review_rules": [
+        "Check that required facts are supported by cited Evidence, not merely present as strings.",
+        "Check that alternative Evidence is genuinely equivalent for this question.",
+        "Do not mark task_success from deterministic metrics alone."
+      ]
+    },
+    "v4-decision-history-04": {
+      "task_id": "v4-decision-history-04",
+      "category": "decision_history",
+      "question": "截至 2025-04-09，系统已确认的 检索重试策略 是什么？当时是否已采用 2？",
+      "project_id": "v4-zephyr-indexer",
+      "dataset_kind": "live",
+      "known_at": "2025-04-09T03:00:00+00:00",
+      "required_evidence_groups": [
+        {
+          "group_id": "doc_v2",
+          "any_of": [
+            {
+              "evidence_id": "ev_0d02c7cd445a2fc688ec4302f7e92afe36349bcf87efbdb71dcdd66341143bfd",
+              "content_hash": "c62abe78e31daf8af3cd080eaf343ef2c680c24c14ca7a2b12ef4b4216c5ec0f"
+            }
+          ]
+        },
+        {
+          "group_id": "issue_triage",
+          "any_of": [
+            {
+              "evidence_id": "ev_92096a4bd443310718734760639414d9641baa31bc10f7c44924a7abc754bfb9",
+              "content_hash": "ebbaccec4d988cfb14ad0ebcdcf946794f7ab9eb083356547db998be77cc4299"
+            }
+          ]
+        }
+      ],
+      "expected_facts": [
+        {
+          "fact_id": "historical_value",
+          "fact_type": "decision_state",
+          "statement": "截止时点已确认值",
+          "required": true,
+          "values": [
+            "1",
+            "dv_ce4a5d6eb5f94471ab697374f2ca46f4"
+          ]
+        },
+        {
+          "fact_id": "not_yet_new",
+          "fact_type": "decision_state",
+          "statement": "截止时点尚未确认新值",
+          "required": true,
+          "values": [
+            "尚未采用 2",
+            "未确认 2",
+            "未确认"
+          ]
+        },
+        {
+          "fact_id": "reviewer",
+          "fact_type": "person",
+          "statement": "可选历史确认人",
+          "required": false,
+          "values": [
+            "唐宁"
+          ]
+        }
+      ],
+      "acceptable_alternative_evidence": [],
+      "expected_decision_state": {
+        "decision_id": "dec_bd6747ebc2fa4c0c92a70cd0734787fe",
+        "known_at": "2025-04-09T03:00:00+00:00",
+        "expected_current_version_id": "dv_ce4a5d6eb5f94471ab697374f2ca46f4",
+        "expected_version_ids": [
+          "dv_ce4a5d6eb5f94471ab697374f2ca46f4",
+          "dv_c08786b3bb4ade67d206bc41acce130a"
+        ],
+        "must_not_claim_confirmed": [
+          "dv_c08786b3bb4ade67d206bc41acce130a"
+        ]
+      },
+      "expected_conflicts": [],
+      "forbidden_inferences": [
+        [
+          "已确认 2",
+          "2 已正式确认",
+          "已正式采用 2"
+        ]
+      ],
+      "expected_abstention": {
+        "required": false,
+        "expected_termination": [
+          "sufficient"
+        ],
+        "must_disclose": []
+      },
+      "expected_limitations": [],
+      "scoring_rubric": {
+        "deterministic": [
+          "evidence_recall",
+          "citation_validity",
+          "structured_fact_accuracy",
+          "termination"
+        ],
+        "manual": [
+          "task_success",
+          "semantic_support",
+          "conflict_interpretation"
+        ]
+      },
+      "difficulty": "medium",
+      "task_set_version": "cma-v4-tasks-v1",
+      "annotation_status": "synthetic_authored_pending_independent_human_review",
+      "human_review_rules": [
+        "Check that required facts are supported by cited Evidence, not merely present as strings.",
+        "Check that alternative Evidence is genuinely equivalent for this question.",
+        "Do not mark task_success from deterministic metrics alone."
+      ]
+    },
+    "v4-decision-history-05": {
+      "task_id": "v4-decision-history-05",
+      "category": "decision_history",
+      "question": "截至 2025-05-06，系统已确认的 计价舍入策略 是什么？当时是否已采用 4？",
+      "project_id": "v4-orbit-billing",
+      "dataset_kind": "live",
+      "known_at": "2025-05-06T03:00:00+00:00",
+      "required_evidence_groups": [
+        {
+          "group_id": "doc_v2",
+          "any_of": [
+            {
+              "evidence_id": "ev_bd9209e342474a4ed5d6ba79038bd37ad7ce704984fafb8cd991fa10a95bb2aa",
+              "content_hash": "d85df06be55c44d6466dbcd41b12b9de00041e1060fddd3924e6615a299b0e73"
+            }
+          ]
+        },
+        {
+          "group_id": "issue_triage",
+          "any_of": [
+            {
+              "evidence_id": "ev_b9b8a7dd916445b2dfe2175f4b896e7958da913c488db5ee5f6ab3bf65b22758",
+              "content_hash": "b277d26e9e01b74890406773b0b82c4c5e5baaad265deefadc178bb4f7a35003"
+            }
+          ]
+        }
+      ],
+      "expected_facts": [
+        {
+          "fact_id": "historical_value",
+          "fact_type": "decision_state",
+          "statement": "截止时点已确认值",
+          "required": true,
+          "values": [
+            "2",
+            "dv_5c444d3029fd56afbcac23a86c11018f"
+          ]
+        },
+        {
+          "fact_id": "not_yet_new",
+          "fact_type": "decision_state",
+          "statement": "截止时点尚未确认新值",
+          "required": true,
+          "values": [
+            "尚未采用 4",
+            "未确认 4",
+            "未确认"
+          ]
+        },
+        {
+          "fact_id": "reviewer",
+          "fact_type": "person",
+          "statement": "可选历史确认人",
+          "required": false,
+          "values": [
+            "顾遥"
+          ]
+        }
+      ],
+      "acceptable_alternative_evidence": [],
+      "expected_decision_state": {
+        "decision_id": "dec_60857ef79a6850b9413f7cda413a2fb5",
+        "known_at": "2025-05-06T03:00:00+00:00",
+        "expected_current_version_id": "dv_5c444d3029fd56afbcac23a86c11018f",
+        "expected_version_ids": [
+          "dv_5c444d3029fd56afbcac23a86c11018f",
+          "dv_eb3258f34aafe47bf87590b18687fe1d"
+        ],
+        "must_not_claim_confirmed": [
+          "dv_eb3258f34aafe47bf87590b18687fe1d"
+        ]
+      },
+      "expected_conflicts": [],
+      "forbidden_inferences": [
+        [
+          "已确认 4",
+          "4 已正式确认",
+          "已正式采用 4"
+        ]
+      ],
+      "expected_abstention": {
+        "required": false,
+        "expected_termination": [
+          "sufficient"
+        ],
+        "must_disclose": []
+      },
+      "expected_limitations": [],
+      "scoring_rubric": {
+        "deterministic": [
+          "evidence_recall",
+          "citation_validity",
+          "structured_fact_accuracy",
+          "termination"
+        ],
+        "manual": [
+          "task_success",
+          "semantic_support",
+          "conflict_interpretation"
+        ]
+      },
+      "difficulty": "medium",
+      "task_set_version": "cma-v4-tasks-v1",
+      "annotation_status": "synthetic_authored_pending_independent_human_review",
+      "human_review_rules": [
+        "Check that required facts are supported by cited Evidence, not merely present as strings.",
+        "Check that alternative Evidence is genuinely equivalent for this question.",
+        "Do not mark task_success from deterministic metrics alone."
+      ]
+    },
+    "v4-conflict-01": {
+      "task_id": "v4-conflict-01",
+      "category": "conflict",
+      "question": "query-router 在 prod 的 shard_timeout_seconds 到底是 5 还是 2？两份记录是否冲突？",
+      "project_id": "v4-atlas-observability",
+      "dataset_kind": "live",
+      "known_at": null,
+      "required_evidence_groups": [
+        {
+          "group_id": "chat_conflict",
+          "any_of": [
+            {
+              "evidence_id": "ev_4920530eb1f4540c4e758f5a5fdf02b2f2f552783d040c002244195c63cad3ee",
+              "content_hash": "83ecce4296de02dd985fd37ec20387b65611aa13f5b020451faad7ead22e8e39"
+            },
+            {
+              "evidence_id": "ev_93cb168c7aee02879543159c3da16e5c8232852c1158e541f421d7a4edffdec3",
+              "content_hash": "8e73fb04b8f30a3b45f77bca15feb53adedcfdf2d25c6694925df577ae2bbf81"
+            }
+          ]
+        },
+        {
+          "group_id": "doc_v2",
+          "any_of": [
+            {
+              "evidence_id": "ev_10c9c0f486b9c9433c4598ca58073e9e56876021d34630b1c9c3c709c1d84745",
+              "content_hash": "0923b694a9b7ae2a56de1da0af3af9f4c038b6ca73385ad613e5fc9b30004377"
+            }
+          ]
+        }
+      ],
+      "expected_facts": [
+        {
+          "fact_id": "value_new",
+          "fact_type": "version",
+          "statement": "设计文档值",
+          "required": true,
+          "values": [
+            "5"
+          ]
+        },
+        {
+          "fact_id": "value_conflict",
+          "fact_type": "version",
+          "statement": "冲突记录值",
+          "required": true,
+          "values": [
+            "2"
+          ]
+        },
+        {
+          "fact_id": "issue_id",
+          "fact_type": "issue_id",
+          "statement": "可选关联 Issue",
+          "required": false,
+          "values": [
+            "issue-ATLAS-1437"
+          ]
+        }
+      ],
+      "acceptable_alternative_evidence": [
+        {
+          "group_id": "chat_conflict",
+          "any_of": [
+            {
+              "evidence_id": "ev_93cb168c7aee02879543159c3da16e5c8232852c1158e541f421d7a4edffdec3",
+              "content_hash": "8e73fb04b8f30a3b45f77bca15feb53adedcfdf2d25c6694925df577ae2bbf81"
+            }
+          ],
+          "note": "Any referenced record is acceptable for this group; the group's required fact must still be supported."
+        }
+      ],
+      "expected_decision_state": null,
+      "expected_conflicts": [
+        {
+          "field": "shard_timeout_seconds",
+          "values": [
+            "5",
+            "2"
+          ],
+          "must_disclose_both": true
+        }
+      ],
+      "forbidden_inferences": [
+        [
+          "以文档为准",
+          "文档是正确",
+          "已裁决"
+        ]
+      ],
+      "expected_abstention": {
+        "required": false,
+        "expected_termination": [
+          "sufficient"
+        ],
+        "must_disclose": []
+      },
+      "expected_limitations": [
+        "不得自行裁决哪一方正确；必须保留双方记录。"
+      ],
+      "scoring_rubric": {
+        "deterministic": [
+          "evidence_recall",
+          "citation_validity",
+          "structured_fact_accuracy",
+          "termination"
+        ],
+        "manual": [
+          "task_success",
+          "semantic_support",
+          "conflict_interpretation"
+        ]
+      },
+      "difficulty": "medium",
+      "task_set_version": "cma-v4-tasks-v1",
+      "annotation_status": "synthetic_authored_pending_independent_human_review",
+      "human_review_rules": [
+        "Check that required facts are supported by cited Evidence, not merely present as strings.",
+        "Check that alternative Evidence is genuinely equivalent for this question.",
+        "Do not mark task_success from deterministic metrics alone."
+      ]
+    },
+    "v4-conflict-02": {
+      "task_id": "v4-conflict-02",
+      "category": "conflict",
+      "question": "rollout-controller 在 prod 的 canary_percent 到底是 10 还是 5？两份记录是否冲突？",
+      "project_id": "v4-atlas-observability",
+      "dataset_kind": "live",
+      "known_at": null,
+      "required_evidence_groups": [
+        {
+          "group_id": "chat_conflict",
+          "any_of": [
+            {
+              "evidence_id": "ev_e44d098ab872a2ba8df52d9fd8f56f6a6d2e7b0a5c434b26369c92ea6b5e8514",
+              "content_hash": "0ee453027efc081d92ec697471272e589e9c62d87eaa330b1f8a59ef2aea72b9"
+            },
+            {
+              "evidence_id": "ev_b6126fa7140c0d6ed35d0a2643793b9cc9d120e4e79dc52b8e5aeacad4ee17cd",
+              "content_hash": "709e024d66997d4802fe58770e7ffc18890fd2680022b86a03814bd01ecc0574"
+            }
+          ]
+        },
+        {
+          "group_id": "doc_v2",
+          "any_of": [
+            {
+              "evidence_id": "ev_b4577c6090e8504514a9dbcdb317172bbe9685c606cd7a404fd4abe903574827",
+              "content_hash": "b81af0807a11e8d38c2410e29ff3361dbd9e568989d205219d8cc6ec7c1238dc"
+            }
+          ]
+        }
+      ],
+      "expected_facts": [
+        {
+          "fact_id": "value_new",
+          "fact_type": "version",
+          "statement": "设计文档值",
+          "required": true,
+          "values": [
+            "10"
+          ]
+        },
+        {
+          "fact_id": "value_conflict",
+          "fact_type": "version",
+          "statement": "冲突记录值",
+          "required": true,
+          "values": [
+            "5"
+          ]
+        },
+        {
+          "fact_id": "issue_id",
+          "fact_type": "issue_id",
+          "statement": "可选关联 Issue",
+          "required": false,
+          "values": [
+            "issue-ATLAS-1548"
+          ]
+        }
+      ],
+      "acceptable_alternative_evidence": [
+        {
+          "group_id": "chat_conflict",
+          "any_of": [
+            {
+              "evidence_id": "ev_b6126fa7140c0d6ed35d0a2643793b9cc9d120e4e79dc52b8e5aeacad4ee17cd",
+              "content_hash": "709e024d66997d4802fe58770e7ffc18890fd2680022b86a03814bd01ecc0574"
+            }
+          ],
+          "note": "Any referenced record is acceptable for this group; the group's required fact must still be supported."
+        }
+      ],
+      "expected_decision_state": null,
+      "expected_conflicts": [
+        {
+          "field": "canary_percent",
+          "values": [
+            "10",
+            "5"
+          ],
+          "must_disclose_both": true
+        }
+      ],
+      "forbidden_inferences": [
+        [
+          "以文档为准",
+          "文档是正确",
+          "已裁决"
+        ]
+      ],
+      "expected_abstention": {
+        "required": false,
+        "expected_termination": [
+          "sufficient"
+        ],
+        "must_disclose": []
+      },
+      "expected_limitations": [
+        "不得自行裁决哪一方正确；必须保留双方记录。"
+      ],
+      "scoring_rubric": {
+        "deterministic": [
+          "evidence_recall",
+          "citation_validity",
+          "structured_fact_accuracy",
+          "termination"
+        ],
+        "manual": [
+          "task_success",
+          "semantic_support",
+          "conflict_interpretation"
+        ]
+      },
+      "difficulty": "medium",
+      "task_set_version": "cma-v4-tasks-v1",
+      "annotation_status": "synthetic_authored_pending_independent_human_review",
+      "human_review_rules": [
+        "Check that required facts are supported by cited Evidence, not merely present as strings.",
+        "Check that alternative Evidence is genuinely equivalent for this question.",
+        "Do not mark task_success from deterministic metrics alone."
+      ]
+    },
+    "v4-conflict-03": {
+      "task_id": "v4-conflict-03",
+      "category": "conflict",
+      "question": "warmup-loader 在 prod 的 warmup_workers 到底是 8 还是 4？两份记录是否冲突？",
+      "project_id": "v4-zephyr-indexer",
+      "dataset_kind": "live",
+      "known_at": null,
+      "required_evidence_groups": [
+        {
+          "group_id": "chat_conflict",
+          "any_of": [
+            {
+              "evidence_id": "ev_20efe3e08c446159cd8356c5998d260c4e513d5b51a421d8e27f4862c03b0298",
+              "content_hash": "e2108d37032470bcdd507664472cd2ac71a263548a2dd374d8128e9a9659b358"
+            },
+            {
+              "evidence_id": "ev_6f15c3b8b31f267f82738cd487f3e1cc237bd69ade02508abd6cbe6979e64f36",
+              "content_hash": "d3df46b5106149ff0879b12a27e2972c5ab301f9a8075303f6277d7673ecc68a"
+            }
+          ]
+        },
+        {
+          "group_id": "doc_v2",
+          "any_of": [
+            {
+              "evidence_id": "ev_39d4d7f12ff00837154a9a6b7a8f93b5bc3a91445d5414813afdff0ea72d1814",
+              "content_hash": "3b39d0aab94256faa5647572039dd36af4523e107fd552fafc2dfa30992c6751"
+            }
+          ]
+        }
+      ],
+      "expected_facts": [
+        {
+          "fact_id": "value_new",
+          "fact_type": "version",
+          "statement": "设计文档值",
+          "required": true,
+          "values": [
+            "8"
+          ]
+        },
+        {
+          "fact_id": "value_conflict",
+          "fact_type": "version",
+          "statement": "冲突记录值",
+          "required": true,
+          "values": [
+            "4"
+          ]
+        },
+        {
+          "fact_id": "issue_id",
+          "fact_type": "issue_id",
+          "statement": "可选关联 Issue",
+          "required": false,
+          "values": [
+            "issue-ZEPHYR-1659"
+          ]
+        }
+      ],
+      "acceptable_alternative_evidence": [
+        {
+          "group_id": "chat_conflict",
+          "any_of": [
+            {
+              "evidence_id": "ev_6f15c3b8b31f267f82738cd487f3e1cc237bd69ade02508abd6cbe6979e64f36",
+              "content_hash": "d3df46b5106149ff0879b12a27e2972c5ab301f9a8075303f6277d7673ecc68a"
+            }
+          ],
+          "note": "Any referenced record is acceptable for this group; the group's required fact must still be supported."
+        }
+      ],
+      "expected_decision_state": null,
+      "expected_conflicts": [
+        {
+          "field": "warmup_workers",
+          "values": [
+            "8",
+            "4"
+          ],
+          "must_disclose_both": true
+        }
+      ],
+      "forbidden_inferences": [
+        [
+          "以文档为准",
+          "文档是正确",
+          "已裁决"
+        ]
+      ],
+      "expected_abstention": {
+        "required": false,
+        "expected_termination": [
+          "sufficient"
+        ],
+        "must_disclose": []
+      },
+      "expected_limitations": [
+        "不得自行裁决哪一方正确；必须保留双方记录。"
+      ],
+      "scoring_rubric": {
+        "deterministic": [
+          "evidence_recall",
+          "citation_validity",
+          "structured_fact_accuracy",
+          "termination"
+        ],
+        "manual": [
+          "task_success",
+          "semantic_support",
+          "conflict_interpretation"
+        ]
+      },
+      "difficulty": "medium",
+      "task_set_version": "cma-v4-tasks-v1",
+      "annotation_status": "synthetic_authored_pending_independent_human_review",
+      "human_review_rules": [
+        "Check that required facts are supported by cited Evidence, not merely present as strings.",
+        "Check that alternative Evidence is genuinely equivalent for this question.",
+        "Do not mark task_success from deterministic metrics alone."
+      ]
+    },
+    "v4-conflict-04": {
+      "task_id": "v4-conflict-04",
+      "category": "conflict",
+      "question": "segment-compactor 在 prod 的 compaction_threshold_mb 到底是 256 还是 128？两份记录是否冲突？",
+      "project_id": "v4-zephyr-indexer",
+      "dataset_kind": "live",
+      "known_at": null,
+      "required_evidence_groups": [
+        {
+          "group_id": "chat_conflict",
+          "any_of": [
+            {
+              "evidence_id": "ev_63e900dcc8600f2d6a0c06d11cfcdfb0482107be9e64e15d0ace363cb54da95f",
+              "content_hash": "924ccaeaf4c6578cfa8a746d57c08bdfe5fb00c9f85bac52e28907c7ac87abbe"
+            },
+            {
+              "evidence_id": "ev_d623cf482a73427b678e5397e7ef9b7d45109d9d761d420972f8c666476027e7",
+              "content_hash": "dd7fa32fe24afc3c06a0a1652f8b680a231087a78aa5021e6d7970c3fb10bfb6"
+            }
+          ]
+        },
+        {
+          "group_id": "doc_v2",
+          "any_of": [
+            {
+              "evidence_id": "ev_f85928f523976512a419d46e897f8f2034d00cdf3d54b71417fabd23d1d7f00b",
+              "content_hash": "30ada37e4d8ccd13e65a7bb8f3f7fb48992ae435ae7402bd8da27f6fd164f8e3"
+            }
+          ]
+        }
+      ],
+      "expected_facts": [
+        {
+          "fact_id": "value_new",
+          "fact_type": "version",
+          "statement": "设计文档值",
+          "required": true,
+          "values": [
+            "256"
+          ]
+        },
+        {
+          "fact_id": "value_conflict",
+          "fact_type": "version",
+          "statement": "冲突记录值",
+          "required": true,
+          "values": [
+            "128"
+          ]
+        },
+        {
+          "fact_id": "issue_id",
+          "fact_type": "issue_id",
+          "statement": "可选关联 Issue",
+          "required": false,
+          "values": [
+            "issue-ZEPHYR-1770"
+          ]
+        }
+      ],
+      "acceptable_alternative_evidence": [
+        {
+          "group_id": "chat_conflict",
+          "any_of": [
+            {
+              "evidence_id": "ev_d623cf482a73427b678e5397e7ef9b7d45109d9d761d420972f8c666476027e7",
+              "content_hash": "dd7fa32fe24afc3c06a0a1652f8b680a231087a78aa5021e6d7970c3fb10bfb6"
+            }
+          ],
+          "note": "Any referenced record is acceptable for this group; the group's required fact must still be supported."
+        }
+      ],
+      "expected_decision_state": null,
+      "expected_conflicts": [
+        {
+          "field": "compaction_threshold_mb",
+          "values": [
+            "256",
+            "128"
+          ],
+          "must_disclose_both": true
+        }
+      ],
+      "forbidden_inferences": [
+        [
+          "以文档为准",
+          "文档是正确",
+          "已裁决"
+        ]
+      ],
+      "expected_abstention": {
+        "required": false,
+        "expected_termination": [
+          "sufficient"
+        ],
+        "must_disclose": []
+      },
+      "expected_limitations": [
+        "不得自行裁决哪一方正确；必须保留双方记录。"
+      ],
+      "scoring_rubric": {
+        "deterministic": [
+          "evidence_recall",
+          "citation_validity",
+          "structured_fact_accuracy",
+          "termination"
+        ],
+        "manual": [
+          "task_success",
+          "semantic_support",
+          "conflict_interpretation"
+        ]
+      },
+      "difficulty": "medium",
+      "task_set_version": "cma-v4-tasks-v1",
+      "annotation_status": "synthetic_authored_pending_independent_human_review",
+      "human_review_rules": [
+        "Check that required facts are supported by cited Evidence, not merely present as strings.",
+        "Check that alternative Evidence is genuinely equivalent for this question.",
+        "Do not mark task_success from deterministic metrics alone."
+      ]
+    },
+    "v4-conflict-05": {
+      "task_id": "v4-conflict-05",
+      "category": "conflict",
+      "question": "invoice-renderer 在 prod 的 batch_limit 到底是 250 还是 100？两份记录是否冲突？",
+      "project_id": "v4-orbit-billing",
+      "dataset_kind": "live",
+      "known_at": null,
+      "required_evidence_groups": [
+        {
+          "group_id": "chat_conflict",
+          "any_of": [
+            {
+              "evidence_id": "ev_b3f5e4db02fcd64d11ebce0e720fab16fbacd9315f5ebf96e39049654ff73b25",
+              "content_hash": "7dab6fb190738c52fd8d5b886f40b7104f5a0ec505598d2a3037b196527cb5c8"
+            },
+            {
+              "evidence_id": "ev_d473e86e2961732ba4935da1b3074385f6ab6a90a019784e699a8e524f2d7407",
+              "content_hash": "401b527f190db5cca029308604ab18eb7989a43da77fc0608e3503b0397fc247"
+            }
+          ]
+        },
+        {
+          "group_id": "doc_v2",
+          "any_of": [
+            {
+              "evidence_id": "ev_eab48034cdedf9e320eb4f26380d0e20fd6c7b35697c610cc7559b33dc1ed32e",
+              "content_hash": "7d910a1e16df4762095ebff8c09e564707e35756e106a3dff56fb97ed84a5a04"
+            }
+          ]
+        }
+      ],
+      "expected_facts": [
+        {
+          "fact_id": "value_new",
+          "fact_type": "version",
+          "statement": "设计文档值",
+          "required": true,
+          "values": [
+            "250"
+          ]
+        },
+        {
+          "fact_id": "value_conflict",
+          "fact_type": "version",
+          "statement": "冲突记录值",
+          "required": true,
+          "values": [
+            "100"
+          ]
+        },
+        {
+          "fact_id": "issue_id",
+          "fact_type": "issue_id",
+          "statement": "可选关联 Issue",
+          "required": false,
+          "values": [
+            "issue-ORBIT-1881"
+          ]
+        }
+      ],
+      "acceptable_alternative_evidence": [
+        {
+          "group_id": "chat_conflict",
+          "any_of": [
+            {
+              "evidence_id": "ev_d473e86e2961732ba4935da1b3074385f6ab6a90a019784e699a8e524f2d7407",
+              "content_hash": "401b527f190db5cca029308604ab18eb7989a43da77fc0608e3503b0397fc247"
+            }
+          ],
+          "note": "Any referenced record is acceptable for this group; the group's required fact must still be supported."
+        }
+      ],
+      "expected_decision_state": null,
+      "expected_conflicts": [
+        {
+          "field": "batch_limit",
+          "values": [
+            "250",
+            "100"
+          ],
+          "must_disclose_both": true
+        }
+      ],
+      "forbidden_inferences": [
+        [
+          "以文档为准",
+          "文档是正确",
+          "已裁决"
+        ]
+      ],
+      "expected_abstention": {
+        "required": false,
+        "expected_termination": [
+          "sufficient"
+        ],
+        "must_disclose": []
+      },
+      "expected_limitations": [
+        "不得自行裁决哪一方正确；必须保留双方记录。"
+      ],
+      "scoring_rubric": {
+        "deterministic": [
+          "evidence_recall",
+          "citation_validity",
+          "structured_fact_accuracy",
+          "termination"
+        ],
+        "manual": [
+          "task_success",
+          "semantic_support",
+          "conflict_interpretation"
+        ]
+      },
+      "difficulty": "medium",
+      "task_set_version": "cma-v4-tasks-v1",
+      "annotation_status": "synthetic_authored_pending_independent_human_review",
+      "human_review_rules": [
+        "Check that required facts are supported by cited Evidence, not merely present as strings.",
+        "Check that alternative Evidence is genuinely equivalent for this question.",
+        "Do not mark task_success from deterministic metrics alone."
+      ]
+    },
+    "v4-insufficient-01": {
+      "task_id": "v4-insufficient-01",
+      "category": "insufficient",
+      "question": "retention-worker 的 retention_days=14 是谁正式批准的？是否已有当前确认版本？",
+      "project_id": "v4-atlas-observability",
+      "dataset_kind": "live",
+      "known_at": null,
+      "required_evidence_groups": [
+        {
+          "group_id": "issue_triage",
+          "any_of": [
+            {
+              "evidence_id": "ev_e294faff8ce09a06d09af9b86ef492689b47513ff6358d84a42744a57933502a",
+              "content_hash": "f4d28cf1e3283879c8d0eab950a1aa4cbb50c9bbdacd4036f6877cabcde5b32e"
+            }
+          ]
+        }
+      ],
+      "expected_facts": [
+        {
+          "fact_id": "no_confirmation",
+          "fact_type": "text",
+          "statement": "说明没有正式批准/确认版本",
+          "required": true,
+          "marker_groups": [
+            [
+              "未确认",
+              "待审核",
+              "没有正式批准",
+              "尚无确认版本"
+            ]
+          ]
+        },
+        {
+          "fact_id": "component",
+          "fact_type": "component",
+          "statement": "可选组件名称",
+          "required": false,
+          "values": [
+            "retention-worker"
+          ]
+        }
+      ],
+      "acceptable_alternative_evidence": [],
+      "expected_decision_state": {
+        "decision_id": "dec_e468a487ffacff99c393ba5c99b8a1ac",
+        "known_at": null,
+        "expected_current_version_id": null,
+        "expected_version_ids": [],
+        "pending_proposal_id": "prop_8a21cb2dbabd903570c2c1749bd79404",
+        "must_not_claim_confirmed": [
+          "prop_8a21cb2dbabd903570c2c1749bd79404"
+        ]
+      },
+      "expected_conflicts": [],
+      "forbidden_inferences": [
+        [
+          "已正式批准",
+          "14 已确认",
+          "当前确认版本是该提案"
+        ]
+      ],
+      "expected_abstention": {
+        "required": true,
+        "expected_termination": [
+          "insufficient",
+          "conflict",
+          "tool_failure"
+        ],
+        "must_disclose": [
+          [
+            "未确认",
+            "待审核",
+            "没有正式批准",
+            "尚无确认版本"
+          ]
+        ]
+      },
+      "expected_limitations": [],
+      "scoring_rubric": {
+        "deterministic": [
+          "evidence_recall",
+          "citation_validity",
+          "structured_fact_accuracy",
+          "termination"
+        ],
+        "manual": [
+          "task_success",
+          "semantic_support",
+          "conflict_interpretation"
+        ]
+      },
+      "difficulty": "hard",
+      "task_set_version": "cma-v4-tasks-v1",
+      "annotation_status": "synthetic_authored_pending_independent_human_review",
+      "human_review_rules": [
+        "Check that required facts are supported by cited Evidence, not merely present as strings.",
+        "Check that alternative Evidence is genuinely equivalent for this question.",
+        "Do not mark task_success from deterministic metrics alone."
+      ],
+      "missing_fact": "retention-worker:retention_days:formal_approval"
+    },
+    "v4-insufficient-02": {
+      "task_id": "v4-insufficient-02",
+      "category": "insufficient",
+      "question": "tenant-quota 的 quota_burst_multiplier=2 是谁正式批准的？是否已有当前确认版本？",
+      "project_id": "v4-atlas-observability",
+      "dataset_kind": "live",
+      "known_at": null,
+      "required_evidence_groups": [
+        {
+          "group_id": "issue_triage",
+          "any_of": [
+            {
+              "evidence_id": "ev_d5503b55acf92d4d0ded01c50a25ec5a22901aab9556d3cc67cb6eb778de5c48",
+              "content_hash": "7c74a4dd0d0be15577bb9076f0a11983f3353d87f1b1f6b9e2aa9c64e0a8c966"
+            }
+          ]
+        }
+      ],
+      "expected_facts": [
+        {
+          "fact_id": "no_confirmation",
+          "fact_type": "text",
+          "statement": "说明没有正式批准/确认版本",
+          "required": true,
+          "marker_groups": [
+            [
+              "未确认",
+              "待审核",
+              "没有正式批准",
+              "尚无确认版本"
+            ]
+          ]
+        },
+        {
+          "fact_id": "component",
+          "fact_type": "component",
+          "statement": "可选组件名称",
+          "required": false,
+          "values": [
+            "tenant-quota"
+          ]
+        }
+      ],
+      "acceptable_alternative_evidence": [],
+      "expected_decision_state": {
+        "decision_id": "dec_9ed641e51e01a6298e6704f72b8208b3",
+        "known_at": null,
+        "expected_current_version_id": null,
+        "expected_version_ids": [],
+        "pending_proposal_id": "prop_33cf48843bf12cc362cbf845d832fcd9",
+        "must_not_claim_confirmed": [
+          "prop_33cf48843bf12cc362cbf845d832fcd9"
+        ]
+      },
+      "expected_conflicts": [],
+      "forbidden_inferences": [
+        [
+          "已正式批准",
+          "2 已确认",
+          "当前确认版本是该提案"
+        ]
+      ],
+      "expected_abstention": {
+        "required": true,
+        "expected_termination": [
+          "insufficient",
+          "conflict",
+          "tool_failure"
+        ],
+        "must_disclose": [
+          [
+            "未确认",
+            "待审核",
+            "没有正式批准",
+            "尚无确认版本"
+          ]
+        ]
+      },
+      "expected_limitations": [],
+      "scoring_rubric": {
+        "deterministic": [
+          "evidence_recall",
+          "citation_validity",
+          "structured_fact_accuracy",
+          "termination"
+        ],
+        "manual": [
+          "task_success",
+          "semantic_support",
+          "conflict_interpretation"
+        ]
+      },
+      "difficulty": "hard",
+      "task_set_version": "cma-v4-tasks-v1",
+      "annotation_status": "synthetic_authored_pending_independent_human_review",
+      "human_review_rules": [
+        "Check that required facts are supported by cited Evidence, not merely present as strings.",
+        "Check that alternative Evidence is genuinely equivalent for this question.",
+        "Do not mark task_success from deterministic metrics alone."
+      ],
+      "missing_fact": "tenant-quota:quota_burst_multiplier:formal_approval"
+    },
+    "v4-insufficient-03": {
+      "task_id": "v4-insufficient-03",
+      "category": "insufficient",
+      "question": "warmup-loader 的 warmup_workers=8 是谁正式批准的？是否已有当前确认版本？",
+      "project_id": "v4-zephyr-indexer",
+      "dataset_kind": "live",
+      "known_at": null,
+      "required_evidence_groups": [
+        {
+          "group_id": "issue_triage",
+          "any_of": [
+            {
+              "evidence_id": "ev_6d720e0f33d73b3434eda65457cd4c1c569066d2958ae12744bdc67f4f945010",
+              "content_hash": "e7e2de97bb7726fa68dde9e68d0a680014972487ffbbdeed10d6b630552df536"
+            }
+          ]
+        }
+      ],
+      "expected_facts": [
+        {
+          "fact_id": "no_confirmation",
+          "fact_type": "text",
+          "statement": "说明没有正式批准/确认版本",
+          "required": true,
+          "marker_groups": [
+            [
+              "未确认",
+              "待审核",
+              "没有正式批准",
+              "尚无确认版本"
+            ]
+          ]
+        },
+        {
+          "fact_id": "component",
+          "fact_type": "component",
+          "statement": "可选组件名称",
+          "required": false,
+          "values": [
+            "warmup-loader"
+          ]
+        }
+      ],
+      "acceptable_alternative_evidence": [],
+      "expected_decision_state": {
+        "decision_id": "dec_be8083c8327a9ca3d06e564ec4ead642",
+        "known_at": null,
+        "expected_current_version_id": null,
+        "expected_version_ids": [],
+        "pending_proposal_id": "prop_fa294cdc77242573b0dc0e80e7c778d1",
+        "must_not_claim_confirmed": [
+          "prop_fa294cdc77242573b0dc0e80e7c778d1"
+        ]
+      },
+      "expected_conflicts": [],
+      "forbidden_inferences": [
+        [
+          "已正式批准",
+          "8 已确认",
+          "当前确认版本是该提案"
+        ]
+      ],
+      "expected_abstention": {
+        "required": true,
+        "expected_termination": [
+          "insufficient",
+          "conflict",
+          "tool_failure"
+        ],
+        "must_disclose": [
+          [
+            "未确认",
+            "待审核",
+            "没有正式批准",
+            "尚无确认版本"
+          ]
+        ]
+      },
+      "expected_limitations": [],
+      "scoring_rubric": {
+        "deterministic": [
+          "evidence_recall",
+          "citation_validity",
+          "structured_fact_accuracy",
+          "termination"
+        ],
+        "manual": [
+          "task_success",
+          "semantic_support",
+          "conflict_interpretation"
+        ]
+      },
+      "difficulty": "hard",
+      "task_set_version": "cma-v4-tasks-v1",
+      "annotation_status": "synthetic_authored_pending_independent_human_review",
+      "human_review_rules": [
+        "Check that required facts are supported by cited Evidence, not merely present as strings.",
+        "Check that alternative Evidence is genuinely equivalent for this question.",
+        "Do not mark task_success from deterministic metrics alone."
+      ],
+      "missing_fact": "warmup-loader:warmup_workers:formal_approval"
+    },
+    "v4-insufficient-04": {
+      "task_id": "v4-insufficient-04",
+      "category": "insufficient",
+      "question": "token-validator 的 clock_skew_seconds=60 是谁正式批准的？是否已有当前确认版本？",
+      "project_id": "v4-zephyr-indexer",
+      "dataset_kind": "live",
+      "known_at": null,
+      "required_evidence_groups": [
+        {
+          "group_id": "issue_triage",
+          "any_of": [
+            {
+              "evidence_id": "ev_889b16fe207c75bfee008d281479b5ee3d67b07edfb1f745e003f70162e27079",
+              "content_hash": "9d02f0ff7d8ede32a59e7430e4daaf48bd360731deac534cc5d9cfdbb719dfb2"
+            }
+          ]
+        }
+      ],
+      "expected_facts": [
+        {
+          "fact_id": "no_confirmation",
+          "fact_type": "text",
+          "statement": "说明没有正式批准/确认版本",
+          "required": true,
+          "marker_groups": [
+            [
+              "未确认",
+              "待审核",
+              "没有正式批准",
+              "尚无确认版本"
+            ]
+          ]
+        },
+        {
+          "fact_id": "component",
+          "fact_type": "component",
+          "statement": "可选组件名称",
+          "required": false,
+          "values": [
+            "token-validator"
+          ]
+        }
+      ],
+      "acceptable_alternative_evidence": [],
+      "expected_decision_state": {
+        "decision_id": "dec_c0351a6f75b9c71b83c2d954f2350570",
+        "known_at": null,
+        "expected_current_version_id": null,
+        "expected_version_ids": [],
+        "pending_proposal_id": "prop_ebe511dd068f7e150eb4ff8c8eaff0b7",
+        "must_not_claim_confirmed": [
+          "prop_ebe511dd068f7e150eb4ff8c8eaff0b7"
+        ]
+      },
+      "expected_conflicts": [],
+      "forbidden_inferences": [
+        [
+          "已正式批准",
+          "60 已确认",
+          "当前确认版本是该提案"
+        ]
+      ],
+      "expected_abstention": {
+        "required": true,
+        "expected_termination": [
+          "insufficient",
+          "conflict",
+          "tool_failure"
+        ],
+        "must_disclose": [
+          [
+            "未确认",
+            "待审核",
+            "没有正式批准",
+            "尚无确认版本"
+          ]
+        ]
+      },
+      "expected_limitations": [],
+      "scoring_rubric": {
+        "deterministic": [
+          "evidence_recall",
+          "citation_validity",
+          "structured_fact_accuracy",
+          "termination"
+        ],
+        "manual": [
+          "task_success",
+          "semantic_support",
+          "conflict_interpretation"
+        ]
+      },
+      "difficulty": "hard",
+      "task_set_version": "cma-v4-tasks-v1",
+      "annotation_status": "synthetic_authored_pending_independent_human_review",
+      "human_review_rules": [
+        "Check that required facts are supported by cited Evidence, not merely present as strings.",
+        "Check that alternative Evidence is genuinely equivalent for this question.",
+        "Do not mark task_success from deterministic metrics alone."
+      ],
+      "missing_fact": "token-validator:clock_skew_seconds:formal_approval"
+    },
+    "v4-insufficient-05": {
+      "task_id": "v4-insufficient-05",
+      "category": "insufficient",
+      "question": "ledger-writer 的 flush_interval_ms=500 是谁正式批准的？是否已有当前确认版本？",
+      "project_id": "v4-orbit-billing",
+      "dataset_kind": "live",
+      "known_at": null,
+      "required_evidence_groups": [
+        {
+          "group_id": "issue_triage",
+          "any_of": [
+            {
+              "evidence_id": "ev_c56cbda23cc9946931e6f64c618170356bc7620360d92e21d1cf1e6533648556",
+              "content_hash": "dedc8a0b549111a53332a59e5cb8cf4ae17e5daccdc4e898567fedd6a4549036"
+            }
+          ]
+        }
+      ],
+      "expected_facts": [
+        {
+          "fact_id": "no_confirmation",
+          "fact_type": "text",
+          "statement": "说明没有正式批准/确认版本",
+          "required": true,
+          "marker_groups": [
+            [
+              "未确认",
+              "待审核",
+              "没有正式批准",
+              "尚无确认版本"
+            ]
+          ]
+        },
+        {
+          "fact_id": "component",
+          "fact_type": "component",
+          "statement": "可选组件名称",
+          "required": false,
+          "values": [
+            "ledger-writer"
+          ]
+        }
+      ],
+      "acceptable_alternative_evidence": [],
+      "expected_decision_state": {
+        "decision_id": "dec_4467ba2012078a9021e0dbe7e52655c8",
+        "known_at": null,
+        "expected_current_version_id": null,
+        "expected_version_ids": [],
+        "pending_proposal_id": "prop_879e193aeb881639098afe9f92be496e",
+        "must_not_claim_confirmed": [
+          "prop_879e193aeb881639098afe9f92be496e"
+        ]
+      },
+      "expected_conflicts": [],
+      "forbidden_inferences": [
+        [
+          "已正式批准",
+          "500 已确认",
+          "当前确认版本是该提案"
+        ]
+      ],
+      "expected_abstention": {
+        "required": true,
+        "expected_termination": [
+          "insufficient",
+          "conflict",
+          "tool_failure"
+        ],
+        "must_disclose": [
+          [
+            "未确认",
+            "待审核",
+            "没有正式批准",
+            "尚无确认版本"
+          ]
+        ]
+      },
+      "expected_limitations": [],
+      "scoring_rubric": {
+        "deterministic": [
+          "evidence_recall",
+          "citation_validity",
+          "structured_fact_accuracy",
+          "termination"
+        ],
+        "manual": [
+          "task_success",
+          "semantic_support",
+          "conflict_interpretation"
+        ]
+      },
+      "difficulty": "hard",
+      "task_set_version": "cma-v4-tasks-v1",
+      "annotation_status": "synthetic_authored_pending_independent_human_review",
+      "human_review_rules": [
+        "Check that required facts are supported by cited Evidence, not merely present as strings.",
+        "Check that alternative Evidence is genuinely equivalent for this question.",
+        "Do not mark task_success from deterministic metrics alone."
+      ],
+      "missing_fact": "ledger-writer:flush_interval_ms:formal_approval"
+    },
+    "v4-budget-01": {
+      "task_id": "v4-budget-01",
+      "category": "budget",
+      "question": "在受限预算下调查 ingest-gateway 的写入放大，说明已完成与未完成部分。",
+      "project_id": "v4-atlas-observability",
+      "dataset_kind": "live",
+      "known_at": null,
+      "required_evidence_groups": [
+        {
+          "group_id": "issue_triage",
+          "any_of": [
+            {
+              "evidence_id": "ev_eae5c627e9e49311d2734bc744988712d6c7893071aecf70fe1cf3e86e2f2419",
+              "content_hash": "6bd156d03e9c837d6bcf8fcdea37a79593400ff46b508dc58b82b589fe01350d"
+            }
+          ]
+        }
+      ],
+      "expected_facts": [
+        {
+          "fact_id": "budget_limitation",
+          "fact_type": "text",
+          "statement": "说明预算受限与未完成部分",
+          "required": true,
+          "marker_groups": [
+            [
+              "预算"
+            ],
+            [
+              "未完成",
+              "未确认",
+              "停止",
+              "无法完成"
+            ]
+          ]
+        },
+        {
+          "fact_id": "component",
+          "fact_type": "component",
+          "statement": "可选组件名称",
+          "required": false,
+          "values": [
+            "ingest-gateway"
+          ]
+        }
+      ],
+      "acceptable_alternative_evidence": [],
+      "expected_decision_state": null,
+      "expected_conflicts": [],
+      "forbidden_inferences": [
+        [
+          "已完成全部调查",
+          "结论完整"
+        ]
+      ],
+      "expected_abstention": {
+        "required": false,
+        "expected_termination": [
+          "sufficient"
+        ],
+        "must_disclose": []
+      },
+      "expected_limitations": [
+        "预算耗尽时必须明确说明未完成，不得伪造结论。"
+      ],
+      "scoring_rubric": {
+        "deterministic": [
+          "evidence_recall",
+          "citation_validity",
+          "structured_fact_accuracy",
+          "termination"
+        ],
+        "manual": [
+          "task_success",
+          "semantic_support",
+          "conflict_interpretation"
+        ]
+      },
+      "difficulty": "hard",
+      "task_set_version": "cma-v4-tasks-v1",
+      "annotation_status": "synthetic_authored_pending_independent_human_review",
+      "human_review_rules": [
+        "Check that required facts are supported by cited Evidence, not merely present as strings.",
+        "Check that alternative Evidence is genuinely equivalent for this question.",
+        "Do not mark task_success from deterministic metrics alone."
+      ],
+      "budget_override": {
+        "max_tokens": 1,
+        "max_model_rounds": 1,
+        "max_tool_calls": 1
+      },
+      "expected_termination": [
+        "budget"
+      ]
+    },
+    "v4-budget-02": {
+      "task_id": "v4-budget-02",
+      "category": "budget",
+      "question": "在受限预算下调查 alert-deduper 的重复告警，说明已完成与未完成部分。",
+      "project_id": "v4-atlas-observability",
+      "dataset_kind": "live",
+      "known_at": null,
+      "required_evidence_groups": [
+        {
+          "group_id": "issue_triage",
+          "any_of": [
+            {
+              "evidence_id": "ev_29b12933fe6b98ce888065d53f07f7405dc5af9375e097c5d0f921b3e4f41958",
+              "content_hash": "2d90e5a3faac0f81717134ae3260c6fd01e6572d5ab91ee7efc275011c4914e0"
+            }
+          ]
+        }
+      ],
+      "expected_facts": [
+        {
+          "fact_id": "budget_limitation",
+          "fact_type": "text",
+          "statement": "说明预算受限与未完成部分",
+          "required": true,
+          "marker_groups": [
+            [
+              "预算"
+            ],
+            [
+              "未完成",
+              "未确认",
+              "停止",
+              "无法完成"
+            ]
+          ]
+        },
+        {
+          "fact_id": "component",
+          "fact_type": "component",
+          "statement": "可选组件名称",
+          "required": false,
+          "values": [
+            "alert-deduper"
+          ]
+        }
+      ],
+      "acceptable_alternative_evidence": [],
+      "expected_decision_state": null,
+      "expected_conflicts": [],
+      "forbidden_inferences": [
+        [
+          "已完成全部调查",
+          "结论完整"
+        ]
+      ],
+      "expected_abstention": {
+        "required": false,
+        "expected_termination": [
+          "sufficient"
+        ],
+        "must_disclose": []
+      },
+      "expected_limitations": [
+        "预算耗尽时必须明确说明未完成，不得伪造结论。"
+      ],
+      "scoring_rubric": {
+        "deterministic": [
+          "evidence_recall",
+          "citation_validity",
+          "structured_fact_accuracy",
+          "termination"
+        ],
+        "manual": [
+          "task_success",
+          "semantic_support",
+          "conflict_interpretation"
+        ]
+      },
+      "difficulty": "hard",
+      "task_set_version": "cma-v4-tasks-v1",
+      "annotation_status": "synthetic_authored_pending_independent_human_review",
+      "human_review_rules": [
+        "Check that required facts are supported by cited Evidence, not merely present as strings.",
+        "Check that alternative Evidence is genuinely equivalent for this question.",
+        "Do not mark task_success from deterministic metrics alone."
+      ],
+      "budget_override": {
+        "max_tokens": 1,
+        "max_model_rounds": 1,
+        "max_tool_calls": 1
+      },
+      "expected_termination": [
+        "budget"
+      ]
+    },
+    "v4-budget-03": {
+      "task_id": "v4-budget-03",
+      "category": "budget",
+      "question": "在受限预算下调查 index-builder 的索引构建变慢，说明已完成与未完成部分。",
+      "project_id": "v4-zephyr-indexer",
+      "dataset_kind": "live",
+      "known_at": null,
+      "required_evidence_groups": [
+        {
+          "group_id": "issue_triage",
+          "any_of": [
+            {
+              "evidence_id": "ev_e519e3b11cbd13b5a6e263251f59ea30d9cfe3687898a297abf06a6ed3097d7c",
+              "content_hash": "e0e949a93f16bef523a9377e737183d77ec67ffc4b07c6749ded079e0484c590"
+            }
+          ]
+        }
+      ],
+      "expected_facts": [
+        {
+          "fact_id": "budget_limitation",
+          "fact_type": "text",
+          "statement": "说明预算受限与未完成部分",
+          "required": true,
+          "marker_groups": [
+            [
+              "预算"
+            ],
+            [
+              "未完成",
+              "未确认",
+              "停止",
+              "无法完成"
+            ]
+          ]
+        },
+        {
+          "fact_id": "component",
+          "fact_type": "component",
+          "statement": "可选组件名称",
+          "required": false,
+          "values": [
+            "index-builder"
+          ]
+        }
+      ],
+      "acceptable_alternative_evidence": [],
+      "expected_decision_state": null,
+      "expected_conflicts": [],
+      "forbidden_inferences": [
+        [
+          "已完成全部调查",
+          "结论完整"
+        ]
+      ],
+      "expected_abstention": {
+        "required": false,
+        "expected_termination": [
+          "sufficient"
+        ],
+        "must_disclose": []
+      },
+      "expected_limitations": [
+        "预算耗尽时必须明确说明未完成，不得伪造结论。"
+      ],
+      "scoring_rubric": {
+        "deterministic": [
+          "evidence_recall",
+          "citation_validity",
+          "structured_fact_accuracy",
+          "termination"
+        ],
+        "manual": [
+          "task_success",
+          "semantic_support",
+          "conflict_interpretation"
+        ]
+      },
+      "difficulty": "hard",
+      "task_set_version": "cma-v4-tasks-v1",
+      "annotation_status": "synthetic_authored_pending_independent_human_review",
+      "human_review_rules": [
+        "Check that required facts are supported by cited Evidence, not merely present as strings.",
+        "Check that alternative Evidence is genuinely equivalent for this question.",
+        "Do not mark task_success from deterministic metrics alone."
+      ],
+      "budget_override": {
+        "max_tokens": 1,
+        "max_model_rounds": 1,
+        "max_tool_calls": 1
+      },
+      "expected_termination": [
+        "budget"
+      ]
+    },
+    "v4-budget-04": {
+      "task_id": "v4-budget-04",
+      "category": "budget",
+      "question": "在受限预算下调查 search-client 的重试次数不足，说明已完成与未完成部分。",
+      "project_id": "v4-zephyr-indexer",
+      "dataset_kind": "live",
+      "known_at": null,
+      "required_evidence_groups": [
+        {
+          "group_id": "issue_triage",
+          "any_of": [
+            {
+              "evidence_id": "ev_92096a4bd443310718734760639414d9641baa31bc10f7c44924a7abc754bfb9",
+              "content_hash": "ebbaccec4d988cfb14ad0ebcdcf946794f7ab9eb083356547db998be77cc4299"
+            }
+          ]
+        }
+      ],
+      "expected_facts": [
+        {
+          "fact_id": "budget_limitation",
+          "fact_type": "text",
+          "statement": "说明预算受限与未完成部分",
+          "required": true,
+          "marker_groups": [
+            [
+              "预算"
+            ],
+            [
+              "未完成",
+              "未确认",
+              "停止",
+              "无法完成"
+            ]
+          ]
+        },
+        {
+          "fact_id": "component",
+          "fact_type": "component",
+          "statement": "可选组件名称",
+          "required": false,
+          "values": [
+            "search-client"
+          ]
+        }
+      ],
+      "acceptable_alternative_evidence": [],
+      "expected_decision_state": null,
+      "expected_conflicts": [],
+      "forbidden_inferences": [
+        [
+          "已完成全部调查",
+          "结论完整"
+        ]
+      ],
+      "expected_abstention": {
+        "required": false,
+        "expected_termination": [
+          "sufficient"
+        ],
+        "must_disclose": []
+      },
+      "expected_limitations": [
+        "预算耗尽时必须明确说明未完成，不得伪造结论。"
+      ],
+      "scoring_rubric": {
+        "deterministic": [
+          "evidence_recall",
+          "citation_validity",
+          "structured_fact_accuracy",
+          "termination"
+        ],
+        "manual": [
+          "task_success",
+          "semantic_support",
+          "conflict_interpretation"
+        ]
+      },
+      "difficulty": "hard",
+      "task_set_version": "cma-v4-tasks-v1",
+      "annotation_status": "synthetic_authored_pending_independent_human_review",
+      "human_review_rules": [
+        "Check that required facts are supported by cited Evidence, not merely present as strings.",
+        "Check that alternative Evidence is genuinely equivalent for this question.",
+        "Do not mark task_success from deterministic metrics alone."
+      ],
+      "budget_override": {
+        "max_tokens": 1,
+        "max_model_rounds": 1,
+        "max_tool_calls": 1
+      },
+      "expected_termination": [
+        "budget"
+      ]
+    },
+    "v4-budget-05": {
+      "task_id": "v4-budget-05",
+      "category": "budget",
+      "question": "在受限预算下调查 pricing-engine 的金额舍入错误，说明已完成与未完成部分。",
+      "project_id": "v4-orbit-billing",
+      "dataset_kind": "live",
+      "known_at": null,
+      "required_evidence_groups": [
+        {
+          "group_id": "issue_triage",
+          "any_of": [
+            {
+              "evidence_id": "ev_b9b8a7dd916445b2dfe2175f4b896e7958da913c488db5ee5f6ab3bf65b22758",
+              "content_hash": "b277d26e9e01b74890406773b0b82c4c5e5baaad265deefadc178bb4f7a35003"
+            }
+          ]
+        }
+      ],
+      "expected_facts": [
+        {
+          "fact_id": "budget_limitation",
+          "fact_type": "text",
+          "statement": "说明预算受限与未完成部分",
+          "required": true,
+          "marker_groups": [
+            [
+              "预算"
+            ],
+            [
+              "未完成",
+              "未确认",
+              "停止",
+              "无法完成"
+            ]
+          ]
+        },
+        {
+          "fact_id": "component",
+          "fact_type": "component",
+          "statement": "可选组件名称",
+          "required": false,
+          "values": [
+            "pricing-engine"
+          ]
+        }
+      ],
+      "acceptable_alternative_evidence": [],
+      "expected_decision_state": null,
+      "expected_conflicts": [],
+      "forbidden_inferences": [
+        [
+          "已完成全部调查",
+          "结论完整"
+        ]
+      ],
+      "expected_abstention": {
+        "required": false,
+        "expected_termination": [
+          "sufficient"
+        ],
+        "must_disclose": []
+      },
+      "expected_limitations": [
+        "预算耗尽时必须明确说明未完成，不得伪造结论。"
+      ],
+      "scoring_rubric": {
+        "deterministic": [
+          "evidence_recall",
+          "citation_validity",
+          "structured_fact_accuracy",
+          "termination"
+        ],
+        "manual": [
+          "task_success",
+          "semantic_support",
+          "conflict_interpretation"
+        ]
+      },
+      "difficulty": "hard",
+      "task_set_version": "cma-v4-tasks-v1",
+      "annotation_status": "synthetic_authored_pending_independent_human_review",
+      "human_review_rules": [
+        "Check that required facts are supported by cited Evidence, not merely present as strings.",
+        "Check that alternative Evidence is genuinely equivalent for this question.",
+        "Do not mark task_success from deterministic metrics alone."
+      ],
+      "budget_override": {
+        "max_tokens": 1,
+        "max_model_rounds": 1,
+        "max_tool_calls": 1
+      },
+      "expected_termination": [
+        "budget"
+      ]
+    },
+    "v4-tool-failure-01": {
+      "task_id": "v4-tool-failure-01",
+      "category": "tool_failure",
+      "question": "query-router 的慢查询文档如何恢复？相关工具不可用时请换来源并说明缺口。",
+      "project_id": "v4-atlas-observability",
+      "dataset_kind": "live",
+      "known_at": null,
+      "required_evidence_groups": [
+        {
+          "group_id": "alternative",
+          "any_of": [
+            {
+              "evidence_id": "ev_2e1e2c0ab84c2a362bccb1d6cac85be59370c1eba366c864a70d0dd0d315a8f9",
+              "content_hash": "33c66744b765dfab03351f15496ae4414a4ba3c1be15e2cbedac8f52314382df"
+            }
+          ]
+        }
+      ],
+      "expected_facts": [
+        {
+          "fact_id": "metric_value",
+          "fact_type": "version",
+          "statement": "配置值",
+          "required": true,
+          "values": [
+            "5"
+          ]
+        },
+        {
+          "fact_id": "gap",
+          "fact_type": "text",
+          "statement": "说明工具失败或证据缺口",
+          "required": true,
+          "marker_groups": [
+            [
+              "工具",
+              "失败",
+              "缺口",
+              "不可用"
+            ]
+          ]
+        },
+        {
+          "fact_id": "issue_id",
+          "fact_type": "issue_id",
+          "statement": "可选关联 Issue",
+          "required": false,
+          "values": [
+            "issue-ATLAS-1437"
+          ]
+        }
+      ],
+      "acceptable_alternative_evidence": [],
+      "expected_decision_state": null,
+      "expected_conflicts": [],
+      "forbidden_inferences": [
+        [
+          "工具没有失败",
+          "不存在缺口"
+        ]
+      ],
+      "expected_abstention": {
+        "required": false,
+        "expected_termination": [
+          "sufficient"
+        ],
+        "must_disclose": []
+      },
+      "expected_limitations": [
+        "必须说明工具失败或缺失来源。"
+      ],
+      "scoring_rubric": {
+        "deterministic": [
+          "evidence_recall",
+          "citation_validity",
+          "structured_fact_accuracy",
+          "termination"
+        ],
+        "manual": [
+          "task_success",
+          "semantic_support",
+          "conflict_interpretation"
+        ]
+      },
+      "difficulty": "hard",
+      "task_set_version": "cma-v4-tasks-v1",
+      "annotation_status": "synthetic_authored_pending_independent_human_review",
+      "human_review_rules": [
+        "Check that required facts are supported by cited Evidence, not merely present as strings.",
+        "Check that alternative Evidence is genuinely equivalent for this question.",
+        "Do not mark task_success from deterministic metrics alone."
+      ],
+      "injected_failure": {
+        "skill": "document",
+        "error": "timeout"
+      }
+    },
+    "v4-tool-failure-02": {
+      "task_id": "v4-tool-failure-02",
+      "category": "tool_failure",
+      "question": "rollout-controller 的灰度比例异常故障如何恢复？相关工具不可用时请换来源并说明缺口。",
+      "project_id": "v4-atlas-observability",
+      "dataset_kind": "live",
+      "known_at": null,
+      "required_evidence_groups": [
+        {
+          "group_id": "alternative",
+          "any_of": [
+            {
+              "evidence_id": "ev_b4577c6090e8504514a9dbcdb317172bbe9685c606cd7a404fd4abe903574827",
+              "content_hash": "b81af0807a11e8d38c2410e29ff3361dbd9e568989d205219d8cc6ec7c1238dc"
+            }
+          ]
+        }
+      ],
+      "expected_facts": [
+        {
+          "fact_id": "metric_value",
+          "fact_type": "version",
+          "statement": "配置值",
+          "required": true,
+          "values": [
+            "10"
+          ]
+        },
+        {
+          "fact_id": "gap",
+          "fact_type": "text",
+          "statement": "说明工具失败或证据缺口",
+          "required": true,
+          "marker_groups": [
+            [
+              "工具",
+              "失败",
+              "缺口",
+              "不可用"
+            ]
+          ]
+        },
+        {
+          "fact_id": "issue_id",
+          "fact_type": "issue_id",
+          "statement": "可选关联 Issue",
+          "required": false,
+          "values": [
+            "issue-ATLAS-1548"
+          ]
+        }
+      ],
+      "acceptable_alternative_evidence": [],
+      "expected_decision_state": null,
+      "expected_conflicts": [],
+      "forbidden_inferences": [
+        [
+          "工具没有失败",
+          "不存在缺口"
+        ]
+      ],
+      "expected_abstention": {
+        "required": false,
+        "expected_termination": [
+          "sufficient"
+        ],
+        "must_disclose": []
+      },
+      "expected_limitations": [
+        "必须说明工具失败或缺失来源。"
+      ],
+      "scoring_rubric": {
+        "deterministic": [
+          "evidence_recall",
+          "citation_validity",
+          "structured_fact_accuracy",
+          "termination"
+        ],
+        "manual": [
+          "task_success",
+          "semantic_support",
+          "conflict_interpretation"
+        ]
+      },
+      "difficulty": "hard",
+      "task_set_version": "cma-v4-tasks-v1",
+      "annotation_status": "synthetic_authored_pending_independent_human_review",
+      "human_review_rules": [
+        "Check that required facts are supported by cited Evidence, not merely present as strings.",
+        "Check that alternative Evidence is genuinely equivalent for this question.",
+        "Do not mark task_success from deterministic metrics alone."
+      ],
+      "injected_failure": {
+        "skill": "problem",
+        "error": "timeout"
+      }
+    },
+    "v4-tool-failure-03": {
+      "task_id": "v4-tool-failure-03",
+      "category": "tool_failure",
+      "question": "warmup-loader 的预热覆盖不全文档如何恢复？相关工具不可用时请换来源并说明缺口。",
+      "project_id": "v4-zephyr-indexer",
+      "dataset_kind": "live",
+      "known_at": null,
+      "required_evidence_groups": [
+        {
+          "group_id": "alternative",
+          "any_of": [
+            {
+              "evidence_id": "ev_6d720e0f33d73b3434eda65457cd4c1c569066d2958ae12744bdc67f4f945010",
+              "content_hash": "e7e2de97bb7726fa68dde9e68d0a680014972487ffbbdeed10d6b630552df536"
+            }
+          ]
+        }
+      ],
+      "expected_facts": [
+        {
+          "fact_id": "metric_value",
+          "fact_type": "version",
+          "statement": "配置值",
+          "required": true,
+          "values": [
+            "8"
+          ]
+        },
+        {
+          "fact_id": "gap",
+          "fact_type": "text",
+          "statement": "说明工具失败或证据缺口",
+          "required": true,
+          "marker_groups": [
+            [
+              "工具",
+              "失败",
+              "缺口",
+              "不可用"
+            ]
+          ]
+        },
+        {
+          "fact_id": "issue_id",
+          "fact_type": "issue_id",
+          "statement": "可选关联 Issue",
+          "required": false,
+          "values": [
+            "issue-ZEPHYR-1659"
+          ]
+        }
+      ],
+      "acceptable_alternative_evidence": [],
+      "expected_decision_state": null,
+      "expected_conflicts": [],
+      "forbidden_inferences": [
+        [
+          "工具没有失败",
+          "不存在缺口"
+        ]
+      ],
+      "expected_abstention": {
+        "required": false,
+        "expected_termination": [
+          "sufficient"
+        ],
+        "must_disclose": []
+      },
+      "expected_limitations": [
+        "必须说明工具失败或缺失来源。"
+      ],
+      "scoring_rubric": {
+        "deterministic": [
+          "evidence_recall",
+          "citation_validity",
+          "structured_fact_accuracy",
+          "termination"
+        ],
+        "manual": [
+          "task_success",
+          "semantic_support",
+          "conflict_interpretation"
+        ]
+      },
+      "difficulty": "hard",
+      "task_set_version": "cma-v4-tasks-v1",
+      "annotation_status": "synthetic_authored_pending_independent_human_review",
+      "human_review_rules": [
+        "Check that required facts are supported by cited Evidence, not merely present as strings.",
+        "Check that alternative Evidence is genuinely equivalent for this question.",
+        "Do not mark task_success from deterministic metrics alone."
+      ],
+      "injected_failure": {
+        "skill": "document",
+        "error": "timeout"
+      }
+    },
+    "v4-tool-failure-04": {
+      "task_id": "v4-tool-failure-04",
+      "category": "tool_failure",
+      "question": "segment-compactor 的合并任务延迟故障如何恢复？相关工具不可用时请换来源并说明缺口。",
+      "project_id": "v4-zephyr-indexer",
+      "dataset_kind": "live",
+      "known_at": null,
+      "required_evidence_groups": [
+        {
+          "group_id": "alternative",
+          "any_of": [
+            {
+              "evidence_id": "ev_f85928f523976512a419d46e897f8f2034d00cdf3d54b71417fabd23d1d7f00b",
+              "content_hash": "30ada37e4d8ccd13e65a7bb8f3f7fb48992ae435ae7402bd8da27f6fd164f8e3"
+            }
+          ]
+        }
+      ],
+      "expected_facts": [
+        {
+          "fact_id": "metric_value",
+          "fact_type": "version",
+          "statement": "配置值",
+          "required": true,
+          "values": [
+            "256"
+          ]
+        },
+        {
+          "fact_id": "gap",
+          "fact_type": "text",
+          "statement": "说明工具失败或证据缺口",
+          "required": true,
+          "marker_groups": [
+            [
+              "工具",
+              "失败",
+              "缺口",
+              "不可用"
+            ]
+          ]
+        },
+        {
+          "fact_id": "issue_id",
+          "fact_type": "issue_id",
+          "statement": "可选关联 Issue",
+          "required": false,
+          "values": [
+            "issue-ZEPHYR-1770"
+          ]
+        }
+      ],
+      "acceptable_alternative_evidence": [],
+      "expected_decision_state": null,
+      "expected_conflicts": [],
+      "forbidden_inferences": [
+        [
+          "工具没有失败",
+          "不存在缺口"
+        ]
+      ],
+      "expected_abstention": {
+        "required": false,
+        "expected_termination": [
+          "sufficient"
+        ],
+        "must_disclose": []
+      },
+      "expected_limitations": [
+        "必须说明工具失败或缺失来源。"
+      ],
+      "scoring_rubric": {
+        "deterministic": [
+          "evidence_recall",
+          "citation_validity",
+          "structured_fact_accuracy",
+          "termination"
+        ],
+        "manual": [
+          "task_success",
+          "semantic_support",
+          "conflict_interpretation"
+        ]
+      },
+      "difficulty": "hard",
+      "task_set_version": "cma-v4-tasks-v1",
+      "annotation_status": "synthetic_authored_pending_independent_human_review",
+      "human_review_rules": [
+        "Check that required facts are supported by cited Evidence, not merely present as strings.",
+        "Check that alternative Evidence is genuinely equivalent for this question.",
+        "Do not mark task_success from deterministic metrics alone."
+      ],
+      "injected_failure": {
+        "skill": "problem",
+        "error": "timeout"
+      }
+    },
+    "v4-tool-failure-05": {
+      "task_id": "v4-tool-failure-05",
+      "category": "tool_failure",
+      "question": "invoice-renderer 的账单渲染超时文档如何恢复？相关工具不可用时请换来源并说明缺口。",
+      "project_id": "v4-orbit-billing",
+      "dataset_kind": "live",
+      "known_at": null,
+      "required_evidence_groups": [
+        {
+          "group_id": "alternative",
+          "any_of": [
+            {
+              "evidence_id": "ev_f686028eab88f82fe685ca5d0c55eca7108ca1957a8fec113255999897d319fe",
+              "content_hash": "1c143356ba65ec3cc640affc2d183c3e8d7b19c3d6db29c4fc9c82ec1103c1dd"
+            }
+          ]
+        }
+      ],
+      "expected_facts": [
+        {
+          "fact_id": "metric_value",
+          "fact_type": "version",
+          "statement": "配置值",
+          "required": true,
+          "values": [
+            "250"
+          ]
+        },
+        {
+          "fact_id": "gap",
+          "fact_type": "text",
+          "statement": "说明工具失败或证据缺口",
+          "required": true,
+          "marker_groups": [
+            [
+              "工具",
+              "失败",
+              "缺口",
+              "不可用"
+            ]
+          ]
+        },
+        {
+          "fact_id": "issue_id",
+          "fact_type": "issue_id",
+          "statement": "可选关联 Issue",
+          "required": false,
+          "values": [
+            "issue-ORBIT-1881"
+          ]
+        }
+      ],
+      "acceptable_alternative_evidence": [],
+      "expected_decision_state": null,
+      "expected_conflicts": [],
+      "forbidden_inferences": [
+        [
+          "工具没有失败",
+          "不存在缺口"
+        ]
+      ],
+      "expected_abstention": {
+        "required": false,
+        "expected_termination": [
+          "sufficient"
+        ],
+        "must_disclose": []
+      },
+      "expected_limitations": [
+        "必须说明工具失败或缺失来源。"
+      ],
+      "scoring_rubric": {
+        "deterministic": [
+          "evidence_recall",
+          "citation_validity",
+          "structured_fact_accuracy",
+          "termination"
+        ],
+        "manual": [
+          "task_success",
+          "semantic_support",
+          "conflict_interpretation"
+        ]
+      },
+      "difficulty": "hard",
+      "task_set_version": "cma-v4-tasks-v1",
+      "annotation_status": "synthetic_authored_pending_independent_human_review",
+      "human_review_rules": [
+        "Check that required facts are supported by cited Evidence, not merely present as strings.",
+        "Check that alternative Evidence is genuinely equivalent for this question.",
+        "Do not mark task_success from deterministic metrics alone."
+      ],
+      "injected_failure": {
+        "skill": "document",
+        "error": "timeout"
+      }
+    },
+    "v4-multi-turn-01": {
+      "task_id": "v4-multi-turn-01",
+      "category": "multi_turn",
+      "question": "先确认 retention-worker 的 日志保留策略 当前配置。然后解释为什么后来从旧值改成新值。",
+      "project_id": "v4-atlas-observability",
+      "dataset_kind": "live",
+      "known_at": null,
+      "required_evidence_groups": [
+        {
+          "group_id": "chat_proposal",
+          "any_of": [
+            {
+              "evidence_id": "ev_1d0b6770d559920981bf5c6046c85cd519ee29ec6f1f3af132cad3d4d4da561c",
+              "content_hash": "702c055919af6d89988ff0d4f99a61c310ff612b9375b7e58680a3247202a0ad"
+            }
+          ]
+        },
+        {
+          "group_id": "commit_fix",
+          "any_of": [
+            {
+              "evidence_id": "ev_803704739ca8b242737a95597c21b8ff2d6fb6df90cba61f04a3686c60e1af28",
+              "content_hash": "a34f4094eee262d0e74cbaadf7f71f5db8c956c46ae8c42a7cc6964d625caafd"
+            }
+          ]
+        },
+        {
+          "group_id": "doc_v2",
+          "any_of": [
+            {
+              "evidence_id": "ev_0da26510bf4792216f4398195d1dc760da58892abbdeb440559871dd2ded4cb7",
+              "content_hash": "f0fcf628e1f9cfd39a6c873bdf4ba89500f9fd60c11c5a8165b3819e4084d2aa"
+            }
+          ]
+        }
+      ],
+      "expected_facts": [
+        {
+          "fact_id": "new_value",
+          "fact_type": "version",
+          "statement": "改变后的值",
+          "required": true,
+          "values": [
+            "14"
+          ]
+        },
+        {
+          "fact_id": "reason",
+          "fact_type": "text",
+          "statement": "改变原因",
+          "required": true,
+          "marker_groups": [
+            [
+              "值班记录仍沿用旧"
+            ]
+          ]
+        },
+        {
+          "fact_id": "commit",
+          "fact_type": "commit",
+          "statement": "可选修复提交",
+          "required": false,
+          "values": [
+            "c7ba02365bb4a02405920baa5d1a190197184b1c",
+            "c7ba0236"
+          ]
+        }
+      ],
+      "acceptable_alternative_evidence": [],
+      "expected_decision_state": null,
+      "expected_conflicts": [],
+      "forbidden_inferences": [],
+      "expected_abstention": {
+        "required": false,
+        "expected_termination": [
+          "sufficient"
+        ],
+        "must_disclose": []
+      },
+      "expected_limitations": [],
+      "scoring_rubric": {
+        "deterministic": [
+          "evidence_recall",
+          "citation_validity",
+          "structured_fact_accuracy",
+          "termination"
+        ],
+        "manual": [
+          "task_success",
+          "semantic_support",
+          "conflict_interpretation"
+        ]
+      },
+      "difficulty": "medium",
+      "task_set_version": "cma-v4-tasks-v1",
+      "annotation_status": "synthetic_authored_pending_independent_human_review",
+      "human_review_rules": [
+        "Check that required facts are supported by cited Evidence, not merely present as strings.",
+        "Check that alternative Evidence is genuinely equivalent for this question.",
+        "Do not mark task_success from deterministic metrics alone."
+      ],
+      "session_id": "session-v4-atlas-retention",
+      "turns": [
+        {
+          "question": "retention-worker 的 日志保留策略 当前配置是什么？",
+          "evaluation_target": [
+            "new_value"
+          ]
+        },
+        {
+          "question": "那后来为什么从 7 改成 14？请引用讨论和提交。",
+          "evaluation_target": [
+            "reason"
+          ]
+        }
+      ]
+    },
+    "v4-multi-turn-02": {
+      "task_id": "v4-multi-turn-02",
+      "category": "multi_turn",
+      "question": "先确认 tenant-quota 的 租户配额策略 当前配置。然后解释为什么后来从旧值改成新值。",
+      "project_id": "v4-atlas-observability",
+      "dataset_kind": "live",
+      "known_at": null,
+      "required_evidence_groups": [
+        {
+          "group_id": "chat_proposal",
+          "any_of": [
+            {
+              "evidence_id": "ev_89999597b38c8fcf362dbd8e5bb3dbfe419c0b774c91faaeaf8f5ce3e61d47ef",
+              "content_hash": "4705fdebaaa1d344445deca7cab70b715efaa0093118f8817aab16d79557ca27"
+            }
+          ]
+        },
+        {
+          "group_id": "commit_fix",
+          "any_of": [
+            {
+              "evidence_id": "ev_1aa8f29b176e39a7f976556413ebdeb125406c21bf6fd947ed2dcc0fedce9cbf",
+              "content_hash": "0bdacc30b25927d3b9dd23d760bbc6a4a397e8f0ad5dcabfc2734f36c41db8da"
+            }
+          ]
+        },
+        {
+          "group_id": "doc_v2",
+          "any_of": [
+            {
+              "evidence_id": "ev_f75db70de116422a8e07b10c2942cbef712a3b4afb9e66e30a01a85d8a534fcc",
+              "content_hash": "a4dfbd872c8c728771ef37699d7f5cb1135218eef52e263064babc5211b017b4"
+            }
+          ]
+        }
+      ],
+      "expected_facts": [
+        {
+          "fact_id": "new_value",
+          "fact_type": "version",
+          "statement": "改变后的值",
+          "required": true,
+          "values": [
+            "2"
+          ]
+        },
+        {
+          "fact_id": "reason",
+          "fact_type": "text",
+          "statement": "改变原因",
+          "required": true,
+          "marker_groups": [
+            [
+              "租户配额没有突发"
+            ]
+          ]
+        },
+        {
+          "fact_id": "commit",
+          "fact_type": "commit",
+          "statement": "可选修复提交",
+          "required": false,
+          "values": [
+            "4299919649a6776bd4b2d080193cfb2b164d18ae",
+            "42999196"
+          ]
+        }
+      ],
+      "acceptable_alternative_evidence": [],
+      "expected_decision_state": null,
+      "expected_conflicts": [],
+      "forbidden_inferences": [],
+      "expected_abstention": {
+        "required": false,
+        "expected_termination": [
+          "sufficient"
+        ],
+        "must_disclose": []
+      },
+      "expected_limitations": [],
+      "scoring_rubric": {
+        "deterministic": [
+          "evidence_recall",
+          "citation_validity",
+          "structured_fact_accuracy",
+          "termination"
+        ],
+        "manual": [
+          "task_success",
+          "semantic_support",
+          "conflict_interpretation"
+        ]
+      },
+      "difficulty": "medium",
+      "task_set_version": "cma-v4-tasks-v1",
+      "annotation_status": "synthetic_authored_pending_independent_human_review",
+      "human_review_rules": [
+        "Check that required facts are supported by cited Evidence, not merely present as strings.",
+        "Check that alternative Evidence is genuinely equivalent for this question.",
+        "Do not mark task_success from deterministic metrics alone."
+      ],
+      "session_id": "session-v4-atlas-tenant",
+      "turns": [
+        {
+          "question": "tenant-quota 的 租户配额策略 当前配置是什么？",
+          "evaluation_target": [
+            "new_value"
+          ]
+        },
+        {
+          "question": "那后来为什么从 1 改成 2？请引用讨论和提交。",
+          "evaluation_target": [
+            "reason"
+          ]
+        }
+      ]
+    },
+    "v4-multi-turn-03": {
+      "task_id": "v4-multi-turn-03",
+      "category": "multi_turn",
+      "question": "先确认 cache-proxy 的 缓存 TTL 策略 当前配置。然后解释为什么后来从旧值改成新值。",
+      "project_id": "v4-zephyr-indexer",
+      "dataset_kind": "live",
+      "known_at": null,
+      "required_evidence_groups": [
+        {
+          "group_id": "chat_proposal",
+          "any_of": [
+            {
+              "evidence_id": "ev_daca541fea0419a9e86862f69a3bc8dcdd99482c6fbcba810f6dca8e8c29260f",
+              "content_hash": "f0916a18c89536035f3bd6a6692ac4ac271e0e65bc55ebfd3c810634bc616f62"
+            }
+          ]
+        },
+        {
+          "group_id": "commit_fix",
+          "any_of": [
+            {
+              "evidence_id": "ev_1c20acd9f65ee513553fd12e364161107129ce014b51cc3a41803d8573d8483a",
+              "content_hash": "78fd1bcbd5b4187b0337ac013962dc294f2fa8fb0ebc91ecf89434013e7b2b55"
+            }
+          ]
+        },
+        {
+          "group_id": "doc_v2",
+          "any_of": [
+            {
+              "evidence_id": "ev_566493a6b9b52609eec08bd25001c86bae7917bf321f5ad167aa184e2f618a63",
+              "content_hash": "44a42ea6fd747ddd2011c59a84ca9463fb681d53fa01efc8687f3bc404c75841"
+            }
+          ]
+        }
+      ],
+      "expected_facts": [
+        {
+          "fact_id": "new_value",
+          "fact_type": "version",
+          "statement": "改变后的值",
+          "required": true,
+          "values": [
+            "600"
+          ]
+        },
+        {
+          "fact_id": "reason",
+          "fact_type": "text",
+          "statement": "改变原因",
+          "required": true,
+          "marker_groups": [
+            [
+              "缓存 TTL 过"
+            ]
+          ]
+        },
+        {
+          "fact_id": "commit",
+          "fact_type": "commit",
+          "statement": "可选修复提交",
+          "required": false,
+          "values": [
+            "fec9e8c12c2ab624b2e236480769b6afe1488bce",
+            "fec9e8c1"
+          ]
+        }
+      ],
+      "acceptable_alternative_evidence": [],
+      "expected_decision_state": null,
+      "expected_conflicts": [],
+      "forbidden_inferences": [],
+      "expected_abstention": {
+        "required": false,
+        "expected_termination": [
+          "sufficient"
+        ],
+        "must_disclose": []
+      },
+      "expected_limitations": [],
+      "scoring_rubric": {
+        "deterministic": [
+          "evidence_recall",
+          "citation_validity",
+          "structured_fact_accuracy",
+          "termination"
+        ],
+        "manual": [
+          "task_success",
+          "semantic_support",
+          "conflict_interpretation"
+        ]
+      },
+      "difficulty": "medium",
+      "task_set_version": "cma-v4-tasks-v1",
+      "annotation_status": "synthetic_authored_pending_independent_human_review",
+      "human_review_rules": [
+        "Check that required facts are supported by cited Evidence, not merely present as strings.",
+        "Check that alternative Evidence is genuinely equivalent for this question.",
+        "Do not mark task_success from deterministic metrics alone."
+      ],
+      "session_id": "session-v4-zephyr-ttl",
+      "turns": [
+        {
+          "question": "cache-proxy 的 缓存 TTL 策略 当前配置是什么？",
+          "evaluation_target": [
+            "new_value"
+          ]
+        },
+        {
+          "question": "那后来为什么从 300 改成 600？请引用讨论和提交。",
+          "evaluation_target": [
+            "reason"
+          ]
+        }
+      ]
+    },
+    "v4-multi-turn-04": {
+      "task_id": "v4-multi-turn-04",
+      "category": "multi_turn",
+      "question": "先确认 token-validator 的 令牌校验策略 当前配置。然后解释为什么后来从旧值改成新值。",
+      "project_id": "v4-zephyr-indexer",
+      "dataset_kind": "live",
+      "known_at": null,
+      "required_evidence_groups": [
+        {
+          "group_id": "chat_proposal",
+          "any_of": [
+            {
+              "evidence_id": "ev_1ee15bd6bb973f867187eb579a1bf4232f875c21d4d866ecd834fc55468da286",
+              "content_hash": "9b6d638a74c685818f122fe654c25e30d8ed309d58d033491d783c0db1853291"
+            }
+          ]
+        },
+        {
+          "group_id": "commit_fix",
+          "any_of": [
+            {
+              "evidence_id": "ev_59c67769631db4e682c1768313cde7ab62ec5b2c34b7c6d1d81c42322cf0f17a",
+              "content_hash": "914e90c3cfdd239430c5cdd7c2a098050b2a360990a224f7df7aedbb6d1fab09"
+            }
+          ]
+        },
+        {
+          "group_id": "doc_v2",
+          "any_of": [
+            {
+              "evidence_id": "ev_193344cd9f4951604fb660d48f7e3c1bde7eee86576a16bdd7de08e134f3ddec",
+              "content_hash": "c93353a8796e0e82e09dcf2726f430382da412e95e11611108da50c7e0482537"
+            }
+          ]
+        }
+      ],
+      "expected_facts": [
+        {
+          "fact_id": "new_value",
+          "fact_type": "version",
+          "statement": "改变后的值",
+          "required": true,
+          "values": [
+            "60"
+          ]
+        },
+        {
+          "fact_id": "reason",
+          "fact_type": "text",
+          "statement": "改变原因",
+          "required": true,
+          "marker_groups": [
+            [
+              "校验器没有考虑跨"
+            ]
+          ]
+        },
+        {
+          "fact_id": "commit",
+          "fact_type": "commit",
+          "statement": "可选修复提交",
+          "required": false,
+          "values": [
+            "89b1b86929b0a9b192b8d810d9c4dc6d46c95d40",
+            "89b1b869"
+          ]
+        }
+      ],
+      "acceptable_alternative_evidence": [],
+      "expected_decision_state": null,
+      "expected_conflicts": [],
+      "forbidden_inferences": [],
+      "expected_abstention": {
+        "required": false,
+        "expected_termination": [
+          "sufficient"
+        ],
+        "must_disclose": []
+      },
+      "expected_limitations": [],
+      "scoring_rubric": {
+        "deterministic": [
+          "evidence_recall",
+          "citation_validity",
+          "structured_fact_accuracy",
+          "termination"
+        ],
+        "manual": [
+          "task_success",
+          "semantic_support",
+          "conflict_interpretation"
+        ]
+      },
+      "difficulty": "medium",
+      "task_set_version": "cma-v4-tasks-v1",
+      "annotation_status": "synthetic_authored_pending_independent_human_review",
+      "human_review_rules": [
+        "Check that required facts are supported by cited Evidence, not merely present as strings.",
+        "Check that alternative Evidence is genuinely equivalent for this question.",
+        "Do not mark task_success from deterministic metrics alone."
+      ],
+      "session_id": "session-v4-zephyr-auth",
+      "turns": [
+        {
+          "question": "token-validator 的 令牌校验策略 当前配置是什么？",
+          "evaluation_target": [
+            "new_value"
+          ]
+        },
+        {
+          "question": "那后来为什么从 30 改成 60？请引用讨论和提交。",
+          "evaluation_target": [
+            "reason"
+          ]
+        }
+      ]
+    },
+    "v4-multi-turn-05": {
+      "task_id": "v4-multi-turn-05",
+      "category": "multi_turn",
+      "question": "先确认 ledger-writer 的 账本刷盘策略 当前配置。然后解释为什么后来从旧值改成新值。",
+      "project_id": "v4-orbit-billing",
+      "dataset_kind": "live",
+      "known_at": null,
+      "required_evidence_groups": [
+        {
+          "group_id": "chat_proposal",
+          "any_of": [
+            {
+              "evidence_id": "ev_f7372d25a5b7025b5293d6ca30288e4a9ad2e3b27fc3bb58175e96f26ec52844",
+              "content_hash": "7f375be4f48e43e451794f9c2e89bc541e5966531c3ed82007d514e4ef9caa37"
+            }
+          ]
+        },
+        {
+          "group_id": "commit_fix",
+          "any_of": [
+            {
+              "evidence_id": "ev_d083cb30eca8f9064266fb9596768c44d5d59f4ca631ffcd621e3e591a734274",
+              "content_hash": "39df73201c8f3c1014f39d96413c1130efc7ef7b5a0c36051e1320aca7b896e1"
+            }
+          ]
+        },
+        {
+          "group_id": "doc_v2",
+          "any_of": [
+            {
+              "evidence_id": "ev_c6939212613d6ad0d9e13ab3e2fd13a660cc9bbc7fe6813b18558762c9af046c",
+              "content_hash": "b35248df5817485f8a1e0dbe61a23d394ec0ab79c89b1a7ca2001888f548f9c7"
+            }
+          ]
+        }
+      ],
+      "expected_facts": [
+        {
+          "fact_id": "new_value",
+          "fact_type": "version",
+          "statement": "改变后的值",
+          "required": true,
+          "values": [
+            "500"
+          ]
+        },
+        {
+          "fact_id": "reason",
+          "fact_type": "text",
+          "statement": "改变原因",
+          "required": true,
+          "marker_groups": [
+            [
+              "刷盘间隔过短导致"
+            ]
+          ]
+        },
+        {
+          "fact_id": "commit",
+          "fact_type": "commit",
+          "statement": "可选修复提交",
+          "required": false,
+          "values": [
+            "cac65ea65c830e99622ffd26a2a2e4378a173327",
+            "cac65ea6"
+          ]
+        }
+      ],
+      "acceptable_alternative_evidence": [],
+      "expected_decision_state": null,
+      "expected_conflicts": [],
+      "forbidden_inferences": [],
+      "expected_abstention": {
+        "required": false,
+        "expected_termination": [
+          "sufficient"
+        ],
+        "must_disclose": []
+      },
+      "expected_limitations": [],
+      "scoring_rubric": {
+        "deterministic": [
+          "evidence_recall",
+          "citation_validity",
+          "structured_fact_accuracy",
+          "termination"
+        ],
+        "manual": [
+          "task_success",
+          "semantic_support",
+          "conflict_interpretation"
+        ]
+      },
+      "difficulty": "medium",
+      "task_set_version": "cma-v4-tasks-v1",
+      "annotation_status": "synthetic_authored_pending_independent_human_review",
+      "human_review_rules": [
+        "Check that required facts are supported by cited Evidence, not merely present as strings.",
+        "Check that alternative Evidence is genuinely equivalent for this question.",
+        "Do not mark task_success from deterministic metrics alone."
+      ],
+      "session_id": "session-v4-orbit-ledger",
+      "turns": [
+        {
+          "question": "ledger-writer 的 账本刷盘策略 当前配置是什么？",
+          "evaluation_target": [
+            "new_value"
+          ]
+        },
+        {
+          "question": "那后来为什么从 200 改成 500？请引用讨论和提交。",
+          "evaluation_target": [
+            "reason"
+          ]
+        }
+      ]
+    }
+  }
+}

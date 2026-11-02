@@ -34,12 +34,23 @@ data/chat_raw.json
 *.sqlite3
 *.sqlite3-*
 *.db
+*.faiss
+live_index/
 db_md/
 logs/
 *.log
 
+# Local model caches (never bake downloaded weights into the image).
+.cache/
+models/
+model_cache/
+
 # Generated reports and benchmark outputs are local artifacts.
 benchmark/reports/
+benchmark/v2/reports/
+benchmark/dev/reports/
+benchmark/v3/reports/
+benchmark/v4/reports/
 reports/
 *.jsonl
 

@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "policy_version": "v2-relevance-2026-11-02",
+  "enabled": true,
+  "identifier_bypass": true,
+  "dense_min_score": 0.782,
+  "lexical_min_coverage": 0.55,
+  "calibration": {
+    "status": "calibrated",
+    "dev_set": "benchmark/dev/relevance_dev.py",
+    "dev_corpus_sha256": "9b204ba008e3141eaff2666e26565ae4ddd4d3655c791e51798485b497a71280",
+    "test_set_used_for_calibration": false,
+    "negative_max_dense": 0.741066,
+    "negative_max_coverage": 0.5,
+    "dense_margin": 0.04,
+    "coverage_margin": 0.05,
+    "generated_at": "2026-11-02T07:59:08Z",
+    "report": "benchmark\\dev\\reports\\relevance-calibration-20261102-075908.json"
+  }
+}

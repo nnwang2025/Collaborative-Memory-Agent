@@ -4,7 +4,7 @@
 
 重点业务数据是聊天、会议纪要、需求文档、评审记录和决策变更；Git Commit、Issue 属于补充证据。系统通过可回取的 Evidence ID、来源 locator、事件时间和版本记录实现跨来源追溯，而不是把项目定位成单纯的 GitHub 代码检索。
 
-> **默认入口说明**：`python main.py` 运行的是 **fixture LangGraph Workflow 演示**，不是真实 Agent 自主调查。正式 live ReAct 调查必须显式指定 `--dataset-kind live --project-id ...`，并先通过 `src.ingest` 导入该项目的真实数据。API 默认同样是 fixture LangGraph；ReAct 需在请求中设置 `"backend": "react"` 和 live scope。
+> **默认入口说明**：`python main.py` 运行的是 **fixture LangGraph Workflow 演示**，不是真实 Agent 自主调查。正式 live ReAct 调查必须显式指定 `--dataset-kind live --project-id ...`，并先通过 `src.ingest` 或 V2 `v2-source-add` / `v2-sync` 导入该项目的真实数据。API 默认同样是 fixture LangGraph；ReAct 需在请求中设置 `"backend": "react"` 和 live scope。
 
 ---
 
@@ -57,6 +57,10 @@ Collaborative Memory Agent 构建面向研发团队的长期记忆 Agent，让�
 
 三种后端都保留。ReAct 的正式 live 用法、数据导入和 API 示例见下方“正式 live ReAct 演示”。
 
+Phase 2 在 ReAct 之上增加了持久化 Session/Run 运行时（SQLite 事件流、提问幂等、协作式取消/超时、重启中断标记、Session 追问上下文与 SSE 断线重放）。详见 [docs/AGENT_RUNTIME_PHASE2.md](docs/AGENT_RUNTIME_PHASE2.md)。
+
+Phase 3 增加确定性的 Context Engineering：模型感知 token 预算、版本化调查状态、优先级证据选择与去重、分层压缩、结构化 `context_limit`、每轮 Context Trace 与 Run 查询接口。原始 Evidence、检索阈值、ReAct 工具协议和 Run/Session 生命周期保持不变。详见 [docs/AGENT_RUNTIME_PHASE3.md](docs/AGENT_RUNTIME_PHASE3.md)。
+
 ---
 
 ## 核心技术栈
@@ -64,10 +68,10 @@ Collaborative Memory Agent 构建面向研发团队的长期记忆 Agent，让�
 | 技术 | 用途 |
 |------|------|
 | **LangGraph** | Agent 工作流引擎，并行 Skill fan-out/fan-in，状态管理 |
-| **FAISS + bge-small-zh-v1.5** | fixture MemorySkill 的向量检索；**live 检索不读取该索引** |
-| **BM25** (自研) | live 与 fixture 的词法检索，精确匹配关键词、文件名、Issue ID |
+| **FAISS + bge-small-zh-v1.5** | fixture MemorySkill 与 V2 live chunk 索引的向量检索；两者索引独立 |
+| **BM25** (自研) | fixture 与 live 的词法检索，精确匹配关键词、文件名、Issue ID |
 | **Entity Retrieval** | fixture 的实体感知检索；live 不使用共享 Entity Memory |
-| **RRF** (Reciprocal Rank Fusion) | fixture 多路召回融合；live 当前为 BM25 单路 |
+| **RRF** (Reciprocal Rank Fusion) | fixture 多路召回融合；V2 live 支持 BM25+Dense RRF，也可单路运行 |
 | **DeepSeek 官方 API（默认）** | LLM 路由分类 + Evidence → Summary 生成；可选兼容 SiliconFlow / OpenAI 兼容配置 |
 | **FastAPI + SSE** | REST API + 流式输出 |
 | **Docker** | 容器化部署 |
@@ -89,7 +93,18 @@ Collaborative Memory Agent 构建面向研发团队的长期记忆 Agent，让�
            Top-K 证据
 ```
 
-**live 检索**（`--dataset-kind live` / API live scope）：按 `project_id` 与 `dataset_kind` 先做来源隔离，再在 SQLite Evidence Store 上执行 BM25；支持 `source_types`、`evidence_ids`、`after`/`before`、`undated_only` 过滤。live 不使用 fixture 的 FAISS 索引、Entity Memory 或 RRF，也不会自动把不同项目的数据混在一起。
+**live 检索**（`--dataset-kind live` / API live scope）：按 `project_id` 与 `dataset_kind` 先做来源隔离。V2 默认仍是 BM25，显式选择 `dense` 或 `hybrid` 时使用版本化 live chunk 索引：BM25 与 Dense 各自排序，经 RRF 融合；每个 chunk 候选都会回取完整父 Evidence，并复核当前状态与 `content_hash`。索引过期、缺失、校验和不符或 Dense 失败时，返回明确标记的 `bm25_fallback`，不会把降级结果报告为 Hybrid 成功。支持 `source_types`、`evidence_ids`、`after`/`before`、`undated_only` 过滤；live 不使用 fixture 的 Entity Memory，也不会混入其他项目的数据。
+
+```bash
+# V2 live 检索模式（默认 bm25）
+python main.py v2-retrieve --project-id your-project --query "回滚流程" --mode bm25
+python main.py v2-retrieve --project-id your-project --query "回滚流程" --mode dense
+python main.py v2-retrieve --project-id your-project --query "回滚流程" --mode hybrid
+
+# ReAct 使用 live Hybrid 时，通过环境变量选择模式
+# PowerShell: $env:LIVE_RETRIEVAL_MODE="hybrid"
+python main.py --react --dataset-kind live --project-id your-project
+```
 
 **旧演示脚本评测状态**：原脚本将至少命中一条相关文档的查询比例误标为 Recall@5，现已更名为 Hit@5。旧脚本相关性仍由关键词启发式生成，历史 73.3% / 80.0% 缺少独立标注和可复现实验依据，不作为已验证结果。详见 [代码审计](docs/CODE_AUDIT.md)。
 
@@ -97,17 +112,93 @@ Collaborative Memory Agent 构建面向研发团队的长期记忆 Agent，让�
 
 当前评测事实（截至本版）：
 
-- **离线回归：243 项测试通过**（原 231 项 + 本批新增 12 项），不调用模型、不读取密钥。
+- **离线回归：284 项测试通过**（原 262 项 + 相关性策略/真实缓存模型检索/同步并发与扫描失败 22 项），不调用收费模型、不读取真实密钥。
 - **任务级 Benchmark：16 任务 / 8 类别**。其中 **4 个不同任务**（`single-atlas`、`cross-atlas`、`conflict-atlas`、`decision-atlas`）做过真实模型在线运行；其余 12 个任务只有离线运行。
 - **尚无 16 任务整体人工成功率**。`TaskSuccessRate` 和 `AppropriateAbstentionRate` 只在显式人工评分后才有值，当前保持 `null`；字面标记覆盖率不能替代语义成功判断。
 - `decision-atlas` 第二轮在线结果的严格复评事实覆盖为 **1/2**。另一个事实依赖的标记出现在“未确认部分”标题中，严格判定不认可该标题作为事实证据，因此未放宽规则换取 2/2。
 - 在线结果还包含协议失败和一次预算耗尽，不能据此声称 ReAct 已整体优于 Workflow。
+- 独立 V2 合成开发集上已实测 BM25 / Dense / Hybrid；无匹配查询的空结果识别率在三种模式下均为 **1.0**，但正常查询存在 **9.09%**（1/11）的单一预期证据误拒，详见下文。
 
 详见 [评测报告](docs/BENCHMARK_EVALUATION.md) 与 [任务级评测说明](benchmark/tasks/README.md)。
 
 首次 DeepSeek Flash 冒烟日志已完成[定向协议诊断与修复](docs/DEEPSEEK_PROTOCOL_FIX.md)：修正 ReAct 每轮硬编码 512 输出限制，保留停止原因并分类反馈。后续在线运行已改用修复后的配置，历史报告原样保留。
 
-后续新增[调查完整性与上下文改进](docs/INVESTIGATION_CONTEXT_IMPLEMENTATION.md)：live 证据按查询选择可回取片段，保留父 ID/hash；日期过滤空结果可有界补查时间未知资料；请求历史去重并设独立字节预算。multi_round 按事实、来源和时间关联验收。**当前 243 项离线测试通过**；在线覆盖仍仅限上述 4 个任务。
+后续新增[调查完整性与上下文改进](docs/INVESTIGATION_CONTEXT_IMPLEMENTATION.md)：live 证据按查询选择可回取片段，保留父 ID/hash；日期过滤空结果可有界补查时间未知资料；请求历史去重并设独立字节预算。multi_round 按事实、来源和时间关联验收。**当前 284 项离线测试通过**；在线覆盖仍仅限上述 4 个任务。
+
+---
+
+## V2 增量同步与 Live Hybrid 检索
+
+V2 保留原有 Evidence ID、`content_hash`、Evidence Ledger、Claim 校验、Decision Memory 与 ReAct 协议，并新增以下派生链路：
+
+```
+Git / Directory / CSV / JSON / JSONL
+  → SourceRegistry → SyncService → EvidenceStore（current + 历史 + tombstone）
+  → ChunkBuilder → 版本化 LiveIndex（BM25 + Dense + RRF）
+  → LiveRetriever → ScopedSkill → ToolExecutor → EvidenceLedger → AnswerAgent
+```
+
+- **原始 Evidence 仍是唯一事实源**：chunk 只是派生检索单元，命中后必须回取完整父 Evidence；删除产生 tombstone，不物理删除历史。
+- **增量与幂等**：Git 使用提交游标，目录/CSV/JSON 使用稳定记录 ID 与内容哈希；不根据 mtime 或行号推断删除，扫描不完整时不传播删除。
+- **索引是缓存**：索引绑定 `project_id`、`dataset_kind`、Evidence revision、embedder 与 chunker 版本；发布前复核 revision，目录原子切换，失败不破坏当前索引。
+- **不引入外部中间件**：仅使用 SQLite、本地 FAISS 文件和现有 Python 依赖。
+
+```bash
+# 1) 注册来源（CLI 输出均为 JSON）
+python main.py v2-source-add --project-id your-project --connector directory \
+  --source-uri "file:///path/to/docs" --config-json '{"root_path":"/path/to/docs"}'
+python main.py v2-source-add --project-id your-project --connector csv \
+  --source-uri "file:///path/to/issues.csv" \
+  --config-json '{"path":"/path/to/issues.csv","id_column":"id","content_column":"description","category":"issue","time_column":"updated_at"}'
+python main.py v2-source-add --project-id your-project --connector json \
+  --source-uri "file:///path/to/events.json" \
+  --config-json '{"path":"/path/to/events.json","record_path":"records","id_field":"id","content_fields":["title","body"],"time_field":"event_time","category":"document"}'
+
+# 2) 首次全量/后续增量同步；--dry-run 只计算不写库
+python main.py v2-source-list --project-id your-project
+python main.py v2-sync <source_id>
+python main.py v2-sync <source_id> --dry-run
+
+# 3) 构建、校验、回滚索引
+python main.py v2-index-build --project-id your-project
+python main.py v2-index-status --project-id your-project
+python main.py v2-index-verify --project-id your-project
+python main.py v2-index-activate <index_version>
+
+# 4) 独立 V2 合成开发集（离线缓存模型，不调用收费 LLM）
+$env:HF_HUB_OFFLINE="1"; $env:TRANSFORMERS_OFFLINE="1"
+python -m benchmark.v2.run_benchmark
+```
+
+报告写入 `benchmark/v2/reports/`，不修改冻结的 Benchmark V1、Gold、任务标签或历史报告。最近一次本机实测（15 个查询：11 个有标准答案，4 个负向查询；`top_k=10`；启用相关性门控）：
+
+| 模式 | Recall@5 | Recall@10 | MRR | nDCG@10 | p50 / p95 ms | 空结果识别率 | 正常查询误拒率 | 实际模式 |
+|------|----------|-----------|-----|---------|--------------|--------------|----------------|----------|
+| BM25 | 0.955 | 0.955 | 0.939 | 0.919 | 9.3 / 9.6 | 1.0 | 9.09% | bm25 |
+| Dense | 0.955 | 0.955 | 0.955 | 0.931 | 20.4 / 32.5 | 1.0 | 9.09% | dense |
+| Hybrid (RRF) | 0.955 | 0.955 | 0.939 | 0.919 | 21.3 / 32.8 | 1.0 | 9.09% | hybrid |
+
+同一报告中的未门控消融（`ablation_ungated`）显示：三种模式的 Recall@5/10 均为 1.0，但 Dense/Hybrid 的空结果识别率为 **0.0**（4 个负向查询全部返回最近邻），BM25 为 **0.5**；门控把空结果识别率提升到 1.0，代价是 11 个正常查询中有 1 个丢失了 1 条预期证据（`cross_source` 的 `architecture.md`，原因见下方限制）。
+
+**最终验收与候选召回分离**：Dense/BM25/RRF 只负责召回候选；父 Evidence 是否可返回由 `src/index/relevance.py` 的独立门控决定。门控信号为：
+
+- 查询中的精确标识符（Issue/commit/文件名/中文选项字母）在记录文本中以完整 token 出现；
+- 或 meaningful-token 词法覆盖率 ≥ 校准阈值；
+- 或 Dense cosine ≥ 校准阈值。
+
+两个数值阈值分别校准，不做跨通道分数比较，也不使用 RRF 分数。策略文件为 `src/index/relevance_policy.json`，可用 `LIVE_RELEVANCE_POLICY` 指向另一份 JSON；关闭门控仅用于消融。拒绝原因、策略版本、阈值、实际检索模式和 fallback 状态都会写入 `RetrievalHits.diagnostics`、工具观察与 `TraceStep`，空结果会明确标记为 `no_candidates` 或 `all_candidates_filtered`。
+
+```bash
+# 在独立开发语料上重新校准（不使用 V2 测试集；生成新报告，不覆盖旧报告）
+$env:HF_HUB_OFFLINE="1"; $env:TRANSFORMERS_OFFLINE="1"
+python -m benchmark.dev.calibrate_relevance
+```
+
+当前校准结果：12 个负向开发查询在三种模式下的最大 Dense 分数为 0.741、最大词法覆盖率为 0.50；分别加 0.04 / 0.05 安全边际，得到 `dense_min_score=0.782`、`lexical_min_coverage=0.55`。开发集上正常查询误拒 0、负向查询误接收 0。
+
+同一报告中：索引构建约 8.3 秒、17 个 chunk、约 53 KB；删除记录误召回率在重建前后均为 0；跨项目污染率为 0；索引被移走时明确返回 `bm25_fallback / index_manifest_missing / unusable`；更新记录保持同一 Evidence ID 并保留 2 个版本；已删除记录仍可按历史 ID/hash 回取。
+
+**明确限制**：本集 Hybrid 的 Recall@5 与 BM25 持平、MRR/nDCG 未超过 Dense，**不能外推为 Hybrid 普遍更优**。词法覆盖率对“只含通用任务词 + 少量内容词”的跨来源查询偏保守：`cross_source` 的 `architecture.md` 只命中 `tombstone`，`lifecycle` 缺失，因此被过滤；这是本集唯一的正常证据误拒。Dense-only 的低重叠语义改写若 cosine 低于阈值也会被保守拒绝（宁可空结果，不返回最近邻伪证据）。这些阈值只在 9 文档开发集上校准，迁移到更大或不同领域语料前应重新校准。
 
 ---
 
@@ -186,7 +277,7 @@ python -m src.evaluate
 ### 离线验证（不调用模型、不读取密钥）
 
 ```bash
-# 243 项离线回归测试
+# 331 项离线回归测试（含 Phase 2 Runtime/Session/SSE 与 Phase 3 Context Engineering）
 python -m unittest discover -s tests -v
 
 # Demo 1：校验合成 CSV 导入，不写入数据库
@@ -338,10 +429,21 @@ ingest_all(csv_files=[{
 │
 ├── src/
 │   ├── graph.py             # LangGraph StateGraph 工作流定义
-│   ├── retrieval.py         # fixture 混合检索；live 为隔离后的 BM25
+│   ├── retrieval.py         # fixture 混合检索；live BM25 / Dense / Hybrid 入口
 │   ├── ingest.py            # Git/目录/结构化 CSV 导入
 │   ├── evidence.py          # Evidence 身份、scope、时间、hash
-│   ├── evidence_store.py    # append-only SQLite 证据存储
+│   ├── evidence_store.py    # append-only SQLite 证据存储 + current/tombstone/索引元数据
+│   ├── chunking.py          # 既有 chunker + 稳定 char/line locator
+│   ├── sync/                # V2 source registry、connectors、事务写入、同步服务
+│   │   ├── connectors.py    # Git / Directory / CSV / JSON / JSONL（不执行外部代码）
+│   │   ├── service.py       # SourceRegistry、SyncService、cursor、dry-run
+│   │   ├── writer.py        # 按批次事务写入、current 状态、tombstone
+│   │   └── models.py        # SourceSpec / ScanBatch / SyncReport
+│   ├── index/               # V2 派生 chunk 与版本化 FAISS 索引
+│   │   ├── chunks.py        # 稳定 chunk ID、父 Evidence 关联、locator
+│   │   ├── builder.py       # 构建、manifest、校验、原子发布、恢复
+│   │   ├── store.py         # index version / alias / 成员元数据
+│   │   └── retriever.py     # BM25/Dense/RRF、父 Evidence 回取、显式 fallback
 │   ├── investigation.py     # ReAct 协议与 Evidence Ledger
 │   ├── investigation_context.py # 证据片段、上下文预算、来源覆盖
 │   ├── llm_config.py        # 统一模型配置解析（DeepSeek 优先，兼容旧变量）
@@ -361,6 +463,8 @@ ingest_all(csv_files=[{
 │   │   └── conversation.py      # 多轮对话记忆
 │   └── evaluate.py              # 启发式评估 (Hit@5 + 路由命中率)
 │
+├── benchmark/v2/             # 独立 V2 合成开发集、指标与 live 检索报告
+├── benchmark/v3/             # 独立 Phase 3 上下文构造评测（不覆盖 V1/V2）
 ├── examples/team_collaboration/ # 全合成聊天/会议/评审/决策 CSV 与 seed 脚本
 ├── data/                    # fixture 数据；data/live/ 为本地 live 导入（不入镜像）
 │   ├── decision_memory.json
@@ -387,14 +491,16 @@ ingest_all(csv_files=[{
 ## 项目亮点
 
 - **LangGraph 工作流**：显式 StateGraph，并行 Skill fan-out，可观测可调试（默认 fixture）
-- **Hybrid RAG（fixture）**：Dense + Sparse + Entity 三路检索，RRF 融合；live 检索是隔离后的 BM25
+- **Hybrid RAG（fixture）**：Dense + Sparse + Entity 三路检索，RRF 融合；V2 live 支持 BM25/Dense/Hybrid 与显式 fallback
 - **ReAct Agent**：自适应 Think-Act-Observe 循环，动态选择工具和查询策略；可显式切到 live
 - **LLM 路由 + 关键词 Fallback**：既利用 LLM 语义理解，又保证离线可用
 - **长期记忆分层**：Decision/Episodic/Semantic/Entity/Relationship 结构；其中 Decision 有版本/审核 CLI，其余仍以静态数据为主
-- **证据化输出**：回答+证据+来源+实体+置信度+路由；live ReAct 额外校验 Evidence ID、hash、scope 和原文子串
+- **Multisource 增量同步**：Git 游标、目录/CSV/JSON 稳定身份、幂等写入、tombstone 与历史回取；删除不物理清除
+- **版本化 LiveIndex**：manifest/checksum、revision 快照、原子 alias 切换、失败隔离与回滚
+- **证据化输出**：回答+证据+来源+实体+置信度+路由；live ReAct 额外校验 Evidence ID、hash、scope 和原文摘录
 - **多轮对话记忆**：追问感知，窗口滑动 + 历史摘要
 - **双模式部署**：CLI 交互 + FastAPI 流式服务 + Docker 容器化
-- **离线 Benchmark/回归**：冻结合成集、任务级定义与手写评分入口；243 项离线测试通过。真实模型仅覆盖 4 个任务，整体人工成功率尚不存在。
+- **离线 Benchmark/回归**：冻结 V1 合成集保持不变；V2 独立开发集报告与 284 项离线测试通过。真实模型仅覆盖 4 个 V1 任务，V2 尚无真实模型语义验收。
 
 ## Docker 部署与安全边界
 
@@ -409,8 +515,13 @@ ingest_all(csv_files=[{
 
 以下内容**不能**表述为已完成：
 
-- **外部 SaaS 接入**：没有实现飞书、Slack、Jira、Confluence 等外部 SaaS 的在线导入/同步；当前入口是 Git、目录和结构化 CSV。
-- **完整增量同步**：没有通用的全量对账、删除传播或外部游标增量同步；重复导入依靠 Evidence 内容哈希去重。
+- **外部 SaaS 接入**：没有实现飞书、Slack、Jira、Confluence 等外部 SaaS 的在线导入/同步；当前入口是 Git、目录、结构化 CSV/JSON/JSONL。
+- **自动调度与 Webhook**：V2 同步是显式 CLI 调用，没有后台调度器、Webhook 或跨进程同步队列；并发同步使用 SQLite 运行标记与 cursor 乐观版本控制，不提供分布式锁。
+- **V2 真实模型语义验收**：本轮只完成离线脚本化 ReAct 验收和检索指标；尚未用真实 DeepSeek 对 V2 合成集做语义正确性/引用正确性人工评分。
+- **Connector 边界**：目录扫描遇到不可读或非 UTF-8 文件会中止整次扫描（因此不会误删），但不会跳过并继续；CSV 的 `schema_hash` 仍是轻量列签名，不是完整 schema 演进系统；不会执行 CSV/JSON 中的任何代码或 Shell。
+- **Live 索引增量性**：当前采用整库重建（可接受），没有 FAISS 向量级增量删除；旧版本索引保留用于回滚，但尚未实现自动过期清理策略。
+- **Chunk locator 粒度**：结构化/代码 chunk 可提供精确 offset 与行号；部分 Markdown chunker 会规范化空行，这类 chunk 标记为 `unavailable`，只能通过父 Evidence + 查询片段生成摘录，不能直接作为已验证 Excerpt。
+- **空结果策略的边界**：Dense/Hybrid 的最近邻候选现在会经过校准门控，无匹配查询在 V2 测试集上识别率为 1.0；但门控是保守的词法/绝对 cosine 规则，不是重排模型。低重叠语义改写可能被误拒，阈值也只在 9 文档开发集上校准。门控不满足时应返回空结果并在 diagnostics/Agent gap 中披露，而不是返回最近邻伪证据；更换领域或 embedder 后必须重新校准。
 - **Docker 实际构建**：本机无 Docker CLI，镜像构建与容器运行未验证。
 - **16 任务整体在线成功率**：只有 4 个任务有真实模型运行记录，且没有对全部任务做人工评分。
 - **连续会话持久化**：API 为请求独立实例，没有跨请求的持久会话。
@@ -424,5 +535,6 @@ ingest_all(csv_files=[{
 - [真实证据接入与 Evidence 实现](docs/EVIDENCE_IMPLEMENTATION.md)
 - [ReAct 调查、引用与执行轨迹](docs/REACT_INVESTIGATION_IMPLEMENTATION.md)
 - [Decision Memory 审核与 LLM 冒烟准备](docs/DECISION_MEMORY_IMPLEMENTATION.md)
+- [Phase 3 上下文预算、证据选择、压缩与可观测性](docs/AGENT_RUNTIME_PHASE3.md)
 - 结构化接入说明：[examples/team_collaboration/README.md](examples/team_collaboration/README.md)
 - 离线回归：`python -m unittest discover -s tests -v`，测试依赖见 `requirements-dev.txt`。新增结构化导入测试不调用模型、不读取密钥。

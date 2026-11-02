@@ -1,0 +1,1336 @@
+{
+  "plan_version": "cma-v4-acceptance-v1",
+  "status": "prepared_not_executed",
+  "snapshot_id": "cma-v4-658dd583ab18a47f",
+  "task_set_version": "cma-v4-tasks-v1",
+  "task_count": 10,
+  "tasks": [
+    {
+      "task_id": "v4-single-source-01",
+      "category": "single_source",
+      "difficulty": "easy",
+      "selection_reason": "Clean single-source baseline: required facts must come from one source family without cross-source fusion.",
+      "turns": 1,
+      "injected_failure": null,
+      "budget_override": null
+    },
+    {
+      "task_id": "v4-cross-source-01",
+      "category": "cross_source",
+      "difficulty": "medium",
+      "selection_reason": "Cross-source task: the answer needs at least two source types, exercising multi-skill retrieval, merge and cross-source citation.",
+      "turns": 1,
+      "injected_failure": null,
+      "budget_override": null
+    },
+    {
+      "task_id": "v4-multi-step-01",
+      "category": "multi_step",
+      "difficulty": "medium",
+      "selection_reason": "Multi-step investigation: several constraints/entities must be resolved before the final fact can be supported.",
+      "turns": 1,
+      "injected_failure": null,
+      "budget_override": null
+    },
+    {
+      "task_id": "v4-decision-history-01",
+      "category": "decision_history",
+      "difficulty": "medium",
+      "selection_reason": "Historical decision cutoff: distinguishes a confirmed version at known_at from a later proposal that must not be reported as confirmed.",
+      "turns": 1,
+      "injected_failure": null,
+      "budget_override": null
+    },
+    {
+      "task_id": "v4-conflict-01",
+      "category": "conflict",
+      "difficulty": "medium",
+      "selection_reason": "Unresolved conflict: both sides must be disclosed without the system choosing one side as the verdict.",
+      "turns": 1,
+      "injected_failure": null,
+      "budget_override": null
+    },
+    {
+      "task_id": "v4-insufficient-01",
+      "category": "insufficient",
+      "difficulty": "hard",
+      "selection_reason": "Insufficient evidence: the correct behaviour is a bounded abstention that discloses what is missing, not an invented answer.",
+      "turns": 1,
+      "injected_failure": null,
+      "budget_override": null
+    },
+    {
+      "task_id": "v4-multi-turn-01",
+      "category": "multi_turn",
+      "difficulty": "medium",
+      "selection_reason": "Two-turn follow-up: tests per-turn evaluation targets and whether conversation context is used without treating the previous answer as evidence.",
+      "turns": 2,
+      "injected_failure": null,
+      "budget_override": null
+    },
+    {
+      "task_id": "v4-tool-failure-01",
+      "category": "tool_failure",
+      "difficulty": "hard",
+      "selection_reason": "Injected document-tool timeout: tests recovery or explicit disclosure after a source tool fails.",
+      "turns": 1,
+      "injected_failure": {
+        "skill": "document",
+        "error": "timeout"
+      },
+      "budget_override": null
+    },
+    {
+      "task_id": "v4-tool-failure-02",
+      "category": "tool_failure",
+      "difficulty": "hard",
+      "selection_reason": "Injected problem-tool timeout: a second, different failing skill, so the result does not depend on one failure point.",
+      "turns": 1,
+      "injected_failure": {
+        "skill": "problem",
+        "error": "timeout"
+      },
+      "budget_override": null
+    },
+    {
+      "task_id": "v4-budget-01",
+      "category": "budget",
+      "difficulty": "hard",
+      "selection_reason": "Explicit budget override: tests whether the backend stops within the configured limit and discloses the unfinished part instead of claiming completion.",
+      "turns": 1,
+      "injected_failure": null,
+      "budget_override": {
+        "max_tokens": 1,
+        "max_model_rounds": 1,
+        "max_tool_calls": 1
+      }
+    }
+  ],
+  "coverage": {
+    "categories": [
+      "budget",
+      "conflict",
+      "cross_source",
+      "decision_history",
+      "insufficient",
+      "multi_step",
+      "multi_turn",
+      "single_source",
+      "tool_failure"
+    ],
+    "single_turn": 9,
+    "multi_turn": 1,
+    "tool_failure_tasks": 2,
+    "budget_tasks": 1
+  },
+  "experiment": {
+    "experiment_id": "cma-v4-acceptance-v1",
+    "status": "prepared_not_executed",
+    "this_round_made_model_calls": false,
+    "snapshot": {
+      "snapshot_id": "cma-v4-658dd583ab18a47f",
+      "dataset_version": "cma-v4-dataset-v1",
+      "task_set_version": "cma-v4-tasks-v1",
+      "task_set_sha256": "8793116a0581fc71d5b4eb3d89677fe99ba36ee9f39c25dae00c24269c6644b1"
+    },
+    "task_ids": [
+      "v4-single-source-01",
+      "v4-cross-source-01",
+      "v4-multi-step-01",
+      "v4-decision-history-01",
+      "v4-conflict-01",
+      "v4-insufficient-01",
+      "v4-multi-turn-01",
+      "v4-tool-failure-01",
+      "v4-tool-failure-02",
+      "v4-budget-01"
+    ],
+    "backends": [
+      "react",
+      "workflow"
+    ],
+    "same_controls_for_both_backends": [
+      "frozen snapshot and task set",
+      "project scope and Evidence database",
+      "retrieval mode and verified index",
+      "scorer",
+      "provider/model/base URL",
+      "identical hard model-call and token caps (architecture-derived upper bounds are recorded separately)"
+    ],
+    "provider_model": {
+      "status": "operator_must_supply",
+      "provider": "<exact provider name>",
+      "model": "<exact priced model id>",
+      "base_url": "https://<exact-origin>",
+      "approved_origin": "https://<exact-origin>",
+      "api_key_env": "<environment variable name only>",
+      "note": "No key or .env file is read by this preparation step."
+    },
+    "retrieval_mode": "hybrid",
+    "index_preparation": {
+      "required": true,
+      "rule": "Build and verify one real FAISS index per project before either backend runs.",
+      "abort_rule": "If preparation fails or any run reports bm25 fallback, abort the comparison; never score fallback as hybrid.",
+      "expected": "ready"
+    },
+    "shared_limits": {
+      "max_output_tokens": 1024,
+      "max_retries": 1,
+      "timeout_seconds": 120,
+      "temperature": 0.1
+    },
+    "per_backend_caps": {
+      "react": {
+        "max_tasks": 10,
+        "max_tool_calls": 8,
+        "max_model_calls": 80,
+        "max_budget_tokens": 300000,
+        "max_model_rounds": 5
+      },
+      "workflow": {
+        "max_tasks": 10,
+        "max_tool_calls": 8,
+        "max_model_calls": 80,
+        "max_budget_tokens": 300000,
+        "max_model_rounds": null
+      }
+    },
+    "call_upper_bound": {
+      "react": 77,
+      "workflow": 33,
+      "turns": 11
+    },
+    "cap_note": "Caps are per backend run and shared across all selected tasks and retries. Workflow has no native round concept; its cap is external. ReAct's upper bound includes one truncation-recovery call per turn.",
+    "token_and_cost_method": {
+      "pre_run_estimate": "calls_upper_bound * (estimated_input_tokens + max_output_tokens); estimated_input_tokens = UTF-8 bytes of the request JSON // 4. Treat as a planning ceiling, not a measurement.",
+      "post_run_measurement": "Use provider usage.prompt_tokens/completion_tokens when present; otherwise estimate bytes // 4 and mark estimated_usage=true.",
+      "cost_formula": "actual_cost_usd = prompt_tokens * input_unit_price + completion_tokens * output_unit_price. Unit prices must be supplied by the operator for the exact model; no price is assumed here.",
+      "this_round_cost": null,
+      "provider_pricing_status": "not_supplied_no_cost_estimate"
+    },
+    "commands": {
+      "react": "python -m benchmark.v4.run_online --backend react --online --i-understand-this-makes-paid-model-calls --provider <provider> --model <model> --base-url https://<origin> --approved-origin https://<origin> --retrieval-mode hybrid --task <id> [repeat] --max-tasks 10 --max-model-calls 80 --max-budget-tokens 300000 --max-model-rounds 5 --max-tool-calls 8 --max-output-tokens 1024 --max-retries 1 --output benchmark/v4/reports/online-acceptance-react-<date>",
+      "workflow": "python -m benchmark.v4.run_online --backend workflow --online --i-understand-this-makes-paid-model-calls --provider <provider> --model <model> --base-url https://<origin> --approved-origin https://<origin> --retrieval-mode hybrid --task <id> [repeat] --max-tasks 10 --max-model-calls 80 --max-budget-tokens 300000 --max-tool-calls 8 --max-output-tokens 1024 --max-retries 1 --output benchmark/v4/reports/online-acceptance-workflow-<date>"
+    },
+    "comparability": {
+      "comparable": [
+        "retrieval quality",
+        "structured fact accuracy",
+        "citation integrity",
+        "latency and measured token use under the shared cap"
+      ],
+      "incomparable": [
+        "budget-protocol behaviour",
+        "Claim Ledger validation",
+        "known_at filtering",
+        "multi-round investigation depth"
+      ],
+      "interpretation_rule": "Do not attribute an observed ReAct/Workflow difference to ReAct reasoning as a cause. Report it as an end-to-end architecture difference."
+    }
+  },
+  "checklists": [
+    {
+      "task_id": "v4-single-source-01",
+      "category": "single_source",
+      "difficulty": "easy",
+      "question": "ingest-gateway 的写入放大根因是什么？请引用日志。",
+      "turns": [],
+      "known_at": null,
+      "required_evidence_groups": [
+        {
+          "group_id": "log_error",
+          "any_of": [
+            {
+              "evidence_id": "ev_7f106b51b6255f3855a0891dc63607994eeed510b7c80afbf253a9bc7ac1c5eb",
+              "content_hash": "aa309c3087cc1e2abe29d6d912144aac4ee2eb324d76c2f54419af54209b068e",
+              "resolves": true,
+              "source_type": "log",
+              "source_uri": "https://logs.example.test/atlas/log-atlas-00/log_error",
+              "event_time": "2025-01-16T17:00:00+00:00",
+              "ingested_at": "2026-10-15T08:17:00+00:00",
+              "content_preview": "日志 log-atlas-00 ERROR ingest-gateway 写入放大：batch_size=500，请求失败率上升。事件时间 2025-01-16T17:00:00+00:00。"
+            }
+          ]
+        },
+        {
+          "group_id": "issue_triage",
+          "any_of": [
+            {
+              "evidence_id": "ev_eae5c627e9e49311d2734bc744988712d6c7893071aecf70fe1cf3e86e2f2419",
+              "content_hash": "6bd156d03e9c837d6bcf8fcdea37a79593400ff46b508dc58b82b589fe01350d",
+              "resolves": true,
+              "source_type": "issue",
+              "source_uri": "https://issues.example.test/atlas/1400/issue_triage",
+              "event_time": "2025-01-14T23:00:00+00:00",
+              "ingested_at": "2026-10-15T08:06:00+00:00",
+              "content_preview": "Issue issue-ATLAS-1400 评审记录：根因是上游批次过小，固定开销占比过高；建议把 batch_size 调整到 2000。评审人 赵岚。"
+            }
+          ]
+        }
+      ],
+      "acceptable_alternative_evidence": [],
+      "expected_facts": [
+        {
+          "fact_id": "component",
+          "fact_type": "component",
+          "statement": "组件名称",
+          "required": true,
+          "values": [
+            "ingest-gateway"
+          ]
+        },
+        {
+          "fact_id": "log_id",
+          "fact_type": "issue_id",
+          "statement": "日志记录标识",
+          "required": true,
+          "values": [
+            "log-atlas-00"
+          ]
+        },
+        {
+          "fact_id": "root_cause",
+          "fact_type": "text",
+          "statement": "根因解释",
+          "required": true,
+          "marker_groups": [
+            [
+              "上游批次过小，固",
+              "上游批次过小，固定开销占比过高"
+            ]
+          ]
+        },
+        {
+          "fact_id": "issue_id",
+          "fact_type": "issue_id",
+          "statement": "可选关联 Issue",
+          "required": false,
+          "values": [
+            "issue-ATLAS-1400"
+          ]
+        }
+      ],
+      "forbidden_inferences": [],
+      "expected_decision_state": null,
+      "expected_conflicts": [],
+      "expected_abstention": {
+        "required": false,
+        "expected_termination": [
+          "sufficient"
+        ],
+        "must_disclose": []
+      },
+      "expected_limitations": [],
+      "injected_failure": null,
+      "budget_override": null,
+      "human_review_rules": [
+        "Check that required facts are supported by cited Evidence, not merely present as strings.",
+        "Check that alternative Evidence is genuinely equivalent for this question.",
+        "Do not mark task_success from deterministic metrics alone."
+      ],
+      "review_checks": [
+        "Every required fact is semantically supported by the cited Evidence, not merely present as a string.",
+        "Every accepted alternative Evidence is genuinely equivalent for this question.",
+        "No forbidden inference appears, especially proposal-as-confirmed or unilateral conflict adjudication.",
+        "Each citation resolves to the current content hash and the quoted claim appears in that Evidence.",
+        "Abstention/limitation text is appropriate for the task and does not hide a wrong answer.",
+        "Tool-failure and budget tasks disclose interruption rather than claiming completion."
+      ]
+    },
+    {
+      "task_id": "v4-cross-source-01",
+      "category": "cross_source",
+      "difficulty": "medium",
+      "question": "query-router 为什么采用 5？讨论理由与哪个提交相互印证？",
+      "turns": [],
+      "known_at": null,
+      "required_evidence_groups": [
+        {
+          "group_id": "chat_proposal",
+          "any_of": [
+            {
+              "evidence_id": "ev_3cae8d55e82fc3884921267f936dedb9b864962b0b70adf7151c3e49a389bceb",
+              "content_hash": "6f0274bb39eb860b9f2c9581218fadccb19506053d57f07300cfec0dd02f10ec",
+              "resolves": true,
+              "source_type": "chat",
+              "source_uri": "https://chat.example.test/atlas/01/chat_proposal",
+              "event_time": "2025-01-19T19:00:00+00:00",
+              "ingested_at": "2026-10-15T08:08:00+00:00",
+              "content_preview": "#atlas-obs 2025-01-19 19:00 林澄: 我建议把 query-router 的 shard_timeout_seconds 从 2 调到 5；初步判断根因是跨分片查询默认超时过短。"
+            }
+          ]
+        },
+        {
+          "group_id": "commit_fix",
+          "any_of": [
+            {
+              "evidence_id": "ev_eed0c6fb65c18e75d60c35bd92af131f0c371b76db3fbeae0c7f718750fbce1d",
+              "content_hash": "3f3ca2b8b35cdb102ad88b5c451210198ab0d0cdf461c5b0b0c7344cd452bdfe",
+              "resolves": true,
+              "source_type": "git_commit",
+              "source_uri": "https://git.example.test/atlas-observability.git",
+              "event_time": "2025-01-26T19:00:00+00:00",
+              "ingested_at": "2026-10-15T08:17:00+00:00",
+              "content_preview": "commit a3ff87577b27f7f49ce2ce9dd340c3dc7d41075b\n作者 林澄\nquery-router: 将 shard_timeout_seconds 调整为 5（Fixes issue-ATLAS-1437）\n事件时间 2025-01-26T19:00:00+00:00\n关联 Issue: issue-ATLAS-1437"
+            }
+          ]
+        }
+      ],
+      "acceptable_alternative_evidence": [],
+      "expected_facts": [
+        {
+          "fact_id": "metric_value",
+          "fact_type": "version",
+          "statement": "配置值",
+          "required": true,
+          "values": [
+            "5"
+          ]
+        },
+        {
+          "fact_id": "commit",
+          "fact_type": "commit",
+          "statement": "修复提交",
+          "required": true,
+          "values": [
+            "a3ff87577b27f7f49ce2ce9dd340c3dc7d41075b",
+            "a3ff8757"
+          ]
+        },
+        {
+          "fact_id": "reason",
+          "fact_type": "text",
+          "statement": "采用理由",
+          "required": true,
+          "marker_groups": [
+            [
+              "跨分片查询默认超"
+            ]
+          ]
+        },
+        {
+          "fact_id": "meeting_id",
+          "fact_type": "issue_id",
+          "statement": "可选会议记录",
+          "required": false,
+          "values": [
+            "meeting-atlas-01"
+          ]
+        }
+      ],
+      "forbidden_inferences": [],
+      "expected_decision_state": null,
+      "expected_conflicts": [],
+      "expected_abstention": {
+        "required": false,
+        "expected_termination": [
+          "sufficient"
+        ],
+        "must_disclose": []
+      },
+      "expected_limitations": [],
+      "injected_failure": null,
+      "budget_override": null,
+      "human_review_rules": [
+        "Check that required facts are supported by cited Evidence, not merely present as strings.",
+        "Check that alternative Evidence is genuinely equivalent for this question.",
+        "Do not mark task_success from deterministic metrics alone."
+      ],
+      "review_checks": [
+        "Every required fact is semantically supported by the cited Evidence, not merely present as a string.",
+        "Every accepted alternative Evidence is genuinely equivalent for this question.",
+        "No forbidden inference appears, especially proposal-as-confirmed or unilateral conflict adjudication.",
+        "Each citation resolves to the current content hash and the quoted claim appears in that Evidence.",
+        "Abstention/limitation text is appropriate for the task and does not hide a wrong answer.",
+        "Tool-failure and budget tasks disclose interruption rather than claiming completion."
+      ]
+    },
+    {
+      "task_id": "v4-multi-step-01",
+      "category": "multi_step",
+      "difficulty": "medium",
+      "question": "从 Issue issue-ATLAS-1474 追查 retention-worker 的修复提交与验证日志。",
+      "turns": [],
+      "known_at": null,
+      "required_evidence_groups": [
+        {
+          "group_id": "issue_fix",
+          "any_of": [
+            {
+              "evidence_id": "ev_4acf6fad8299112ca7d0ebf5ca0265851e51865456718f9ad2ed936c86d23398",
+              "content_hash": "7497654e8d721761d99c6c80a713afa88d0c5f8037ca761f628627efb3fa6c40",
+              "resolves": true,
+              "source_type": "issue",
+              "source_uri": "https://issues.example.test/atlas/1474/issue_fix",
+              "event_time": "2025-02-04T01:00:00+00:00",
+              "ingested_at": "2026-10-15T08:21:00+00:00",
+              "content_preview": "Issue issue-ATLAS-1474 修复验证：提交 c7ba02365bb4a02405920baa5d1a190197184b1c 之后 retention_days=14，验证通过。关联提交 c7ba02365bb4a02405920baa5d1a190197184b1c。"
+            }
+          ]
+        },
+        {
+          "group_id": "commit_fix",
+          "any_of": [
+            {
+              "evidence_id": "ev_803704739ca8b242737a95597c21b8ff2d6fb6df90cba61f04a3686c60e1af28",
+              "content_hash": "a34f4094eee262d0e74cbaadf7f71f5db8c956c46ae8c42a7cc6964d625caafd",
+              "resolves": true,
+              "source_type": "git_commit",
+              "source_uri": "https://git.example.test/atlas-observability.git",
+              "event_time": "2025-02-04T19:00:00+00:00",
+              "ingested_at": "2026-10-15T08:24:00+00:00",
+              "content_preview": "commit c7ba02365bb4a02405920baa5d1a190197184b1c\n作者 林澄\nretention-worker: 将 retention_days 调整为 14（Fixes issue-ATLAS-1474）\n事件时间 2025-02-04T19:00:00+00:00\n关联 Issue: issue-ATLAS-1474"
+            }
+          ]
+        },
+        {
+          "group_id": "log_recovery",
+          "any_of": [
+            {
+              "evidence_id": "ev_50112ada176e77caca4f8c32bc043af632c31a4e586de55b6d5799707ce56093",
+              "content_hash": "c2c529c4023429e0848609cd0c507e3ed5874ffcfaa03e9b1161d245230e3c29",
+              "resolves": true,
+              "source_type": "log",
+              "source_uri": "https://logs.example.test/atlas/log-atlas-02/log_recovery",
+              "event_time": "2025-02-05T17:00:00+00:00",
+              "ingested_at": "2026-10-15T08:32:00+00:00",
+              "content_preview": "日志 log-atlas-02 INFO 调整后 retention_days=14，retention-worker 服务恢复；关联提交 c7ba02365bb4a02405920baa5d1a190197184b1c。"
+            }
+          ]
+        }
+      ],
+      "acceptable_alternative_evidence": [],
+      "expected_facts": [
+        {
+          "fact_id": "issue_id",
+          "fact_type": "issue_id",
+          "statement": "Issue 标识",
+          "required": true,
+          "values": [
+            "issue-ATLAS-1474"
+          ]
+        },
+        {
+          "fact_id": "commit",
+          "fact_type": "commit",
+          "statement": "修复提交",
+          "required": true,
+          "values": [
+            "c7ba02365bb4a02405920baa5d1a190197184b1c",
+            "c7ba0236"
+          ]
+        },
+        {
+          "fact_id": "metric_value",
+          "fact_type": "version",
+          "statement": "验证值",
+          "required": true,
+          "values": [
+            "14"
+          ]
+        },
+        {
+          "fact_id": "log_id",
+          "fact_type": "issue_id",
+          "statement": "可选恢复日志",
+          "required": false,
+          "values": [
+            "log-atlas-02"
+          ]
+        }
+      ],
+      "forbidden_inferences": [],
+      "expected_decision_state": null,
+      "expected_conflicts": [],
+      "expected_abstention": {
+        "required": false,
+        "expected_termination": [
+          "sufficient"
+        ],
+        "must_disclose": []
+      },
+      "expected_limitations": [],
+      "injected_failure": null,
+      "budget_override": null,
+      "human_review_rules": [
+        "Check that required facts are supported by cited Evidence, not merely present as strings.",
+        "Check that alternative Evidence is genuinely equivalent for this question.",
+        "Do not mark task_success from deterministic metrics alone."
+      ],
+      "review_checks": [
+        "Every required fact is semantically supported by the cited Evidence, not merely present as a string.",
+        "Every accepted alternative Evidence is genuinely equivalent for this question.",
+        "No forbidden inference appears, especially proposal-as-confirmed or unilateral conflict adjudication.",
+        "Each citation resolves to the current content hash and the quoted claim appears in that Evidence.",
+        "Abstention/limitation text is appropriate for the task and does not hide a wrong answer.",
+        "Tool-failure and budget tasks disclose interruption rather than claiming completion."
+      ]
+    },
+    {
+      "task_id": "v4-decision-history-01",
+      "category": "decision_history",
+      "difficulty": "medium",
+      "question": "截至 2025-01-18，系统已确认的 写入批次策略 是什么？当时是否已采用 2000？",
+      "turns": [],
+      "known_at": "2025-01-18T03:00:00+00:00",
+      "required_evidence_groups": [
+        {
+          "group_id": "doc_v2",
+          "any_of": [
+            {
+              "evidence_id": "ev_472b355fc537d7628481fd7d534ab638d166b0c7491d85513f8f29d8096e3833",
+              "content_hash": "d0f67f6d290cea5d4625a28fd663279b94b387d4ece39038015ba7e7c3a43e82",
+              "resolves": true,
+              "source_type": "document",
+              "source_uri": "https://docs.example.test/atlas/doc-atlas-00.md",
+              "event_time": "2025-01-17T18:00:00+00:00",
+              "ingested_at": "2026-10-15T08:14:00+00:00",
+              "content_preview": "设计文档 doc-atlas-00 v2（已评审）：ingest-gateway 将 batch_size 从 500 调整为 2000。理由：上游批次过小，固定开销占比过高。评审人 赵岚；该文档是原始证据，不等同于系统确认版本。"
+            }
+          ]
+        },
+        {
+          "group_id": "issue_triage",
+          "any_of": [
+            {
+              "evidence_id": "ev_eae5c627e9e49311d2734bc744988712d6c7893071aecf70fe1cf3e86e2f2419",
+              "content_hash": "6bd156d03e9c837d6bcf8fcdea37a79593400ff46b508dc58b82b589fe01350d",
+              "resolves": true,
+              "source_type": "issue",
+              "source_uri": "https://issues.example.test/atlas/1400/issue_triage",
+              "event_time": "2025-01-14T23:00:00+00:00",
+              "ingested_at": "2026-10-15T08:06:00+00:00",
+              "content_preview": "Issue issue-ATLAS-1400 评审记录：根因是上游批次过小，固定开销占比过高；建议把 batch_size 调整到 2000。评审人 赵岚。"
+            }
+          ]
+        }
+      ],
+      "acceptable_alternative_evidence": [],
+      "expected_facts": [
+        {
+          "fact_id": "historical_value",
+          "fact_type": "decision_state",
+          "statement": "截止时点已确认值",
+          "required": true,
+          "values": [
+            "500",
+            "dv_ec2e09cb916cd38a1fb2ae90aa77e9e7"
+          ]
+        },
+        {
+          "fact_id": "not_yet_new",
+          "fact_type": "decision_state",
+          "statement": "截止时点尚未确认新值",
+          "required": true,
+          "values": [
+            "尚未采用 2000",
+            "未确认 2000",
+            "未确认"
+          ]
+        },
+        {
+          "fact_id": "reviewer",
+          "fact_type": "person",
+          "statement": "可选历史确认人",
+          "required": false,
+          "values": [
+            "赵岚"
+          ]
+        }
+      ],
+      "forbidden_inferences": [
+        [
+          "已确认 2000",
+          "2000 已正式确认",
+          "已正式采用 2000"
+        ]
+      ],
+      "expected_decision_state": {
+        "decision_id": "dec_0524241a5a22c99e5d397f4f27611cf9",
+        "known_at": "2025-01-18T03:00:00+00:00",
+        "expected_current_version_id": "dv_ec2e09cb916cd38a1fb2ae90aa77e9e7",
+        "expected_version_ids": [
+          "dv_ec2e09cb916cd38a1fb2ae90aa77e9e7",
+          "dv_1262a0169fbb8b2f9ec3197420180560"
+        ],
+        "must_not_claim_confirmed": [
+          "dv_1262a0169fbb8b2f9ec3197420180560"
+        ]
+      },
+      "expected_conflicts": [],
+      "expected_abstention": {
+        "required": false,
+        "expected_termination": [
+          "sufficient"
+        ],
+        "must_disclose": []
+      },
+      "expected_limitations": [],
+      "injected_failure": null,
+      "budget_override": null,
+      "human_review_rules": [
+        "Check that required facts are supported by cited Evidence, not merely present as strings.",
+        "Check that alternative Evidence is genuinely equivalent for this question.",
+        "Do not mark task_success from deterministic metrics alone."
+      ],
+      "review_checks": [
+        "Every required fact is semantically supported by the cited Evidence, not merely present as a string.",
+        "Every accepted alternative Evidence is genuinely equivalent for this question.",
+        "No forbidden inference appears, especially proposal-as-confirmed or unilateral conflict adjudication.",
+        "Each citation resolves to the current content hash and the quoted claim appears in that Evidence.",
+        "Abstention/limitation text is appropriate for the task and does not hide a wrong answer.",
+        "Tool-failure and budget tasks disclose interruption rather than claiming completion."
+      ]
+    },
+    {
+      "task_id": "v4-conflict-01",
+      "category": "conflict",
+      "difficulty": "medium",
+      "question": "query-router 在 prod 的 shard_timeout_seconds 到底是 5 还是 2？两份记录是否冲突？",
+      "turns": [],
+      "known_at": null,
+      "required_evidence_groups": [
+        {
+          "group_id": "chat_conflict",
+          "any_of": [
+            {
+              "evidence_id": "ev_4920530eb1f4540c4e758f5a5fdf02b2f2f552783d040c002244195c63cad3ee",
+              "content_hash": "83ecce4296de02dd985fd37ec20387b65611aa13f5b020451faad7ead22e8e39",
+              "resolves": true,
+              "source_type": "chat",
+              "source_uri": "https://chat.example.test/atlas/01/chat_conflict",
+              "event_time": "2025-01-19T20:00:00+00:00",
+              "ingested_at": "2026-10-15T08:09:00+00:00",
+              "content_preview": "#atlas-obs 2025-01-19 20:00 赵岚: 我在 prod 的值班记录里看到 shard_timeout_seconds=2，和上面讨论的 5 不一致，两份记录都要保留。"
+            },
+            {
+              "evidence_id": "ev_93cb168c7aee02879543159c3da16e5c8232852c1158e541f421d7a4edffdec3",
+              "content_hash": "8e73fb04b8f30a3b45f77bca15feb53adedcfdf2d25c6694925df577ae2bbf81",
+              "resolves": true,
+              "source_type": "log",
+              "source_uri": "https://logs.example.test/atlas/log-atlas-01/log_error",
+              "event_time": "2025-01-25T17:00:00+00:00",
+              "ingested_at": "2026-10-15T08:24:00+00:00",
+              "content_preview": "日志 log-atlas-01 ERROR query-router 慢查询：shard_timeout_seconds=2，请求失败率上升。事件时间 2025-01-25T17:00:00+00:00。"
+            }
+          ]
+        },
+        {
+          "group_id": "doc_v2",
+          "any_of": [
+            {
+              "evidence_id": "ev_10c9c0f486b9c9433c4598ca58073e9e56876021d34630b1c9c3c709c1d84745",
+              "content_hash": "0923b694a9b7ae2a56de1da0af3af9f4c038b6ca73385ad613e5fc9b30004377",
+              "resolves": true,
+              "source_type": "document",
+              "source_uri": "https://docs.example.test/atlas/doc-atlas-01.md",
+              "event_time": "2025-01-26T18:00:00+00:00",
+              "ingested_at": "2026-10-15T08:21:00+00:00",
+              "content_preview": "设计文档 doc-atlas-01 v2（已评审）：query-router 将 shard_timeout_seconds 从 2 调整为 5。理由：跨分片查询默认超时过短。评审人 赵岚；该文档是原始证据，不等同于系统确认版本。"
+            }
+          ]
+        }
+      ],
+      "acceptable_alternative_evidence": [
+        {
+          "group_id": "chat_conflict",
+          "any_of": [
+            {
+              "evidence_id": "ev_93cb168c7aee02879543159c3da16e5c8232852c1158e541f421d7a4edffdec3",
+              "content_hash": "8e73fb04b8f30a3b45f77bca15feb53adedcfdf2d25c6694925df577ae2bbf81",
+              "resolves": true,
+              "source_type": "log",
+              "source_uri": "https://logs.example.test/atlas/log-atlas-01/log_error",
+              "event_time": "2025-01-25T17:00:00+00:00",
+              "ingested_at": "2026-10-15T08:24:00+00:00",
+              "content_preview": "日志 log-atlas-01 ERROR query-router 慢查询：shard_timeout_seconds=2，请求失败率上升。事件时间 2025-01-25T17:00:00+00:00。"
+            }
+          ]
+        }
+      ],
+      "expected_facts": [
+        {
+          "fact_id": "value_new",
+          "fact_type": "version",
+          "statement": "设计文档值",
+          "required": true,
+          "values": [
+            "5"
+          ]
+        },
+        {
+          "fact_id": "value_conflict",
+          "fact_type": "version",
+          "statement": "冲突记录值",
+          "required": true,
+          "values": [
+            "2"
+          ]
+        },
+        {
+          "fact_id": "issue_id",
+          "fact_type": "issue_id",
+          "statement": "可选关联 Issue",
+          "required": false,
+          "values": [
+            "issue-ATLAS-1437"
+          ]
+        }
+      ],
+      "forbidden_inferences": [
+        [
+          "以文档为准",
+          "文档是正确",
+          "已裁决"
+        ]
+      ],
+      "expected_decision_state": null,
+      "expected_conflicts": [
+        {
+          "field": "shard_timeout_seconds",
+          "values": [
+            "5",
+            "2"
+          ],
+          "must_disclose_both": true
+        }
+      ],
+      "expected_abstention": {
+        "required": false,
+        "expected_termination": [
+          "sufficient"
+        ],
+        "must_disclose": []
+      },
+      "expected_limitations": [
+        "不得自行裁决哪一方正确；必须保留双方记录。"
+      ],
+      "injected_failure": null,
+      "budget_override": null,
+      "human_review_rules": [
+        "Check that required facts are supported by cited Evidence, not merely present as strings.",
+        "Check that alternative Evidence is genuinely equivalent for this question.",
+        "Do not mark task_success from deterministic metrics alone."
+      ],
+      "review_checks": [
+        "Every required fact is semantically supported by the cited Evidence, not merely present as a string.",
+        "Every accepted alternative Evidence is genuinely equivalent for this question.",
+        "No forbidden inference appears, especially proposal-as-confirmed or unilateral conflict adjudication.",
+        "Each citation resolves to the current content hash and the quoted claim appears in that Evidence.",
+        "Abstention/limitation text is appropriate for the task and does not hide a wrong answer.",
+        "Tool-failure and budget tasks disclose interruption rather than claiming completion."
+      ]
+    },
+    {
+      "task_id": "v4-insufficient-01",
+      "category": "insufficient",
+      "difficulty": "hard",
+      "question": "retention-worker 的 retention_days=14 是谁正式批准的？是否已有当前确认版本？",
+      "turns": [],
+      "known_at": null,
+      "required_evidence_groups": [
+        {
+          "group_id": "issue_triage",
+          "any_of": [
+            {
+              "evidence_id": "ev_e294faff8ce09a06d09af9b86ef492689b47513ff6358d84a42744a57933502a",
+              "content_hash": "f4d28cf1e3283879c8d0eab950a1aa4cbb50c9bbdacd4036f6877cabcde5b32e",
+              "resolves": true,
+              "source_type": "issue",
+              "source_uri": "https://issues.example.test/atlas/1474/issue_triage",
+              "event_time": "2025-02-01T23:00:00+00:00",
+              "ingested_at": "2026-10-15T08:20:00+00:00",
+              "content_preview": "Issue issue-ATLAS-1474 评审记录：根因是值班记录仍沿用旧保留窗口；建议把 retention_days 调整到 14。评审人 赵岚。"
+            }
+          ]
+        }
+      ],
+      "acceptable_alternative_evidence": [],
+      "expected_facts": [
+        {
+          "fact_id": "no_confirmation",
+          "fact_type": "text",
+          "statement": "说明没有正式批准/确认版本",
+          "required": true,
+          "marker_groups": [
+            [
+              "未确认",
+              "待审核",
+              "没有正式批准",
+              "尚无确认版本"
+            ]
+          ]
+        },
+        {
+          "fact_id": "component",
+          "fact_type": "component",
+          "statement": "可选组件名称",
+          "required": false,
+          "values": [
+            "retention-worker"
+          ]
+        }
+      ],
+      "forbidden_inferences": [
+        [
+          "已正式批准",
+          "14 已确认",
+          "当前确认版本是该提案"
+        ]
+      ],
+      "expected_decision_state": {
+        "decision_id": "dec_e468a487ffacff99c393ba5c99b8a1ac",
+        "known_at": null,
+        "expected_current_version_id": null,
+        "expected_version_ids": [],
+        "pending_proposal_id": "prop_8a21cb2dbabd903570c2c1749bd79404",
+        "must_not_claim_confirmed": [
+          "prop_8a21cb2dbabd903570c2c1749bd79404"
+        ]
+      },
+      "expected_conflicts": [],
+      "expected_abstention": {
+        "required": true,
+        "expected_termination": [
+          "insufficient",
+          "conflict",
+          "tool_failure"
+        ],
+        "must_disclose": [
+          [
+            "未确认",
+            "待审核",
+            "没有正式批准",
+            "尚无确认版本"
+          ]
+        ]
+      },
+      "expected_limitations": [],
+      "injected_failure": null,
+      "budget_override": null,
+      "human_review_rules": [
+        "Check that required facts are supported by cited Evidence, not merely present as strings.",
+        "Check that alternative Evidence is genuinely equivalent for this question.",
+        "Do not mark task_success from deterministic metrics alone."
+      ],
+      "review_checks": [
+        "Every required fact is semantically supported by the cited Evidence, not merely present as a string.",
+        "Every accepted alternative Evidence is genuinely equivalent for this question.",
+        "No forbidden inference appears, especially proposal-as-confirmed or unilateral conflict adjudication.",
+        "Each citation resolves to the current content hash and the quoted claim appears in that Evidence.",
+        "Abstention/limitation text is appropriate for the task and does not hide a wrong answer.",
+        "Tool-failure and budget tasks disclose interruption rather than claiming completion."
+      ]
+    },
+    {
+      "task_id": "v4-multi-turn-01",
+      "category": "multi_turn",
+      "difficulty": "medium",
+      "question": "先确认 retention-worker 的 日志保留策略 当前配置。然后解释为什么后来从旧值改成新值。",
+      "turns": [
+        {
+          "question": "retention-worker 的 日志保留策略 当前配置是什么？",
+          "evaluation_target": [
+            "new_value"
+          ]
+        },
+        {
+          "question": "那后来为什么从 7 改成 14？请引用讨论和提交。",
+          "evaluation_target": [
+            "reason"
+          ]
+        }
+      ],
+      "known_at": null,
+      "required_evidence_groups": [
+        {
+          "group_id": "chat_proposal",
+          "any_of": [
+            {
+              "evidence_id": "ev_1d0b6770d559920981bf5c6046c85cd519ee29ec6f1f3af132cad3d4d4da561c",
+              "content_hash": "702c055919af6d89988ff0d4f99a61c310ff612b9375b7e58680a3247202a0ad",
+              "resolves": true,
+              "source_type": "chat",
+              "source_uri": "https://chat.example.test/atlas/02/chat_proposal",
+              "event_time": "2025-01-28T19:00:00+00:00",
+              "ingested_at": "2026-10-15T08:15:00+00:00",
+              "content_preview": "#atlas-obs 2025-01-28 19:00 林澄: 我建议把 retention-worker 的 retention_days 从 7 调到 14；初步判断根因是值班记录仍沿用旧保留窗口。"
+            }
+          ]
+        },
+        {
+          "group_id": "commit_fix",
+          "any_of": [
+            {
+              "evidence_id": "ev_803704739ca8b242737a95597c21b8ff2d6fb6df90cba61f04a3686c60e1af28",
+              "content_hash": "a34f4094eee262d0e74cbaadf7f71f5db8c956c46ae8c42a7cc6964d625caafd",
+              "resolves": true,
+              "source_type": "git_commit",
+              "source_uri": "https://git.example.test/atlas-observability.git",
+              "event_time": "2025-02-04T19:00:00+00:00",
+              "ingested_at": "2026-10-15T08:24:00+00:00",
+              "content_preview": "commit c7ba02365bb4a02405920baa5d1a190197184b1c\n作者 林澄\nretention-worker: 将 retention_days 调整为 14（Fixes issue-ATLAS-1474）\n事件时间 2025-02-04T19:00:00+00:00\n关联 Issue: issue-ATLAS-1474"
+            }
+          ]
+        },
+        {
+          "group_id": "doc_v2",
+          "any_of": [
+            {
+              "evidence_id": "ev_0da26510bf4792216f4398195d1dc760da58892abbdeb440559871dd2ded4cb7",
+              "content_hash": "f0fcf628e1f9cfd39a6c873bdf4ba89500f9fd60c11c5a8165b3819e4084d2aa",
+              "resolves": true,
+              "source_type": "document",
+              "source_uri": "https://docs.example.test/atlas/doc-atlas-02.md",
+              "event_time": "2025-02-04T18:00:00+00:00",
+              "ingested_at": "2026-10-15T08:28:00+00:00",
+              "content_preview": "设计文档 doc-atlas-02 v2（已评审）：retention-worker 将 retention_days 从 7 调整为 14。理由：值班记录仍沿用旧保留窗口。评审人 赵岚；该文档是原始证据，不等同于系统确认版本。"
+            }
+          ]
+        }
+      ],
+      "acceptable_alternative_evidence": [],
+      "expected_facts": [
+        {
+          "fact_id": "new_value",
+          "fact_type": "version",
+          "statement": "改变后的值",
+          "required": true,
+          "values": [
+            "14"
+          ]
+        },
+        {
+          "fact_id": "reason",
+          "fact_type": "text",
+          "statement": "改变原因",
+          "required": true,
+          "marker_groups": [
+            [
+              "值班记录仍沿用旧"
+            ]
+          ]
+        },
+        {
+          "fact_id": "commit",
+          "fact_type": "commit",
+          "statement": "可选修复提交",
+          "required": false,
+          "values": [
+            "c7ba02365bb4a02405920baa5d1a190197184b1c",
+            "c7ba0236"
+          ]
+        }
+      ],
+      "forbidden_inferences": [],
+      "expected_decision_state": null,
+      "expected_conflicts": [],
+      "expected_abstention": {
+        "required": false,
+        "expected_termination": [
+          "sufficient"
+        ],
+        "must_disclose": []
+      },
+      "expected_limitations": [],
+      "injected_failure": null,
+      "budget_override": null,
+      "human_review_rules": [
+        "Check that required facts are supported by cited Evidence, not merely present as strings.",
+        "Check that alternative Evidence is genuinely equivalent for this question.",
+        "Do not mark task_success from deterministic metrics alone."
+      ],
+      "review_checks": [
+        "Every required fact is semantically supported by the cited Evidence, not merely present as a string.",
+        "Every accepted alternative Evidence is genuinely equivalent for this question.",
+        "No forbidden inference appears, especially proposal-as-confirmed or unilateral conflict adjudication.",
+        "Each citation resolves to the current content hash and the quoted claim appears in that Evidence.",
+        "Abstention/limitation text is appropriate for the task and does not hide a wrong answer.",
+        "Tool-failure and budget tasks disclose interruption rather than claiming completion."
+      ]
+    },
+    {
+      "task_id": "v4-tool-failure-01",
+      "category": "tool_failure",
+      "difficulty": "hard",
+      "question": "query-router 的慢查询文档如何恢复？相关工具不可用时请换来源并说明缺口。",
+      "turns": [],
+      "known_at": null,
+      "required_evidence_groups": [
+        {
+          "group_id": "alternative",
+          "any_of": [
+            {
+              "evidence_id": "ev_2e1e2c0ab84c2a362bccb1d6cac85be59370c1eba366c864a70d0dd0d315a8f9",
+              "content_hash": "33c66744b765dfab03351f15496ae4414a4ba3c1be15e2cbedac8f52314382df",
+              "resolves": true,
+              "source_type": "issue",
+              "source_uri": "https://issues.example.test/atlas/1437/issue_triage",
+              "event_time": "2025-01-23T23:00:00+00:00",
+              "ingested_at": "2026-10-15T08:13:00+00:00",
+              "content_preview": "Issue issue-ATLAS-1437 评审记录：根因是跨分片查询默认超时过短；建议把 shard_timeout_seconds 调整到 5。评审人 赵岚。"
+            }
+          ]
+        }
+      ],
+      "acceptable_alternative_evidence": [],
+      "expected_facts": [
+        {
+          "fact_id": "metric_value",
+          "fact_type": "version",
+          "statement": "配置值",
+          "required": true,
+          "values": [
+            "5"
+          ]
+        },
+        {
+          "fact_id": "gap",
+          "fact_type": "text",
+          "statement": "说明工具失败或证据缺口",
+          "required": true,
+          "marker_groups": [
+            [
+              "工具",
+              "失败",
+              "缺口",
+              "不可用"
+            ]
+          ]
+        },
+        {
+          "fact_id": "issue_id",
+          "fact_type": "issue_id",
+          "statement": "可选关联 Issue",
+          "required": false,
+          "values": [
+            "issue-ATLAS-1437"
+          ]
+        }
+      ],
+      "forbidden_inferences": [
+        [
+          "工具没有失败",
+          "不存在缺口"
+        ]
+      ],
+      "expected_decision_state": null,
+      "expected_conflicts": [],
+      "expected_abstention": {
+        "required": false,
+        "expected_termination": [
+          "sufficient"
+        ],
+        "must_disclose": []
+      },
+      "expected_limitations": [
+        "必须说明工具失败或缺失来源。"
+      ],
+      "injected_failure": {
+        "skill": "document",
+        "error": "timeout"
+      },
+      "budget_override": null,
+      "human_review_rules": [
+        "Check that required facts are supported by cited Evidence, not merely present as strings.",
+        "Check that alternative Evidence is genuinely equivalent for this question.",
+        "Do not mark task_success from deterministic metrics alone."
+      ],
+      "review_checks": [
+        "Every required fact is semantically supported by the cited Evidence, not merely present as a string.",
+        "Every accepted alternative Evidence is genuinely equivalent for this question.",
+        "No forbidden inference appears, especially proposal-as-confirmed or unilateral conflict adjudication.",
+        "Each citation resolves to the current content hash and the quoted claim appears in that Evidence.",
+        "Abstention/limitation text is appropriate for the task and does not hide a wrong answer.",
+        "Tool-failure and budget tasks disclose interruption rather than claiming completion."
+      ]
+    },
+    {
+      "task_id": "v4-tool-failure-02",
+      "category": "tool_failure",
+      "difficulty": "hard",
+      "question": "rollout-controller 的灰度比例异常故障如何恢复？相关工具不可用时请换来源并说明缺口。",
+      "turns": [],
+      "known_at": null,
+      "required_evidence_groups": [
+        {
+          "group_id": "alternative",
+          "any_of": [
+            {
+              "evidence_id": "ev_b4577c6090e8504514a9dbcdb317172bbe9685c606cd7a404fd4abe903574827",
+              "content_hash": "b81af0807a11e8d38c2410e29ff3361dbd9e568989d205219d8cc6ec7c1238dc",
+              "resolves": true,
+              "source_type": "document",
+              "source_uri": "https://docs.example.test/atlas/doc-atlas-04.md",
+              "event_time": "2025-02-22T18:00:00+00:00",
+              "ingested_at": "2026-10-15T08:42:00+00:00",
+              "content_preview": "设计文档 doc-atlas-04 v2（已评审）：rollout-controller 将 canary_percent 从 5 调整为 10。理由：灰度控制器读取了旧配置。评审人 赵岚；该文档是原始证据，不等同于系统确认版本。"
+            }
+          ]
+        }
+      ],
+      "acceptable_alternative_evidence": [],
+      "expected_facts": [
+        {
+          "fact_id": "metric_value",
+          "fact_type": "version",
+          "statement": "配置值",
+          "required": true,
+          "values": [
+            "10"
+          ]
+        },
+        {
+          "fact_id": "gap",
+          "fact_type": "text",
+          "statement": "说明工具失败或证据缺口",
+          "required": true,
+          "marker_groups": [
+            [
+              "工具",
+              "失败",
+              "缺口",
+              "不可用"
+            ]
+          ]
+        },
+        {
+          "fact_id": "issue_id",
+          "fact_type": "issue_id",
+          "statement": "可选关联 Issue",
+          "required": false,
+          "values": [
+            "issue-ATLAS-1548"
+          ]
+        }
+      ],
+      "forbidden_inferences": [
+        [
+          "工具没有失败",
+          "不存在缺口"
+        ]
+      ],
+      "expected_decision_state": null,
+      "expected_conflicts": [],
+      "expected_abstention": {
+        "required": false,
+        "expected_termination": [
+          "sufficient"
+        ],
+        "must_disclose": []
+      },
+      "expected_limitations": [
+        "必须说明工具失败或缺失来源。"
+      ],
+      "injected_failure": {
+        "skill": "problem",
+        "error": "timeout"
+      },
+      "budget_override": null,
+      "human_review_rules": [
+        "Check that required facts are supported by cited Evidence, not merely present as strings.",
+        "Check that alternative Evidence is genuinely equivalent for this question.",
+        "Do not mark task_success from deterministic metrics alone."
+      ],
+      "review_checks": [
+        "Every required fact is semantically supported by the cited Evidence, not merely present as a string.",
+        "Every accepted alternative Evidence is genuinely equivalent for this question.",
+        "No forbidden inference appears, especially proposal-as-confirmed or unilateral conflict adjudication.",
+        "Each citation resolves to the current content hash and the quoted claim appears in that Evidence.",
+        "Abstention/limitation text is appropriate for the task and does not hide a wrong answer.",
+        "Tool-failure and budget tasks disclose interruption rather than claiming completion."
+      ]
+    },
+    {
+      "task_id": "v4-budget-01",
+      "category": "budget",
+      "difficulty": "hard",
+      "question": "在受限预算下调查 ingest-gateway 的写入放大，说明已完成与未完成部分。",
+      "turns": [],
+      "known_at": null,
+      "required_evidence_groups": [
+        {
+          "group_id": "issue_triage",
+          "any_of": [
+            {
+              "evidence_id": "ev_eae5c627e9e49311d2734bc744988712d6c7893071aecf70fe1cf3e86e2f2419",
+              "content_hash": "6bd156d03e9c837d6bcf8fcdea37a79593400ff46b508dc58b82b589fe01350d",
+              "resolves": true,
+              "source_type": "issue",
+              "source_uri": "https://issues.example.test/atlas/1400/issue_triage",
+              "event_time": "2025-01-14T23:00:00+00:00",
+              "ingested_at": "2026-10-15T08:06:00+00:00",
+              "content_preview": "Issue issue-ATLAS-1400 评审记录：根因是上游批次过小，固定开销占比过高；建议把 batch_size 调整到 2000。评审人 赵岚。"
+            }
+          ]
+        }
+      ],
+      "acceptable_alternative_evidence": [],
+      "expected_facts": [
+        {
+          "fact_id": "budget_limitation",
+          "fact_type": "text",
+          "statement": "说明预算受限与未完成部分",
+          "required": true,
+          "marker_groups": [
+            [
+              "预算"
+            ],
+            [
+              "未完成",
+              "未确认",
+              "停止",
+              "无法完成"
+            ]
+          ]
+        },
+        {
+          "fact_id": "component",
+          "fact_type": "component",
+          "statement": "可选组件名称",
+          "required": false,
+          "values": [
+            "ingest-gateway"
+          ]
+        }
+      ],
+      "forbidden_inferences": [
+        [
+          "已完成全部调查",
+          "结论完整"
+        ]
+      ],
+      "expected_decision_state": null,
+      "expected_conflicts": [],
+      "expected_abstention": {
+        "required": false,
+        "expected_termination": [
+          "sufficient"
+        ],
+        "must_disclose": []
+      },
+      "expected_limitations": [
+        "预算耗尽时必须明确说明未完成，不得伪造结论。"
+      ],
+      "injected_failure": null,
+      "budget_override": {
+        "max_tokens": 1,
+        "max_model_rounds": 1,
+        "max_tool_calls": 1
+      },
+      "human_review_rules": [
+        "Check that required facts are supported by cited Evidence, not merely present as strings.",
+        "Check that alternative Evidence is genuinely equivalent for this question.",
+        "Do not mark task_success from deterministic metrics alone."
+      ],
+      "review_checks": [
+        "Every required fact is semantically supported by the cited Evidence, not merely present as a string.",
+        "Every accepted alternative Evidence is genuinely equivalent for this question.",
+        "No forbidden inference appears, especially proposal-as-confirmed or unilateral conflict adjudication.",
+        "Each citation resolves to the current content hash and the quoted claim appears in that Evidence.",
+        "Abstention/limitation text is appropriate for the task and does not hide a wrong answer.",
+        "Tool-failure and budget tasks disclose interruption rather than claiming completion."
+      ]
+    }
+  ]
+}

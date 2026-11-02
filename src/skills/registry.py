@@ -27,7 +27,9 @@ class ScopedSkill:
             evidence = retrieve_evidence(question, scope=registry.scope, db_path=registry.db_path,
                                          live_dir=registry.live_dir, source_types=self.SOURCE_TYPES[self.name], top_k=top_k, filters=filters)
             result = {"answer": "已检索指定项目的真实证据。" if evidence else "当前范围内没有匹配证据。",
-                      "evidence": evidence, "sources": sorted({e["source"] for e in evidence}), "entities": []}
+                      "evidence": evidence, "sources": sorted({e["source"] for e in evidence}),
+                      "entities": [],
+                      "retrieval_diagnostics": dict(getattr(evidence, "diagnostics", {}) or {})}
         elif registry.scope.project_id == DEMO_PROJECT:
             result = self.legacy.run(question, top_k=top_k)
             if filters:
@@ -64,12 +66,20 @@ class ScopedSkill:
                 by_identity.setdefault((item["evidence_id"], item["content_hash"]), item)
             result = {**result, "evidence": list(by_identity.values()), "decision_memories": valid_memories}
         normalized = []
+        retrieval_fields = ("retrieval_mode", "fallback_reason", "index_state",
+                            "index_version", "source_revision", "rrf_score",
+                            "channels", "matched_chunks", "score_kind",
+                            "relevance")
         for item in result["evidence"]:
             evidence = legacy_evidence(item)
             if (evidence.project_id, evidence.dataset_kind) != (registry.scope.project_id, registry.scope.dataset_kind):
                 raise ValueError("Skill returned evidence outside query scope")
             registry._observed[(evidence.evidence_id, evidence.content_hash)] = evidence
-            normalized.append(evidence.as_hit(item.get("score", 0), item.get("source")))
+            hit = evidence.as_hit(item.get("score", 0), item.get("source"))
+            for field in retrieval_fields:
+                if field in item:
+                    hit[field] = item[field]
+            normalized.append(hit)
         return {**result, "evidence": normalized, "sources": sorted({item["source"] for item in normalized})}
 
 

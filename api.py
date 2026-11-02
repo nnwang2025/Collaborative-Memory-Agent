@@ -1,10 +1,15 @@
 """
-FastAPI server for the Collaborative Memory Agent.
+FastAPI application factory for the Collaborative Memory Agent.
 
 Endpoints:
-  POST /chat       – Ask a question (JSON response)
-  POST /chat/stream – Ask a question (SSE streaming)
+  POST /chat        – Ask a question (compatibility JSON response)
+  POST /chat/stream – Ask a question (compatibility SSE streaming)
   GET  /health      – Health check
+  Session/Run REST + SSE endpoints under /sessions and /runs
+
+Importing this module must not read a developer's ``.env`` or create a
+database.  Runtime dependencies are injected through ``create_app``; the
+default runtime is created lazily on the first Session/Run API call.
 
 Usage:
     uvicorn api:app --reload --port 8000
@@ -15,6 +20,7 @@ from __future__ import annotations
 import json
 import os
 import re
+import threading
 from typing import AsyncGenerator, Literal
 
 from fastapi import FastAPI, HTTPException
@@ -22,27 +28,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from starlette.concurrency import run_in_threadpool
 from pydantic import BaseModel
+from src.api.runtime_routes import build_runtime_router
 from src.evidence import EvidenceScope
-
-# Load .env
-try:
-    from dotenv import load_dotenv
-    load_dotenv()
-except ModuleNotFoundError:
-    pass
-
-app = FastAPI(
-    title="Collaborative Memory Agent",
-    description="基于 Agent + RAG 的研发协作长期记忆系统 API",
-    version="2.0.0",
-)
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+from src.runtime.config import RuntimeConfig
 
 
 # ---------------------------------------------------------------------------
@@ -95,10 +83,9 @@ def _get_agent(backend: str, scope=None):
 
 
 # ---------------------------------------------------------------------------
-# Routes
+# Compatibility routes
 # ---------------------------------------------------------------------------
 
-@app.get("/health")
 async def health():
     return {
         "status": "ok",
@@ -107,9 +94,8 @@ async def health():
     }
 
 
-@app.post("/chat", response_model=ChatResponse)
 async def chat(req: ChatRequest):
-    """Answer a question (non-streaming)."""
+    """Answer a question (non-streaming, in-request compatibility path)."""
     if not req.question.strip():
         raise HTTPException(status_code=400, detail="question is required")
 
@@ -129,13 +115,8 @@ async def chat(req: ChatRequest):
     return ChatResponse(answer=answer, backend=req.backend)
 
 
-@app.post("/chat/stream")
 async def chat_stream(req: ChatRequest):
-    """Answer a question with Server-Sent Events streaming.
-
-    When ``req.backend == 'langgraph'``, streams per-node progress
-    updates (classifying → routing → retrieving → composing).
-    """
+    """Compatibility SSE path; the persistent event stream lives at /runs/{id}/stream."""
     if not req.question.strip():
         raise HTTPException(status_code=400, detail="question is required")
 
@@ -144,8 +125,6 @@ async def chat_stream(req: ChatRequest):
     async def event_generator() -> AsyncGenerator[str, None]:
         try:
             if req.backend == "react":
-                # ReAct: stream a single result (tool-calling makes
-                # incremental streaming complex; full result is fine)
                 if hasattr(agent, "run_result"):
                     result = await run_in_threadpool(agent.run_result, req.question)
                     yield f"data: {json.dumps({'type': 'investigation', 'run_id': result.run_id, 'termination_reason': result.termination_reason, 'evidence_refs': [r.model_dump() for r in result.evidence_refs]}, ensure_ascii=False)}\n\n"
@@ -154,7 +133,6 @@ async def chat_stream(req: ChatRequest):
                     answer = await run_in_threadpool(agent.run, req.question)
                 yield f"data: {json.dumps({'type': 'answer', 'content': answer}, ensure_ascii=False)}\n\n"
             elif req.backend == "langgraph":
-                # LangGraph: stream per-node progress
                 answer = None
                 async for chunk in agent.astream(req.question):
                     node_name = list(chunk.keys())[0] if chunk else "unknown"
@@ -162,7 +140,6 @@ async def chat_stream(req: ChatRequest):
                     if "generate_answer" in chunk:
                         answer = chunk["generate_answer"].get("answer")
 
-                # Get the final answer
                 if answer is None:
                     raise RuntimeError("Graph completed without an answer")
                 yield f"data: {json.dumps({'type': 'answer', 'content': answer}, ensure_ascii=False)}\n\n"
@@ -170,8 +147,6 @@ async def chat_stream(req: ChatRequest):
                 answer = await run_in_threadpool(agent.ask, req.question)
                 yield f"data: {json.dumps({'type': 'answer', 'content': answer}, ensure_ascii=False)}\n\n"
         except Exception as exc:
-            # Structured terminal error for every backend; the DONE marker
-            # below still runs so clients never hang on an aborted stream.
             yield f"data: {json.dumps({'type': 'error', 'message': _stream_error_message(exc)}, ensure_ascii=False)}\n\n"
         yield "data: [DONE]\n\n"
 
@@ -187,10 +162,38 @@ async def chat_stream(req: ChatRequest):
 
 
 # ---------------------------------------------------------------------------
-# Main
+# Application factory
 # ---------------------------------------------------------------------------
+
+def create_app(runtime_service=None, runtime_config=None) -> FastAPI:
+    """Build an isolated app; tests inject a RunService bound to temp SQLite."""
+    app = FastAPI(
+        title="Collaborative Memory Agent",
+        description="基于 Agent + RAG 的研发协作长期记忆系统 API",
+        version="2.0.0",
+    )
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+    app.state.runtime_service = runtime_service
+    app.state.runtime_config = runtime_config or RuntimeConfig.from_env()
+    app.state.runtime_lock = threading.Lock()
+    app.add_api_route("/health", health, methods=["GET"])
+    app.add_api_route("/chat", chat, methods=["POST"], response_model=ChatResponse)
+    app.add_api_route("/chat/stream", chat_stream, methods=["POST"])
+    app.include_router(build_runtime_router())
+    return app
+
+
+app = create_app()
+
 
 if __name__ == "__main__":
     import uvicorn
-    port = int(os.getenv("PORT", "8000"))
-    uvicorn.run("api:app", host="0.0.0.0", port=port, reload=True)
+    from src.runtime.config import load_env_file
+
+    load_env_file()
+    uvicorn.run(create_app(), host="0.0.0.0", port=int(os.getenv("PORT", "8000")))

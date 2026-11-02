@@ -311,12 +311,14 @@ class CodeChunker(BaseChunker):
                     for sc in sub_chunks:
                         chunks.append({
                             "content": sc,
-                            "metadata": {**meta, "chunk_strategy": "code_ast", "symbol": node.name},
+                            "metadata": {**meta, "chunk_strategy": "code_ast", "symbol": node.name,
+                                         "code_start_line": start + 1, "code_end_line": end},
                         })
                 else:
                     chunks.append({
                         "content": chunk_text,
-                        "metadata": {**meta, "chunk_strategy": "code_ast", "symbol": node.name},
+                        "metadata": {**meta, "chunk_strategy": "code_ast", "symbol": node.name,
+                                     "code_start_line": start + 1, "code_end_line": end},
                     })
 
         # If no AST boundaries found, fall back
@@ -358,7 +360,9 @@ class CodeChunker(BaseChunker):
             if chunk_text.strip():
                 chunks.append({
                     "content": chunk_text,
-                    "metadata": {**metadata, "chunk_strategy": "code_line"},
+                    "metadata": {**metadata, "chunk_strategy": "code_line",
+                                 "code_start_line": i + 1,
+                                 "code_end_line": min(i + 40, len(lines))},
                 })
         return chunks
 
@@ -499,3 +503,70 @@ def auto_chunk(
         category = "default"
 
     return chunk_for_category(category, text, metadata={"source": source, "category": category})
+
+
+# ---------------------------------------------------------------------------
+# Offset resolution for citation-safe live chunks
+# ---------------------------------------------------------------------------
+
+CHUNKER_VERSION = "v2.0"
+
+
+def _line_number_at(text: str, offset: int) -> int:
+    return text.count("\n", 0, max(0, offset)) + 1
+
+
+def chunk_with_offsets(
+    category: str,
+    text: str,
+    metadata: Optional[dict] = None,
+    chunk_size: Optional[int] = None,
+    *,
+    chunker_version: str = CHUNKER_VERSION,
+) -> List[dict]:
+    """Chunk *text* and attach verified character/line locators.
+
+    Offsets point into the *parent Evidence content*, never into a source file.
+    A chunk whose exact text cannot be located is marked ``approximate`` (when
+    it has a reliable line range) or ``unavailable``; it must not be used as a
+    citation excerpt without parent verification.
+    """
+    raw_chunks = chunk_for_category(category, text, metadata=metadata,
+                                    chunk_size=chunk_size)
+    result: List[dict] = []
+    search_from = 0
+    for index, chunk in enumerate(raw_chunks):
+        content = chunk["content"]
+        meta = dict(chunk.get("metadata") or {})
+        start = text.find(content, search_from)
+        if start < 0 and search_from:
+            start = text.find(content)
+        locator_status = "unavailable"
+        char_start = char_end = None
+        line_start = line_end = None
+        if start >= 0 and text[start:start + len(content)] == content:
+            locator_status = "exact"
+            char_start, char_end = start, start + len(content)
+            line_start = _line_number_at(text, char_start)
+            line_end = _line_number_at(text, max(char_start, char_end - 1))
+            search_from = start + 1
+        else:
+            start_line = meta.get("code_start_line")
+            end_line = meta.get("code_end_line")
+            if isinstance(start_line, int) and isinstance(end_line, int):
+                locator_status = "approximate"
+                line_start, line_end = start_line, end_line
+        result.append({
+            "content": content,
+            "metadata": {
+                **meta,
+                "chunk_index": index,
+                "char_start": char_start,
+                "char_end": char_end,
+                "line_start": line_start,
+                "line_end": line_end,
+                "locator_status": locator_status,
+                "chunker_version": chunker_version,
+            },
+        })
+    return result

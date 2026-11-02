@@ -140,7 +140,14 @@ class Budget(StrictModel):
     max_truncation_retry_output_tokens: int = Field(default=4096, ge=128, le=16384)
     max_protocol_retries: int = Field(default=2, ge=0, le=5)
     max_time_relaxations: int = Field(default=1, ge=0, le=3)
+    # Auxiliary byte ceiling retained from Phase 2.
     max_context_bytes: int = Field(default=48000, ge=1, le=1000000)
+    # Phase 3 model-aware context ceiling. None resolves from the model name.
+    context_window_tokens: int | None = Field(default=None, ge=1024, le=2000000)
+    context_safety_margin_tokens: int = Field(default=512, ge=0, le=100000)
+    context_tokenizer: Literal["estimate", "tiktoken"] = "estimate"
+    context_max_excerpts: int = Field(default=8, ge=1, le=40)
+    context_max_excerpts_per_evidence: int = Field(default=1, ge=1, le=8)
     deadline_seconds: float = Field(default=120.0, gt=0, le=3600)
     model_timeout: float = Field(default=30.0, gt=0, le=300)
     tool_timeout: float = Field(default=10.0, gt=0, le=300)
@@ -192,6 +199,10 @@ class TraceStep(StrictModel):
     validation_issues: list[dict] = Field(default_factory=list)
     recovery_kind: str | None = None
     context_usage: dict = Field(default_factory=dict)
+    # Compact audit of evidence kept/dropped for this request; no excerpt bodies.
+    context_selection: dict = Field(default_factory=dict)
+    # Empty-result/fallback diagnostics from live retrieval; not Evidence.
+    retrieval_diagnostics: dict = Field(default_factory=dict)
     # Full scoped evidence snapshot on the terminal trace step; the user-facing
     # answer only cites relevant items.
     evidence_records: list[dict] = Field(default_factory=list)
@@ -381,6 +392,7 @@ class Observation(StrictModel):
     conflicts: list[Conflict] = Field(default_factory=list)
     possible_sources: list[ToolName] = Field(default_factory=lambda: list(TOOLS))
     time_relaxation: dict | None = None
+    retrieval_diagnostics: dict = Field(default_factory=dict)
 
 
 class SynthesisStatement(StrictModel):
@@ -424,6 +436,8 @@ class InvestigationResult(StrictModel):
     decision_memories: list[dict] = Field(default_factory=list)
     task_coverage: dict = Field(default_factory=dict)
     context_usage: dict = Field(default_factory=dict)
+    # Per-model-round context statistics; no prompt, excerpt body or secret.
+    context_trace: list[dict] = Field(default_factory=list)
 
     def export_jsonl(self, trusted_path):
         """Opt-in caller-controlled export. Never exports full evidence or model replies."""

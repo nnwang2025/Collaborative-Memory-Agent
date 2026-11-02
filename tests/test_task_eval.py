@@ -155,7 +155,9 @@ class TaskEvaluationTests(unittest.TestCase):
     def test_online_runner_rejects_existing_output_before_any_request(self):
         output = self.root / "existing"
         output.mkdir()
-        with patch.dict(os.environ, {"SILICONFLOW_BASE_URL": "https://api.example.test/v1"}, clear=False):
+        with patch.dict(os.environ, {"SILICONFLOW_BASE_URL": "https://api.example.test/v1",
+                                     "DEEPSEEK_BASE_URL": "", "OPENAI_BASE_URL": ""},
+                        clear=False):
             with self.assertRaises(FileExistsError):
                 run_online.run(online=True, approved_origin="https://api.example.test", output=output)
 

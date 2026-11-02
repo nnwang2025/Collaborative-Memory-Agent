@@ -1,0 +1,30 @@
+{
+  "dataset_version": "cma-v4-dataset-v1",
+  "task_set_version": "cma-v4-tasks-v1",
+  "scoring_version": "cma-v4-scoring-v1",
+  "snapshot_id": "cma-v4-658dd583ab18a47f",
+  "task_set_sha256": "8793116a0581fc71d5b4eb3d89677fe99ba36ee9f39c25dae00c24269c6644b1",
+  "record_count": 414,
+  "evidence_identity_count": 396,
+  "project_count": 3,
+  "files": {
+    "records.json": {
+      "bytes": 565780,
+      "sha256": "31cfba6c4222ac75cb73152ea616f47f48d1a190e49c8bed6904d96e587ae20c"
+    },
+    "decisions.sql": {
+      "bytes": 83642,
+      "sha256": "85a754c66922af17db199effaf7ff9b2df8b9d4aba624e6141c4be8db4eb3ec3"
+    },
+    "tasks/public.json": {
+      "bytes": 18233,
+      "sha256": "5769d28b88178ad81ddac8762e9baa2c458aaaf9aa0151e3cbcd7db6fc47733d"
+    },
+    "tasks/gold.json": {
+      "bytes": 152020,
+      "sha256": "2085d186f60bc57f49e62b11766b6c1ffd71763bb9cb5ab5f1ea77166ac076a6"
+    }
+  },
+  "generated_by": "benchmark.v4.build",
+  "annotation_status": "synthetic_authored_pending_independent_human_review"
+}

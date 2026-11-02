@@ -39,6 +39,19 @@ INDEX_DIR = ROOT / "db_md"
 INDEX_PATH = INDEX_DIR / "faiss.index"
 DOCS_PATH = INDEX_DIR / "docs.pkl"
 
+
+class RetrievalHits(list):
+    """A result list that also carries request-local retrieval diagnostics.
+
+    It remains a normal list for existing callers, but lets the agent record
+    why a request returned no evidence (empty candidates, relevance filtering,
+    stale-index fallback) without adding fake Evidence records.
+    """
+
+    def __init__(self, items=(), diagnostics=None):
+        super().__init__(items)
+        self.diagnostics = dict(diagnostics or {})
+
 # ---------------------------------------------------------------------------
 # Document loading helpers
 # ---------------------------------------------------------------------------
@@ -402,7 +415,9 @@ def _bm25_rank(
     if not query_tokens or not docs:
         return []
 
-    tokenized_docs = [_tokenize(d["content"]) for d in docs]
+    # retrieval_text includes the stable record identifier but is used only for
+    # ranking; ``content`` stays the citable parent text.
+    tokenized_docs = [_tokenize(d.get("retrieval_text") or d["content"]) for d in docs]
     doc_count = len(tokenized_docs)
     avgdl = sum(len(t) for t in tokenized_docs) / max(doc_count, 1)
     df = Counter()
@@ -712,26 +727,35 @@ def hybrid_rank(
     return fused[:top_k]
 
 
-def retrieve_evidence(query, *, scope, db_path=None, live_dir=None, source_types=None, top_k=10, filters=None):
-    """Explicitly scoped live retrieval; uses existing BM25 without a shared index.
+def retrieve_evidence(query, *, scope, db_path=None, live_dir=None, source_types=None,
+                      top_k=10, filters=None, mode=None, index_root=None,
+                      relevance_policy=None):
+    """Explicitly scoped live retrieval with final relevance acceptance.
 
-    Filter ownership BEFORE ranking. No fixture entities, cached FAISS or fallback.
+    The default remains BM25 for V1 compatibility.  ``mode`` may be ``bm25``,
+    ``dense`` or ``hybrid``; the environment variable ``LIVE_RETRIEVAL_MODE``
+    is used when it is omitted.  Hybrid/dense failures return an explicitly
+    labelled BM25 fallback rather than pretending fusion succeeded.
+
+    Candidate recall and final acceptance are separate.  Every returned parent
+    Evidence must pass the calibrated :mod:`src.index.relevance` gate; when
+    nothing passes, the returned :class:`RetrievalHits` list is empty and its
+    ``diagnostics`` explain whether there were no candidates or all candidates
+    were filtered out.
     """
     from src.evidence import EvidenceScope
-    from src.evidence_store import EvidenceStore, read_live_json
     scope = EvidenceScope.model_validate(scope)
     if scope.dataset_kind != "live":
-        return []  # fixture demo remains on the existing Skill path
-    store = EvidenceStore(db_path)
-    records = {r.evidence_id: r for r in read_live_json(live_dir or store.path.parent, scope)}
-    records.update({r.evidence_id: r for r in store.list(scope)})
-    docs = [r.as_hit() for r in records.values() if source_types is None or r.source_type in source_types]
-    if filters:
-        docs = filter_evidence_hits(docs, filters)
-    hits = _bm25_rank(query, docs, top_k=top_k)
-    for hit in hits:
-        hit["score"] = hit["bm25_score"]
-    return hits
+        return RetrievalHits()  # fixture demo remains on the existing Skill path
+    resolved_mode = (mode or os.getenv("LIVE_RETRIEVAL_MODE") or "bm25").lower()
+    from src.index.retriever import LiveRetriever
+    retriever = LiveRetriever(db_path, index_root=index_root, live_dir=live_dir,
+                              mode=resolved_mode,
+                              relevance_policy=relevance_policy)
+    return retriever.retrieve(
+        query, scope=scope, top_k=top_k, mode=resolved_mode,
+        source_types=source_types, filters=filters,
+    )
 
 
 def filter_evidence_hits(hits, filters):
