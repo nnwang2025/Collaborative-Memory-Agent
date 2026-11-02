@@ -1,0 +1,20 @@
+[
+  {
+    "evidence_ids": [
+      "ev_fec06e3f5d2acba37db2d8ab162b3506de32c66a3132ce8abb08ccc185ee8d06",
+      "ev_6847f3e60f6f78f80ed8d9932655b2063ad75c4915429fd17a941ca7ac70650d"
+    ],
+    "field": "ack_mode",
+    "kind": "conflict",
+    "project_id": "bench-atlas"
+  },
+  {
+    "evidence_ids": [
+      "ev_58c51a7538cd1b76bb744bc448492aa9f9ef6857179322314e1a326ddca491d1",
+      "ev_2516afa31ede8adf80b5e272401b27b5db741e533541c34a3a9842b5796d902f"
+    ],
+    "field": "ttl_seconds",
+    "kind": "conflict",
+    "project_id": "bench-zephyr"
+  }
+]

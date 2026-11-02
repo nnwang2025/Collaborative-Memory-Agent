@@ -22,6 +22,7 @@ import urllib.request
 from typing import Dict, List, Optional
 
 from src.agents.answer_agent import AnswerAgent
+from src.llm_config import resolve_api_key, resolve_base_url, resolve_model_name
 from src.skills.registry import SkillRegistry
 
 
@@ -139,8 +140,11 @@ class CoordinatorAgent:
         use_langgraph: bool = True,
         use_llm_routing: bool = True,
         enable_conversation_memory: bool = True,
+        scope=None,
+        db_path=None,
+        live_dir=None,
     ):
-        self.registry = registry or SkillRegistry()
+        self.registry = registry or SkillRegistry(scope=scope, db_path=db_path, live_dir=live_dir)
         self.answer_agent = answer_agent or AnswerAgent()
         self.use_langgraph = use_langgraph
         self.use_llm_routing = use_llm_routing
@@ -233,29 +237,19 @@ class CoordinatorAgent:
 
     @staticmethod
     def _llm_route_scores(question: str) -> Optional[Dict[str, int]]:
-        """Classify the question with SiliconFlow/Qwen few-shot.
+        """Classify the question with the configured chat model.
 
         Returns a ``{skill: score}`` dict on success, ``None`` on failure
         (so the caller falls back to keyword scoring).
         """
-        # Support both SILICONFLOW_API_KEY and OPENAI_API_KEY env vars
-        api_key = (
-            os.getenv("SILICONFLOW_API_KEY", "")
-            or os.getenv("OPENAI_API_KEY", "")
-        ).strip()
+        # DeepSeek official settings are canonical; legacy provider variables
+        # remain supported.  Placeholder template keys count as unconfigured.
+        base_url = resolve_base_url()
+        api_key = resolve_api_key(base_url)
         if not api_key:
             return None
 
-        model = (
-            os.getenv("SILICONFLOW_MODEL", "")
-            or os.getenv("MODEL_NAME", "")
-            or "Qwen/Qwen2.5-14B-Instruct"
-        ).strip()
-        base_url = (
-            os.getenv("SILICONFLOW_BASE_URL", "")
-            or os.getenv("OPENAI_BASE_URL", "")
-            or "https://api.siliconflow.cn/v1"
-        ).strip()
+        model = resolve_model_name(base_url)
 
         payload = {
             "model": model,
@@ -384,13 +378,18 @@ class CoordinatorAgent:
         # thread BEFORE LangGraph fans out to parallel skill nodes.  This
         # avoids a race condition where two nodes try to load
         # sentence_transformers / faiss simultaneously.
-        self._warm_hybrid_retriever()
+        if self.registry.scope.dataset_kind == "fixture":
+            self._warm_hybrid_retriever()
 
         from src.graph import get_graph
 
         graph = get_graph()
 
         initial_state = {
+            "scope": self.registry.scope.model_dump(),
+            "db_path": str(self.registry.db_path) if self.registry.db_path is not None else None,
+            "live_dir": str(self.registry.live_dir) if self.registry.live_dir is not None else None,
+            "use_llm_routing": self.use_llm_routing,
             "question": question,
             "scores": {},
             "skill_names": [],
@@ -412,7 +411,7 @@ class CoordinatorAgent:
         except Exception:
             pass  # hybrid retrieval is optional; skills fall back to BM25
 
-    def astream(self, question: str):
+    async def astream(self, question: str):
         """Async-generate tokens via LangGraph's astream.
 
         Yields per-node updates so callers can show progress (e.g.
@@ -423,6 +422,10 @@ class CoordinatorAgent:
         graph = get_graph()
 
         initial_state = {
+            "scope": self.registry.scope.model_dump(),
+            "db_path": str(self.registry.db_path) if self.registry.db_path is not None else None,
+            "live_dir": str(self.registry.live_dir) if self.registry.live_dir is not None else None,
+            "use_llm_routing": self.use_llm_routing,
             "question": question,
             "scores": {},
             "skill_names": [],
@@ -431,7 +434,7 @@ class CoordinatorAgent:
             "answer": "",
         }
 
-        for chunk in graph.astream(initial_state):
+        async for chunk in graph.astream(initial_state):
             yield chunk
 
     # ------------------------------------------------------------------

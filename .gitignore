@@ -29,10 +29,20 @@ build/
 
 # Runtime/generated storage
 data/vector_store/
+data/live/
 storage/
 logs/
+*.log
 tmp/
 temp/
+
+# Local test outputs and tool state
+*.out
+*_out.txt
+.claude/
+
+# Historical benchmark/evaluation artifacts (source and definitions stay tracked)
+benchmark/reports/
 
 # Local vector DB artifacts from earlier experiments
 db/

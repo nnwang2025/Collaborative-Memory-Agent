@@ -1,0 +1,146 @@
+[
+  {
+    "case_id": "single-atlas",
+    "category": "single_source",
+    "corpus_snapshot_id": "cma-v1-fb8e82059066d95c",
+    "dataset_kind": "live",
+    "project_id": "bench-atlas",
+    "question": "Atlas E42 的 TLS 故障根因是什么？请引用日志。",
+    "split": "test"
+  },
+  {
+    "case_id": "single-zephyr",
+    "category": "single_source",
+    "corpus_snapshot_id": "cma-v1-fb8e82059066d95c",
+    "dataset_kind": "live",
+    "project_id": "bench-zephyr",
+    "question": "Zephyr 重试策略为什么只允许两次？请查技术文档。",
+    "split": "test"
+  },
+  {
+    "case_id": "cross-atlas",
+    "category": "cross_source",
+    "corpus_snapshot_id": "cma-v1-fb8e82059066d95c",
+    "dataset_kind": "live",
+    "project_id": "bench-atlas",
+    "question": "Atlas 为什么采用固定分区归属？讨论理由与哪个代码提交相互印证？",
+    "split": "test"
+  },
+  {
+    "case_id": "cross-zephyr",
+    "category": "cross_source",
+    "corpus_snapshot_id": "cma-v1-fb8e82059066d95c",
+    "dataset_kind": "live",
+    "project_id": "bench-zephyr",
+    "question": "Zephyr 预热覆盖问题如何定位并实施修复？请关联 Issue 和提交。",
+    "split": "test"
+  },
+  {
+    "case_id": "multi-atlas",
+    "category": "multi_round",
+    "corpus_snapshot_id": "cma-v1-fb8e82059066d95c",
+    "dataset_kind": "live",
+    "project_id": "bench-atlas",
+    "question": "调查 Atlas 回滚入口，沿其引用追查恢复门槛及后续修复提交。",
+    "split": "test"
+  },
+  {
+    "case_id": "multi-zephyr",
+    "category": "multi_round",
+    "corpus_snapshot_id": "cma-v1-fb8e82059066d95c",
+    "dataset_kind": "live",
+    "project_id": "bench-zephyr",
+    "question": "调查 Zephyr 泄漏入口，沿线索追查关闭顺序及实际修复提交。",
+    "split": "test"
+  },
+  {
+    "case_id": "decision-atlas",
+    "category": "decision_history",
+    "corpus_snapshot_id": "cma-v1-fb8e82059066d95c",
+    "dataset_kind": "live",
+    "project_id": "bench-atlas",
+    "question": "截至 2025-02-20 系统已确认的 Atlas 调度方案是什么？当时 C 是否已替代 B？",
+    "split": "test"
+  },
+  {
+    "case_id": "decision-zephyr",
+    "category": "decision_history",
+    "corpus_snapshot_id": "cma-v1-fb8e82059066d95c",
+    "dataset_kind": "live",
+    "project_id": "bench-zephyr",
+    "question": "Zephyr 缓存方案的系统确认版本如何从 B 变为 C？当前确认指针和替代关系是什么？",
+    "split": "test"
+  },
+  {
+    "case_id": "conflict-atlas",
+    "category": "conflict",
+    "corpus_snapshot_id": "cma-v1-fb8e82059066d95c",
+    "dataset_kind": "live",
+    "project_id": "bench-atlas",
+    "question": "Atlas prod 的消息确认模式究竟是什么？两份同日记录一致吗？",
+    "split": "test"
+  },
+  {
+    "case_id": "conflict-zephyr",
+    "category": "conflict",
+    "corpus_snapshot_id": "cma-v1-fb8e82059066d95c",
+    "dataset_kind": "live",
+    "project_id": "bench-zephyr",
+    "question": "Zephyr prod 缓存 TTL 是多少？设计说明与值班记录是否冲突？",
+    "split": "test"
+  },
+  {
+    "case_id": "missing-atlas",
+    "category": "insufficient",
+    "corpus_snapshot_id": "cma-v1-fb8e82059066d95c",
+    "dataset_kind": "live",
+    "project_id": "bench-atlas",
+    "question": "Atlas 调度方案的系统最新确认版本，能证明现在生产环境已经执行吗？",
+    "split": "test"
+  },
+  {
+    "case_id": "missing-zephyr",
+    "category": "insufficient",
+    "corpus_snapshot_id": "cma-v1-fb8e82059066d95c",
+    "dataset_kind": "live",
+    "project_id": "bench-zephyr",
+    "question": "Zephyr 清理策略的七天保留窗口是谁正式批准的？是否已有当前确认版本？",
+    "split": "test"
+  },
+  {
+    "case_id": "recovery-atlas",
+    "category": "tool_failure",
+    "corpus_snapshot_id": "cma-v1-fb8e82059066d95c",
+    "dataset_kind": "live",
+    "project_id": "bench-atlas",
+    "question": "Atlas E42 应急恢复方法是什么？Issue 工具不可用时请换来源并说明缺口。",
+    "split": "test"
+  },
+  {
+    "case_id": "recovery-zephyr",
+    "category": "tool_failure",
+    "corpus_snapshot_id": "cma-v1-fb8e82059066d95c",
+    "dataset_kind": "live",
+    "project_id": "bench-zephyr",
+    "question": "Zephyr P9 池耗尽如何恢复？文档工具不可用时请查其他来源。",
+    "split": "test"
+  },
+  {
+    "case_id": "dev-config",
+    "category": "single_source",
+    "corpus_snapshot_id": "cma-v1-fb8e82059066d95c",
+    "dataset_kind": "live",
+    "project_id": "bench-orbit-dev",
+    "question": "Orbit 的开发批次上限及原因是什么？",
+    "split": "dev"
+  },
+  {
+    "case_id": "dev-unknown",
+    "category": "insufficient",
+    "corpus_snapshot_id": "cma-v1-fb8e82059066d95c",
+    "dataset_kind": "live",
+    "project_id": "bench-orbit-dev",
+    "question": "Orbit 压缩实验吞吐量提升多少？",
+    "split": "dev"
+  }
+]

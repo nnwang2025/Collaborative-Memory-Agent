@@ -1,0 +1,4 @@
+meeting_id,content,event_time,chair,channel,topic,source_ref
+MTG-001,"会议结论：v1 采用 SQLite Evidence + BM25 基线，暂不引入向量数据库。",2026-01-15T14:00:00+08:00,wang.lei,architecture,架构评审,meeting://MTG-001
+MTG-002,"后续行动：用合成集验证 BM25；如果语义召回不足，再评估 hybrid，不直接上向量数据库。",2026-01-15T14:30:00+08:00,wang.lei,architecture,架构评审,meeting://MTG-002
+MTG-003,"决策变更：取消 Q2 向量数据库迁移；v1 保持 SQLite + BM25，待真实数据接入后重新评估。",2026-03-12T15:00:00+08:00,wang.lei,architecture,决策变更,meeting://MTG-003

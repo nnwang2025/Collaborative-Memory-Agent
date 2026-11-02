@@ -56,6 +56,10 @@ class AgentState(TypedDict):
     from parallel (fan-out) branches.
     """
 
+    scope: Dict[str, str]
+    db_path: str | None
+    live_dir: str | None
+    use_llm_routing: bool
     question: str
     """Raw user question."""
 
@@ -90,7 +94,7 @@ def classify_intent_node(state: AgentState) -> dict:
     # Re-use the keyword-based scorer for now; P0-3 replaces this with LLM.
     from src.agents.coordinator_agent import CoordinatorAgent
 
-    coordinator = CoordinatorAgent()
+    coordinator = CoordinatorAgent(scope=state.get("scope"), use_llm_routing=state.get("use_llm_routing", True))
     scores = coordinator.route_scores(state["question"])
     return {"scores": scores}
 
@@ -107,7 +111,7 @@ def route_skills_node(state: AgentState) -> dict:
     """
     from src.agents.coordinator_agent import CoordinatorAgent
 
-    coordinator = CoordinatorAgent()
+    coordinator = CoordinatorAgent(scope=state.get("scope"), use_llm_routing=state.get("use_llm_routing", True))
     skill_names = coordinator.route(state["question"])
     return {"skill_names": skill_names}
 
@@ -130,7 +134,7 @@ def _make_skill_node(skill_name: str):
     """
 
     def skill_node(state: AgentState) -> dict:
-        registry = SkillRegistry()
+        registry = SkillRegistry(scope=state.get("scope"), db_path=state.get("db_path"), live_dir=state.get("live_dir"))
         skill = registry.get(skill_name)
         result = skill.run(state["question"])
         # Return only this skill's contribution; the reducer merges.

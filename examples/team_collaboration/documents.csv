@@ -1,0 +1,3 @@
+document_id,content,event_time,author,channel,subject,source_ref
+DOC-001,"设计修订：Evidence 增加 event_time_status=unknown；引用未知时间证据时答案必须标记 insufficient。",2026-02-05T10:00:00+08:00,li.ming,docs,设计修订,doc://DOC-001
+DOC-002,"设计草案：Q2 不迁移向量数据库，继续 SQLite + BM25。",2026-02-10T11:00:00+08:00,li.ming,docs,设计草案,doc://DOC-002

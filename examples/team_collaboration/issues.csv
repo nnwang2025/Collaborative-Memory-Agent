@@ -1,0 +1,3 @@
+issue_id,content,event_time,reporter,channel,subject,source_ref,status
+ISS-001,"问题：缺时间的聊天记录被检索到后，回答可能把它当成已确认决策。",2026-01-25T11:00:00+08:00,chen.hui,issue-tracker,时间语义,issue://ISS-001,open
+ISS-002,"问题：冲突记录可能被模型只引用一方；需要求模型保留双方并披露冲突。",2026-02-11T10:00:00+08:00,chen.hui,issue-tracker,冲突处理,issue://ISS-002,open

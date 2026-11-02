@@ -1,0 +1,30 @@
+{
+  "annotation_status": "pending_human_review",
+  "development_cases": 2,
+  "files": {
+    "cases/public.json": {
+      "bytes": 5069,
+      "sha256": "b8a2613c55eef924506005eee2d617a67c102b8fcc7cecb3940b1bf988445144"
+    },
+    "corpus/decisions.sql": {
+      "bytes": 15083,
+      "sha256": "0b280b4d84b32915a3a772a4fe3a2c9d5261561bd8dcf42853c06747d719360e"
+    },
+    "corpus/evidence.json": {
+      "bytes": 23711,
+      "sha256": "3d93753ba839fb4533bb99cc71311167cab00cf1057714a8167c3b2b198a8cd3"
+    },
+    "corpus/relations.json": {
+      "bytes": 571,
+      "sha256": "8381649b1ca228b2c51767f69afdc694ee5d7e6803b14154bb62a6621f1495ca"
+    },
+    "labels/gold.json": {
+      "bytes": 15178,
+      "sha256": "d7100404bde8eb9b545978a990ed3f5634e754954b76bc75e87b11decb230e4e"
+    }
+  },
+  "seed": 20261022,
+  "snapshot_id": "cma-v1-fb8e82059066d95c",
+  "synthetic": true,
+  "test_cases": 14
+}

@@ -1,4 +1,8 @@
 numpy
+fastapi
+uvicorn
+sentence-transformers
+faiss-cpu
 openai
 pandas
 tiktoken
@@ -10,7 +14,7 @@ langchain_core
 langchainhub
 langgraph
 python-dotenv
-pydantic
+pydantic>=2,<3
 typing-extensions
 python-magic
 pdfkit

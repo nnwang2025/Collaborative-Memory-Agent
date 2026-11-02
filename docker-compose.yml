@@ -6,11 +6,28 @@ services:
     ports:
       - "8000:8000"
     environment:
+      # DeepSeek official API (canonical). Empty values fall back in code; no
+      # placeholder credential is treated as real.
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY:-}
+      - DEEPSEEK_BASE_URL=${DEEPSEEK_BASE_URL:-}
+      - DEEPSEEK_MODEL=${DEEPSEEK_MODEL:-}
+      # Legacy compatible providers (optional)
+      - SILICONFLOW_API_KEY=${SILICONFLOW_API_KEY:-}
+      - SILICONFLOW_BASE_URL=${SILICONFLOW_BASE_URL:-}
+      - SILICONFLOW_MODEL=${SILICONFLOW_MODEL:-}
       - OPENAI_API_KEY=${OPENAI_API_KEY:-}
-      - OPENAI_BASE_URL=${OPENAI_BASE_URL:-https://api.siliconflow.cn/v1}
-      - MODEL_NAME=${MODEL_NAME:-Qwen/Qwen2.5-14B-Instruct}
+      - OPENAI_BASE_URL=${OPENAI_BASE_URL:-}
+      - MODEL_NAME=${MODEL_NAME:-}
       - EMBEDDING_MODEL=${EMBEDDING_MODEL:-BAAI/bge-small-zh-v1.5}
+      - EVIDENCE_DB_PATH=/app/data/live/evidence.sqlite3
     volumes:
-      - ./db_md:/app/db_md  # persist FAISS index
-      - ./data:/app/data      # persist data files
+      - cma_db_md:/app/db_md  # image index is copied into this named volume at first start
+      - ./data:/app/data      # live evidence and fixture data are mounted at runtime, never baked in
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     restart: unless-stopped
+
+volumes:
+  cma_db_md:

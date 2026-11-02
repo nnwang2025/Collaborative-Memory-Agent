@@ -92,14 +92,7 @@ class DocumentSkill:
                 extract_entities(question),
             )
 
-        evidence = [
-            {
-                "source": hit["source"],
-                "content": hit["content"],
-                "score": hit["score"],
-            }
-            for hit in hits
-        ]
+        evidence = [dict(hit) for hit in hits]
         sources = [hit["source"] for hit in hits]
         entities = extract_entities(question + " " + " ".join(hit["content"] for hit in hits))
         answer = f"在技术文档中找到 {len(hits)} 条相关内容，优先参考 {sources[0]}。"

@@ -1,0 +1,346 @@
+[
+  {
+    "annotation_status": "pending_human_review",
+    "case_id": "single-atlas",
+    "expected_behavior": "Identify the unchanged pool certificate, not a generic network outage.",
+    "expected_termination": [
+      "sufficient"
+    ],
+    "gold_content_hashes": {
+      "ev_9203ca23a20d38a3bf69190bdfa04071f85e50036c37b84e298fcf22ffa3f7e3": "091e4711c79b955602de3e7aec828c008e0c6c0dbf5b9aac35bfc66557f34ef4"
+    },
+    "gold_evidence_ids": [
+      "ev_9203ca23a20d38a3bf69190bdfa04071f85e50036c37b84e298fcf22ffa3f7e3"
+    ],
+    "grading_notes": "Requires independent semantic review; Identify the unchanged pool certificate, not a generic network outage.",
+    "required_sources": [
+      "log"
+    ],
+    "reviewers": []
+  },
+  {
+    "annotation_status": "pending_human_review",
+    "case_id": "single-zephyr",
+    "expected_behavior": "Explain the lease window boundary.",
+    "expected_termination": [
+      "sufficient"
+    ],
+    "gold_content_hashes": {
+      "ev_c144747229712e484b5156d159cf2d96d6fcf9089a49d0bd270e9d024eab54f1": "02efc09c43787f000abded653e276f452b3de96acbbbfba67eca2f8dbeb397fd"
+    },
+    "gold_evidence_ids": [
+      "ev_c144747229712e484b5156d159cf2d96d6fcf9089a49d0bd270e9d024eab54f1"
+    ],
+    "grading_notes": "Requires independent semantic review; Explain the lease window boundary.",
+    "required_sources": [
+      "document"
+    ],
+    "reviewers": []
+  },
+  {
+    "annotation_status": "pending_human_review",
+    "case_id": "cross-atlas",
+    "expected_behavior": "Connect account ordering discussion with the implementing commit.",
+    "expected_termination": [
+      "sufficient"
+    ],
+    "gold_content_hashes": {
+      "ev_6c9d44174e8d75343a4c992eb5be7d5be7f3f3ed05ae58a1a56ab5341c47d0b0": "7e68f6f3371b973aff76ac43bb6ab07f495d2dff9c71b1700123af0c1f7f2b18",
+      "ev_9ccc9fcf6f0f451cfc3a4ecc8d405ebe7d8f54e05f1bd49b7d03740f5124b7aa": "97f4ff9983269603afa42e31ea2d67927c99ad9a637e145a39963508e8853492"
+    },
+    "gold_evidence_ids": [
+      "ev_9ccc9fcf6f0f451cfc3a4ecc8d405ebe7d8f54e05f1bd49b7d03740f5124b7aa",
+      "ev_6c9d44174e8d75343a4c992eb5be7d5be7f3f3ed05ae58a1a56ab5341c47d0b0"
+    ],
+    "grading_notes": "Requires independent semantic review; Connect account ordering discussion with the implementing commit.",
+    "required_sources": [
+      "chat",
+      "git_commit"
+    ],
+    "reviewers": []
+  },
+  {
+    "annotation_status": "pending_human_review",
+    "case_id": "cross-zephyr",
+    "expected_behavior": "Connect stale writer symptom to generation comparison.",
+    "expected_termination": [
+      "sufficient"
+    ],
+    "gold_content_hashes": {
+      "ev_2ba87b4fb100eda4fb435a963808b4fc0a87952835eea71207de39fdeee9e56f": "4406c36bbf0ab50065d13a0631da7f3b1ae188031e600258ceb587507926bf3b",
+      "ev_54d814aad58226e1fb4b90d5ae3b6877c7eba9780015c722ecb38a3a7b50c43d": "12673238a11f4fb830fc21b829f7c4d8ef366e60d5848c7b5bca93766a6ec6ed"
+    },
+    "gold_evidence_ids": [
+      "ev_54d814aad58226e1fb4b90d5ae3b6877c7eba9780015c722ecb38a3a7b50c43d",
+      "ev_2ba87b4fb100eda4fb435a963808b4fc0a87952835eea71207de39fdeee9e56f"
+    ],
+    "grading_notes": "Requires independent semantic review; Connect stale writer symptom to generation comparison.",
+    "required_sources": [
+      "issue",
+      "git_commit"
+    ],
+    "reviewers": []
+  },
+  {
+    "annotation_status": "pending_human_review",
+    "case_id": "multi-atlas",
+    "expected_behavior": "Follow A-17 and distinguish transient peaks from sustained backlog.",
+    "expected_termination": [
+      "sufficient"
+    ],
+    "gold_content_hashes": {
+      "ev_100b9694ff8b2f1365b8cf35b3b657e9269adff028d7eeaed2dc2afe071c078b": "4d678af67f58eedb50cee9b86c58c28fccc616e89d1826f11ca26247fbe7d8b9",
+      "ev_708b62597e00a4fb22771ed5f54117e7faefb6833caa51270fa0b1333c69ceaf": "1fb634d92eb79504a729336f296a35534bca3149140670fe22ef9071c2844838",
+      "ev_90e73251d970fdd582be774ca68b3288634fbc1c288140a4f5aa8f7afdf47213": "876232be62fb879129bafe228e3d6e2593883d86893d03099c666b7ffc457dd3"
+    },
+    "gold_evidence_ids": [
+      "ev_90e73251d970fdd582be774ca68b3288634fbc1c288140a4f5aa8f7afdf47213",
+      "ev_708b62597e00a4fb22771ed5f54117e7faefb6833caa51270fa0b1333c69ceaf",
+      "ev_100b9694ff8b2f1365b8cf35b3b657e9269adff028d7eeaed2dc2afe071c078b"
+    ],
+    "grading_notes": "Requires independent semantic review; Follow A-17 and distinguish transient peaks from sustained backlog.",
+    "minimum_investigation_steps": 2,
+    "required_capabilities": [
+      "feedback_loop"
+    ],
+    "reviewers": []
+  },
+  {
+    "annotation_status": "pending_human_review",
+    "case_id": "multi-zephyr",
+    "expected_behavior": "Follow Z-42; memory limit increase is not the fix.",
+    "expected_termination": [
+      "sufficient"
+    ],
+    "gold_content_hashes": {
+      "ev_3f3061b777834e3cdf0b55f1e86a64d5beb019a8a57148fde61fe71c90c3cb66": "7b75a6506e2415bc72d14ad5fab4cabcab8aac809b228ddc34dae64462709630",
+      "ev_b8bafe7a148074b1e2f3e736ef6cc2ffa36df861fc961030484fa7e82ab3961d": "cd914832c93079dfa52cb1b529b7c73230cfcab0ea823bd46734a3941a50bb5b",
+      "ev_b8c16fdaf99bd11bd78ff98cb1b19316c55ac89163df2f04310e050bb2ead20c": "98ab10c95eb29e0020bf7d7aed2198936cd849756d373573d3ada373480e3943"
+    },
+    "gold_evidence_ids": [
+      "ev_b8bafe7a148074b1e2f3e736ef6cc2ffa36df861fc961030484fa7e82ab3961d",
+      "ev_b8c16fdaf99bd11bd78ff98cb1b19316c55ac89163df2f04310e050bb2ead20c",
+      "ev_3f3061b777834e3cdf0b55f1e86a64d5beb019a8a57148fde61fe71c90c3cb66"
+    ],
+    "grading_notes": "Requires independent semantic review; Follow Z-42; memory limit increase is not the fix.",
+    "minimum_investigation_steps": 2,
+    "required_capabilities": [
+      "feedback_loop"
+    ],
+    "reviewers": []
+  },
+  {
+    "annotation_status": "pending_human_review",
+    "case_id": "decision-atlas",
+    "decision_id": "dec_486fc2db944c219a5a44bf52ae040c03",
+    "expected_behavior": "Known-at view returns B; C is pending, not confirmed at this cutoff.",
+    "expected_current_version_id": "dv_3c0c1c993afe96c23dd83f9dd2d81b1f",
+    "expected_termination": [
+      "sufficient",
+      "insufficient"
+    ],
+    "gold_content_hashes": {
+      "ev_040364740331b53779419de0bb315a9c06aa4ef378aee78b41b9a90adbd5fe0a": "34bb07cc8fe528b325074f3ca95612036cf533c66e1ee6b00f46b53e91c676d0"
+    },
+    "gold_decision_version_ids": [
+      "dv_3c0c1c993afe96c23dd83f9dd2d81b1f"
+    ],
+    "gold_evidence_ids": [
+      "ev_040364740331b53779419de0bb315a9c06aa4ef378aee78b41b9a90adbd5fe0a"
+    ],
+    "grading_notes": "Requires independent semantic review; Known-at view returns B; C is pending, not confirmed at this cutoff.",
+    "known_at": "2025-02-20T00:00:00+00:00",
+    "required_capabilities": [
+      "time_filters"
+    ],
+    "reviewers": []
+  },
+  {
+    "annotation_status": "pending_human_review",
+    "case_id": "decision-zephyr",
+    "decision_id": "dec_bd7c458b1b4a11fc9f7db54ba85c8c74",
+    "expected_behavior": "Require both versions and C.supersedes=B; system state is not production verification.",
+    "expected_current_version_id": "dv_f69943d9d56ebc090fc63d2f0e9ae671",
+    "expected_supersedes": {
+      "dv_f69943d9d56ebc090fc63d2f0e9ae671": "dv_7373e0dc9719faa5376ce9e51da65cc9"
+    },
+    "expected_termination": [
+      "sufficient",
+      "insufficient"
+    ],
+    "gold_content_hashes": {
+      "ev_c5d39dfe67531909eb7d327ed92982d03f9a56237584ef107fbdce8e923a4c71": "68c255aea4a6b5bb481be8e201394db7767f2161f16bc28b2060cc1d89108d38",
+      "ev_eded2531bd98d9404d9f8911d1e448dc0dc1e36c93d76a8f229fff6136dee19f": "20c7d7013aab999f842d351790cc674e729b469db27fc98c86567bd79da32a30"
+    },
+    "gold_decision_version_ids": [
+      "dv_7373e0dc9719faa5376ce9e51da65cc9",
+      "dv_f69943d9d56ebc090fc63d2f0e9ae671"
+    ],
+    "gold_evidence_ids": [
+      "ev_eded2531bd98d9404d9f8911d1e448dc0dc1e36c93d76a8f229fff6136dee19f",
+      "ev_c5d39dfe67531909eb7d327ed92982d03f9a56237584ef107fbdce8e923a4c71"
+    ],
+    "grading_notes": "Requires independent semantic review; Require both versions and C.supersedes=B; system state is not production verification.",
+    "reviewers": []
+  },
+  {
+    "annotation_status": "pending_human_review",
+    "case_id": "conflict-atlas",
+    "conflict_field": "ack_mode",
+    "expected_behavior": "Disclose exactly_once versus at_least_once without picking one.",
+    "expected_termination": [
+      "conflict",
+      "insufficient"
+    ],
+    "gold_content_hashes": {
+      "ev_6847f3e60f6f78f80ed8d9932655b2063ad75c4915429fd17a941ca7ac70650d": "bda7967c2ee10f2035a489936774310fc13b9752304dede02174368a1811e3fa",
+      "ev_fec06e3f5d2acba37db2d8ab162b3506de32c66a3132ce8abb08ccc185ee8d06": "5033543c815050298ce54e6cd3c4fae369348127c57ab46c833d17b7770458ac"
+    },
+    "gold_evidence_ids": [
+      "ev_fec06e3f5d2acba37db2d8ab162b3506de32c66a3132ce8abb08ccc185ee8d06",
+      "ev_6847f3e60f6f78f80ed8d9932655b2063ad75c4915429fd17a941ca7ac70650d"
+    ],
+    "grading_notes": "Requires independent semantic review; Disclose exactly_once versus at_least_once without picking one.",
+    "reviewers": []
+  },
+  {
+    "annotation_status": "pending_human_review",
+    "case_id": "conflict-zephyr",
+    "conflict_field": "ttl_seconds",
+    "expected_behavior": "Disclose 60 versus 300 seconds, do not silently average.",
+    "expected_termination": [
+      "conflict",
+      "insufficient"
+    ],
+    "gold_content_hashes": {
+      "ev_2516afa31ede8adf80b5e272401b27b5db741e533541c34a3a9842b5796d902f": "0c760813b9c7f539822f17359f86bd4da4f2cf73c4f7daa89d0681b98e251083",
+      "ev_58c51a7538cd1b76bb744bc448492aa9f9ef6857179322314e1a326ddca491d1": "b81fa608a2cede955dcd77da55dc8911d5a45424281230c7f79c14ffa350cb6e"
+    },
+    "gold_evidence_ids": [
+      "ev_58c51a7538cd1b76bb744bc448492aa9f9ef6857179322314e1a326ddca491d1",
+      "ev_2516afa31ede8adf80b5e272401b27b5db741e533541c34a3a9842b5796d902f"
+    ],
+    "grading_notes": "Requires independent semantic review; Disclose 60 versus 300 seconds, do not silently average.",
+    "reviewers": []
+  },
+  {
+    "annotation_status": "pending_human_review",
+    "case_id": "missing-atlas",
+    "decision_id": "dec_486fc2db944c219a5a44bf52ae040c03",
+    "expected_behavior": "Separate latest system confirmation from missing production execution evidence.",
+    "expected_current_version_id": "dv_d46c1881b3b9a911a39e1f1a4efc1927",
+    "expected_termination": [
+      "insufficient"
+    ],
+    "gold_content_hashes": {
+      "ev_e8a6134474085c010b751f866e005349c83c61801f71fca1fe0281d8c3273295": "cb389f60a412f364ddd8e195a62044ab08ff08c4a823ddaecf604cfede56bb15"
+    },
+    "gold_evidence_ids": [
+      "ev_e8a6134474085c010b751f866e005349c83c61801f71fca1fe0281d8c3273295"
+    ],
+    "grading_notes": "Requires independent semantic review; Separate latest system confirmation from missing production execution evidence.",
+    "missing_fact": "production_execution",
+    "reviewers": []
+  },
+  {
+    "annotation_status": "pending_human_review",
+    "case_id": "missing-zephyr",
+    "decision_id": "dec_10b4be9a75199ef6259dea0b25f95f91",
+    "expected_behavior": "There is only an unreviewed retention candidate; no approver or confirmed version exists.",
+    "expected_current_version_id": null,
+    "expected_termination": [
+      "insufficient"
+    ],
+    "gold_content_hashes": {
+      "ev_0387cc6cec469e390ba9a6792c3f9a995525e2acf9a1c4a6dbee431c87ebdb7e": "5b57a8370d76a7a305116cd240d41ed2832a084f71850b7ef1314ec4226aac9d"
+    },
+    "gold_evidence_ids": [
+      "ev_0387cc6cec469e390ba9a6792c3f9a995525e2acf9a1c4a6dbee431c87ebdb7e"
+    ],
+    "grading_notes": "Requires independent semantic review; There is only an unreviewed retention candidate; no approver or confirmed version exists.",
+    "missing_fact": "retention_approver",
+    "no_confirmed_version": true,
+    "reviewers": []
+  },
+  {
+    "annotation_status": "pending_human_review",
+    "case_id": "recovery-atlas",
+    "expected_behavior": "Attempt failed issue source, then obtain handbook evidence via another source.",
+    "expected_termination": [
+      "sufficient",
+      "insufficient"
+    ],
+    "gold_content_hashes": {
+      "ev_799f114b3d4b1bb200032bdc7a99c1786bb3fd9c41937dbac043885e5e0843b8": "424a96c9a679afd83860d7eb00aef7cf3a50dc1a379b939bf274e43a535cdcb7"
+    },
+    "gold_evidence_ids": [
+      "ev_799f114b3d4b1bb200032bdc7a99c1786bb3fd9c41937dbac043885e5e0843b8"
+    ],
+    "grading_notes": "Requires independent semantic review; Attempt failed issue source, then obtain handbook evidence via another source.",
+    "injected_failure": {
+      "error": "TimeoutError",
+      "skill": "problem"
+    },
+    "required_capabilities": [
+      "failure_recovery"
+    ],
+    "reviewers": []
+  },
+  {
+    "annotation_status": "pending_human_review",
+    "case_id": "recovery-zephyr",
+    "expected_behavior": "Recover from document failure with pool log and do not claim larger capacity fixes the cause.",
+    "expected_termination": [
+      "sufficient",
+      "insufficient"
+    ],
+    "gold_content_hashes": {
+      "ev_678bef6cd25f899536497b05322e7e0e8dff9fd4bc5b5607c85b90fced99232e": "4c7bef9159a52690f886773bae4ef59314b5159e2c53035a60f669613463a990"
+    },
+    "gold_evidence_ids": [
+      "ev_678bef6cd25f899536497b05322e7e0e8dff9fd4bc5b5607c85b90fced99232e"
+    ],
+    "grading_notes": "Requires independent semantic review; Recover from document failure with pool log and do not claim larger capacity fixes the cause.",
+    "injected_failure": {
+      "error": "TimeoutError",
+      "skill": "document"
+    },
+    "required_capabilities": [
+      "failure_recovery"
+    ],
+    "reviewers": []
+  },
+  {
+    "annotation_status": "pending_human_review",
+    "case_id": "dev-config",
+    "expected_behavior": "Development only, not a test-set score.",
+    "expected_termination": [
+      "sufficient"
+    ],
+    "gold_content_hashes": {
+      "ev_db335e00d3aff0cbb038c01251536f9d01efbcca03bf93e493d31b5ce1d73218": "575c5cf95de0527309fc8f4a2ef51453b9b6cd04a9f8e501f57b358e75eacdca"
+    },
+    "gold_evidence_ids": [
+      "ev_db335e00d3aff0cbb038c01251536f9d01efbcca03bf93e493d31b5ce1d73218"
+    ],
+    "grading_notes": "Requires independent semantic review; Development only, not a test-set score.",
+    "reviewers": []
+  },
+  {
+    "annotation_status": "pending_human_review",
+    "case_id": "dev-unknown",
+    "expected_behavior": "No measurement exists.",
+    "expected_termination": [
+      "insufficient"
+    ],
+    "gold_content_hashes": {
+      "ev_998a7b74e1420bdf245df6ecf44bd190295a0ccdf0d704d41b8cc762461a4294": "39350f49e7ace19722b4b85f9b8e371ff9f50ddcdc25728e9796c142f9b418ff"
+    },
+    "gold_evidence_ids": [
+      "ev_998a7b74e1420bdf245df6ecf44bd190295a0ccdf0d704d41b8cc762461a4294"
+    ],
+    "grading_notes": "Requires independent semantic review; No measurement exists.",
+    "missing_fact": "compression_throughput",
+    "reviewers": []
+  }
+]

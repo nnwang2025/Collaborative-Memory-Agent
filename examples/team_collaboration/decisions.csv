@@ -1,0 +1,2 @@
+decision_id,content,event_time,owner,channel,subject,source_ref
+DEC-001,"决策记录：取消 Q2 向量数据库迁移，保留 SQLite + BM25；触发重新评估的条件是真实聊天/会议数据接入后召回不足。",2026-03-12T15:10:00+08:00,wang.lei,decisions,决策变更,decision://DEC-001

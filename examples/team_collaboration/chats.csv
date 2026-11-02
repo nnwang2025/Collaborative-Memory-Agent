@@ -1,0 +1,5 @@
+message_id,content,event_time,sender,channel,subject,source_ref
+CHAT-001,"讨论：如果只做 BM25，语义改写问题的召回可能不足。",2026-01-09T09:30:00+08:00,chen.hui,team-chat,检索讨论,chat://CHAT-001
+CHAT-002,"补充：v1 可以先保留 BM25 基线，但文档必须写清楚 hybrid 只在 fixture 生效。",2026-01-09T09:35:00+08:00,chen.hui,team-chat,检索讨论,chat://CHAT-002
+CHAT-003,"旧提议：Q2 迁移到向量数据库。该消息没有发送时间，不能当作已排期决策。",,chen.hui,team-chat,历史提议,chat://CHAT-003
+CHAT-004,"旧计划：Q2 上线向量数据库。",2026-02-10T11:00:00+08:00,chen.hui,team-chat,旧计划,chat://CHAT-004

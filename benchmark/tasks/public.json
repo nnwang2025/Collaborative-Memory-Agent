@@ -1,0 +1,150 @@
+{
+  "task_set_version": "cma-task-eval-v1",
+  "corpus_snapshot_id": "cma-v1-fb8e82059066d95c",
+  "tasks": [
+    {
+      "task_id": "single-atlas",
+      "case_id": "single-atlas",
+      "category": "single_source",
+      "project_id": "bench-atlas",
+      "dataset_kind": "live",
+      "split": "test",
+      "question": "Atlas E42 的 TLS 故障根因是什么？请引用日志。"
+    },
+    {
+      "task_id": "single-zephyr",
+      "case_id": "single-zephyr",
+      "category": "single_source",
+      "project_id": "bench-zephyr",
+      "dataset_kind": "live",
+      "split": "test",
+      "question": "Zephyr 重试策略为什么只允许两次？请查技术文档。"
+    },
+    {
+      "task_id": "cross-atlas",
+      "case_id": "cross-atlas",
+      "category": "cross_source",
+      "project_id": "bench-atlas",
+      "dataset_kind": "live",
+      "split": "test",
+      "question": "Atlas 为什么采用固定分区归属？讨论理由与哪个代码提交相互印证？"
+    },
+    {
+      "task_id": "cross-zephyr",
+      "case_id": "cross-zephyr",
+      "category": "cross_source",
+      "project_id": "bench-zephyr",
+      "dataset_kind": "live",
+      "split": "test",
+      "question": "Zephyr 预热覆盖问题如何定位并实施修复？请关联 Issue 和提交。"
+    },
+    {
+      "task_id": "multi-atlas",
+      "case_id": "multi-atlas",
+      "category": "multi_round",
+      "project_id": "bench-atlas",
+      "dataset_kind": "live",
+      "split": "test",
+      "question": "调查 Atlas 回滚入口，沿其引用追查恢复门槛及后续修复提交。"
+    },
+    {
+      "task_id": "multi-zephyr",
+      "case_id": "multi-zephyr",
+      "category": "multi_round",
+      "project_id": "bench-zephyr",
+      "dataset_kind": "live",
+      "split": "test",
+      "question": "调查 Zephyr 泄漏入口，沿线索追查关闭顺序及实际修复提交。"
+    },
+    {
+      "task_id": "decision-atlas",
+      "case_id": "decision-atlas",
+      "category": "decision_history",
+      "project_id": "bench-atlas",
+      "dataset_kind": "live",
+      "split": "test",
+      "question": "截至 2025-02-20 系统已确认的 Atlas 调度方案是什么？当时 C 是否已替代 B？"
+    },
+    {
+      "task_id": "decision-zephyr",
+      "case_id": "decision-zephyr",
+      "category": "decision_history",
+      "project_id": "bench-zephyr",
+      "dataset_kind": "live",
+      "split": "test",
+      "question": "Zephyr 缓存方案的系统确认版本如何从 B 变为 C？当前确认指针和替代关系是什么？"
+    },
+    {
+      "task_id": "authority-atlas",
+      "case_id": "authority-atlas",
+      "category": "reviewed_vs_discussion",
+      "project_id": "bench-atlas",
+      "dataset_kind": "live",
+      "split": "test",
+      "question": "Atlas 调度方案中，聊天讨论、评审记录和系统已审核确认分别是什么？截至 2025-02-20，哪些只是讨论或候选，哪些已经确认？"
+    },
+    {
+      "task_id": "authority-zephyr",
+      "case_id": "authority-zephyr",
+      "category": "reviewed_vs_discussion",
+      "project_id": "bench-zephyr",
+      "dataset_kind": "live",
+      "split": "test",
+      "question": "Zephyr 缓存方案从讨论到系统确认经历了什么？聊天、评审材料和已审核版本各自说明了什么？"
+    },
+    {
+      "task_id": "conflict-atlas",
+      "case_id": "conflict-atlas",
+      "category": "conflict",
+      "project_id": "bench-atlas",
+      "dataset_kind": "live",
+      "split": "test",
+      "question": "Atlas prod 的消息确认模式究竟是什么？两份同日记录一致吗？"
+    },
+    {
+      "task_id": "conflict-zephyr",
+      "case_id": "conflict-zephyr",
+      "category": "conflict",
+      "project_id": "bench-zephyr",
+      "dataset_kind": "live",
+      "split": "test",
+      "question": "Zephyr prod 缓存 TTL 是多少？设计说明与值班记录是否冲突？"
+    },
+    {
+      "task_id": "missing-atlas",
+      "case_id": "missing-atlas",
+      "category": "insufficient",
+      "project_id": "bench-atlas",
+      "dataset_kind": "live",
+      "split": "test",
+      "question": "Atlas 调度方案的系统最新确认版本，能证明现在生产环境已经执行吗？"
+    },
+    {
+      "task_id": "missing-zephyr",
+      "case_id": "missing-zephyr",
+      "category": "insufficient",
+      "project_id": "bench-zephyr",
+      "dataset_kind": "live",
+      "split": "test",
+      "question": "Zephyr 清理策略的七天保留窗口是谁正式批准的？是否已有当前确认版本？"
+    },
+    {
+      "task_id": "recovery-atlas",
+      "case_id": "recovery-atlas",
+      "category": "tool_failure",
+      "project_id": "bench-atlas",
+      "dataset_kind": "live",
+      "split": "test",
+      "question": "Atlas E42 应急恢复方法是什么？Issue 工具不可用时请换来源并说明缺口。"
+    },
+    {
+      "task_id": "recovery-zephyr",
+      "case_id": "recovery-zephyr",
+      "category": "tool_failure",
+      "project_id": "bench-zephyr",
+      "dataset_kind": "live",
+      "split": "test",
+      "question": "Zephyr P9 池耗尽如何恢复？文档工具不可用时请查其他来源。"
+    }
+  ]
+}

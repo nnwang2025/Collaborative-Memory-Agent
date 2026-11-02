@@ -182,9 +182,12 @@ def extract_entities(text):
 
 
 def format_skill_result(answer, evidence, sources, entities):
+    from src.evidence import legacy_evidence
+    normalized = [legacy_evidence(item).as_hit(score=item.get("score", 0), source=item.get("source"))
+                  for item in evidence[:5]]
     return {
         "answer": answer,
-        "evidence": evidence[:5],
+        "evidence": normalized,
         "sources": sorted(set(sources)),
         "entities": sorted(set(entities)),
     }

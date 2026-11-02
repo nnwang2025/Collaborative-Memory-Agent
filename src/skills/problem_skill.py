@@ -23,6 +23,7 @@ class ProblemSkill:
                         "source": file_path.relative_to(ROOT).as_posix(),
                         "record": record.get("id") or record.get("issue_id") or record.get("commit") or index,
                         "content": content,
+                        "metadata": record,
                     })
         return docs
 
@@ -50,7 +51,7 @@ class ProblemSkill:
         if not ranked:
             return format_skill_result("未在 Bug、Issue、日志或修复记录中检索到相关内容。", [], [], extract_entities(question))
 
-        evidence = [{"source": h["source"], "content": h["content"], "score": h["score"]} for h in ranked]
+        evidence = [dict(h) for h in ranked]
         sources = [h["source"] for h in ranked]
         entities = extract_entities(question + " " + " ".join(h["content"] for h in ranked))
         return format_skill_result("已从问题记录中找到相关 Bug/Issue/日志/修复线索。", evidence, sources, entities)

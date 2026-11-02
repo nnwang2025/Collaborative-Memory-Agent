@@ -1,0 +1,59 @@
+# Never send secrets into the Docker build context.
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa*
+id_ed25519*
+secrets/
+secret/
+credentials*
+*.kdbx
+.npmrc
+.pypirc
+
+# Virtual environments and local tool caches.
+venv/
+.venv/
+env/
+ENV/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Local runtime databases, raw exports, live data, and indexes are not source.
+data/live/
+data/chat_raw.json
+*.sqlite3
+*.sqlite3-*
+*.db
+db_md/
+logs/
+*.log
+
+# Generated reports and benchmark outputs are local artifacts.
+benchmark/reports/
+reports/
+*.jsonl
+
+# Tests and development-only dependencies are not needed in the runtime image.
+tests/
+requirements-dev.txt
+
+# VCS, editors, OS metadata, and temporary files.
+.git/
+.gitignore
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+tmp/
+temp/
+INTERVIEW_HANDBOOK.md

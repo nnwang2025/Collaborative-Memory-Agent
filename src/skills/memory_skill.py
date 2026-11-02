@@ -6,6 +6,15 @@ class MemorySkill:
 
     DECISION_QUERY_SIGNALS = ["为什么", "原因", "采用", "决策", "方案", "技术选型", "没有采用"]
 
+    def query_decisions(self, question, scope, *, evidence_db_path=None, filters=None, top_k=5):
+        """Read reviewed internal versions separately from original Evidence."""
+        from src.investigation import Filters
+        from src.memory.decisions import DecisionStore
+        filters = filters if isinstance(filters, Filters) else Filters.model_validate(filters or {})
+        return DecisionStore(evidence_db_path=evidence_db_path).search(question, scope,
+            decision_id=filters.decision_id, view=filters.memory_view, known_at=filters.known_at,
+            top_k=top_k, after=filters.after, before=filters.before)
+
     def __init__(self):
         self.decision_path = ROOT / "data" / "decision_memory.json"
         self.paths = [
@@ -144,15 +153,7 @@ class MemorySkill:
         if not ranked:
             return format_skill_result("未在历史讨论或长期记忆中检索到相关记录。", [], [], extract_entities(question))
 
-        evidence = [
-            {
-                "source": h["source"],
-                "content": h["content"],
-                "score": h["score"],
-                "metadata": h.get("metadata", {}),
-            }
-            for h in ranked
-        ]
+        evidence = [dict(h) for h in ranked]
         sources = []
         for hit in ranked:
             sources.append(hit["source"])

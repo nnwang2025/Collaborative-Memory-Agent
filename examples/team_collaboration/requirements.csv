@@ -1,0 +1,4 @@
+requirement_id,content,event_time,author,channel,subject,source_ref
+REQ-001,"研发团队需要跨聊天、会议、文档追溯历史决策，而不是只做代码搜索。",2026-01-08T10:00:00+08:00,li.ming,requirements,初始需求,requirements://REQ-001
+REQ-002,"回答必须给出证据ID、来源和事件时间；事件时间缺失时必须明确标注未知。",2026-01-08T10:20:00+08:00,li.ming,requirements,验收条件,requirements://REQ-002
+REQ-003,"第一版优先验证 SQLite Evidence 与 BM25 基线，不直接引入新的向量数据库。",2026-01-09T09:10:00+08:00,wang.lei,requirements,范围约束,requirements://REQ-003

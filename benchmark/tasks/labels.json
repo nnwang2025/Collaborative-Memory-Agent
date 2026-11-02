@@ -1,0 +1,549 @@
+{
+  "task_set_version": "cma-task-eval-v1",
+  "corpus_snapshot_id": "cma-v1-fb8e82059066d95c",
+  "labels": {
+    "single-atlas": {
+      "task_id": "single-atlas",
+      "category": "single_source",
+      "decision_id": null,
+      "key_facts": [
+        {
+          "fact_id": "tls_pool_certificate",
+          "statement": "旧证书仍留在连接池中，仅刷新证书而未重建池导致 TLS 校验失败。",
+          "required": true,
+          "marker_groups": [["旧证书", "证书"], ["连接池"], ["TLS", "校验"]]
+        }
+      ],
+      "acceptable_evidence": [
+        {"evidence_id": "ev_9203ca23a20d38a3bf69190bdfa04071f85e50036c37b84e298fcf22ffa3f7e3", "content_hash": "091e4711c79b955602de3e7aec828c008e0c6c0dbf5b9aac35bfc66557f34ef4"}
+      ],
+      "required_sources": ["log"],
+      "expected_authority": {"levels": ["source_evidence"], "notes": "日志是来源证据，不是已审核决策或生产执行确认。"},
+      "expected_temporal": {"known_at": null, "expected_current_version_id": null, "expected_version_ids": [], "expected_supersedes": {}, "unknown_time_policy": "不得从采集时间补造事件时间。"},
+      "expected_conflict": null,
+      "abstention": {"required": false, "expected_termination": ["sufficient", "insufficient"], "must_disclose": []},
+      "required_capabilities": [],
+      "injected_failure": null,
+      "human_review_rules": [
+        "确认答案指出旧证书/连接池问题，而不是泛化为普通网络故障。",
+        "确认引用的是日志原文，且没有把日志结论扩展为生产执行确认。"
+      ]
+    },
+    "single-zephyr": {
+      "task_id": "single-zephyr",
+      "category": "single_source",
+      "decision_id": null,
+      "key_facts": [
+        {
+          "fact_id": "retry_two_lease_window",
+          "statement": "最多两次重试；第三次会超出租约窗口，应交给下一轮任务。",
+          "required": true,
+          "marker_groups": [["两次", "2 次", "2次"], ["租约"], ["下一轮", "下一轮任务"]]
+        }
+      ],
+      "acceptable_evidence": [
+        {"evidence_id": "ev_c144747229712e484b5156d159cf2d96d6fcf9089a49d0bd270e9d024eab54f1", "content_hash": "02efc09c43787f000abded653e276f452b3de96acbbbfba67eca2f8dbeb397fd"}
+      ],
+      "required_sources": ["document"],
+      "expected_authority": {"levels": ["source_evidence"], "notes": "技术文档说明策略，不等于生产状态证明。"},
+      "expected_temporal": {"known_at": null, "expected_current_version_id": null, "expected_version_ids": [], "expected_supersedes": {}, "unknown_time_policy": "不得从采集时间补造事件时间。"},
+      "expected_conflict": null,
+      "abstention": {"required": false, "expected_termination": ["sufficient", "insufficient"], "must_disclose": []},
+      "required_capabilities": [],
+      "injected_failure": null,
+      "human_review_rules": [
+        "确认答案给出两次重试与租约窗口的关系，而不是只重复“两次”。",
+        "确认没有把技术文档中的策略当成当前生产事实。"
+      ]
+    },
+    "cross-atlas": {
+      "task_id": "cross-atlas",
+      "category": "cross_source",
+      "decision_id": null,
+      "key_facts": [
+        {
+          "fact_id": "partition_ordering_reason",
+          "statement": "采用固定分区归属 B，原因是同一账户的写入必须有序。",
+          "required": true,
+          "marker_groups": [["分区归属", "partition ownership"], ["同一账户", "账户写入", "account"], ["有序", "顺序", "ordered"]]
+        },
+        {
+          "fact_id": "implementing_commit",
+          "statement": "实现提交 f7935f9f 明确账号顺序使用分区归属 B。",
+          "required": true,
+          "marker_groups": [["f7935f9f", "account ordering"], ["分区归属", "partition ownership", "B"]]
+        }
+      ],
+      "acceptable_evidence": [
+        {"evidence_id": "ev_9ccc9fcf6f0f451cfc3a4ecc8d405ebe7d8f54e05f1bd49b7d03740f5124b7aa", "content_hash": "97f4ff9983269603afa42e31ea2d67927c99ad9a637e145a39963508e8853492"},
+        {"evidence_id": "ev_6c9d44174e8d75343a4c992eb5be7d5be7f3f3ed05ae58a1a56ab5341c47d0b0", "content_hash": "7e68f6f3371b973aff76ac43bb6ab07f495d2dff9c71b1700123af0c1f7f2b18"}
+      ],
+      "required_sources": ["chat", "git_commit"],
+      "expected_authority": {"levels": ["discussion", "source_evidence"], "notes": "聊天是讨论来源，提交是实现证据；两者都不是正式已审核决策。"},
+      "expected_temporal": {"known_at": null, "expected_current_version_id": null, "expected_version_ids": [], "expected_supersedes": {}, "unknown_time_policy": "聊天与提交事件时间相近但不得互相冒充。"},
+      "expected_conflict": null,
+      "abstention": {"required": false, "expected_termination": ["sufficient", "insufficient"], "must_disclose": []},
+      "required_capabilities": [],
+      "injected_failure": null,
+      "human_review_rules": [
+        "确认答案把讨论理由与实现提交关联，而不是只命中其中一个。",
+        "确认引用双方来源，并区分讨论与实现证据。"
+      ]
+    },
+    "cross-zephyr": {
+      "task_id": "cross-zephyr",
+      "category": "cross_source",
+      "decision_id": null,
+      "key_facts": [
+        {
+          "fact_id": "stale_writer_symptom",
+          "statement": "旧任务可能用旧值覆盖新缓存值。",
+          "required": true,
+          "marker_groups": [["旧任务", "旧值", "stale"], ["覆盖", "overwrite"]]
+        },
+        {
+          "fact_id": "generation_compare_fix",
+          "statement": "Z-cachefix 要求写入前比较 generation。",
+          "required": true,
+          "marker_groups": [["generation", "版本代次"], ["比较", "compare"], ["写入", "cache write"]]
+        }
+      ],
+      "acceptable_evidence": [
+        {"evidence_id": "ev_54d814aad58226e1fb4b90d5ae3b6877c7eba9780015c722ecb38a3a7b50c43d", "content_hash": "12673238a11f4fb830fc21b829f7c4d8ef366e60d5848c7b5bca93766a6ec6ed"},
+        {"evidence_id": "ev_2ba87b4fb100eda4fb435a963808b4fc0a87952835eea71207de39fdeee9e56f", "content_hash": "4406c36bbf0ab50065d13a0631da7f3b1ae188031e600258ceb587507926bf3b"}
+      ],
+      "required_sources": ["issue", "git_commit"],
+      "expected_authority": {"levels": ["source_evidence"], "notes": "Issue 与提交是来源证据，不是已审核决策。"},
+      "expected_temporal": {"known_at": null, "expected_current_version_id": null, "expected_version_ids": [], "expected_supersedes": {}, "unknown_time_policy": "不得从采集时间补造事件时间。"},
+      "expected_conflict": null,
+      "abstention": {"required": false, "expected_termination": ["sufficient", "insufficient"], "must_disclose": []},
+      "required_capabilities": [],
+      "injected_failure": null,
+      "human_review_rules": [
+        "确认答案把旧任务覆盖症状与 generation 比较修复关联。",
+        "确认引用 Issue 和提交双方，而不是只给一个来源。"
+      ]
+    },
+    "multi-atlas": {
+      "task_id": "multi-atlas",
+      "category": "multi_round",
+      "decision_id": null,
+      "key_facts": [
+        {
+          "fact_id": "a17_sustained_backlog",
+          "statement": "A-17 回滚要求积压持续两分钟，短暂峰值不回滚。",
+          "required": true,
+          "marker_groups": [["A-17"], ["两分钟", "2 分钟", "2分钟", "持续"], ["回滚"]]
+        },
+        {
+          "fact_id": "followup_commit",
+          "statement": "后续提交加入持续时间门槛。",
+          "required": true,
+          "marker_groups": [["956ba4ee", "后续提交", "follow-up"], ["持续时间", "duration", "门槛"]]
+        }
+      ],
+      "acceptable_evidence": [
+        {"evidence_id": "ev_90e73251d970fdd582be774ca68b3288634fbc1c288140a4f5aa8f7afdf47213", "content_hash": "876232be62fb879129bafe228e3d6e2593883d86893d03099c666b7ffc457dd3"},
+        {"evidence_id": "ev_708b62597e00a4fb22771ed5f54117e7faefb6833caa51270fa0b1333c69ceaf", "content_hash": "1fb634d92eb79504a729336f296a35534bca3149140670fe22ef9071c2844838"},
+        {"evidence_id": "ev_100b9694ff8b2f1365b8cf35b3b657e9269adff028d7eeaed2dc2afe071c078b", "content_hash": "4d678af67f58eedb50cee9b86c58c28fccc616e89d1826f11ca26247fbe7d8b9"}
+      ],
+      "required_sources": ["issue", "document", "git_commit"],
+      "expected_authority": {"levels": ["source_evidence"], "notes": "需要沿 A-17 线索多轮调查，不是单个来源命中。"},
+      "expected_temporal": {"known_at": null, "expected_current_version_id": null, "expected_version_ids": [], "expected_supersedes": {}, "unknown_time_policy": "运行记录、手册和后续提交的事件时间必须分别保留。"},
+      "expected_conflict": null,
+      "abstention": {"required": false, "expected_termination": ["sufficient", "insufficient"], "must_disclose": []},
+      "required_capabilities": ["feedback_loop"],
+      "injected_failure": null,
+      "human_review_rules": [
+        "确认答案沿 A-17 找到运行记录与后续提交，而不是只给入口 Issue。",
+        "确认区分短暂峰值与持续积压，不把提高容量当作根因修复。"
+      ]
+    },
+    "multi-zephyr": {
+      "task_id": "multi-zephyr",
+      "category": "multi_round",
+      "decision_id": null,
+      "key_facts": [
+        {
+          "fact_id": "z42_close_order",
+          "statement": "Z-42 要求先停止预热生产者，再释放句柄；反序会让新任务继续占用已释放池。",
+          "required": true,
+          "marker_groups": [["Z-42"], ["停止", "关闭"], ["预热", "生产者"], ["释放", "回收"], ["句柄"]]
+        },
+        {
+          "fact_id": "memory_not_root_fix",
+          "statement": "提高内存限制不是根因修复。",
+          "required": true,
+          "marker_groups": [["内存", "memory"], ["不是", "非"], ["根因", "根治", "修复"]]
+        }
+      ],
+      "acceptable_evidence": [
+        {"evidence_id": "ev_b8bafe7a148074b1e2f3e736ef6cc2ffa36df861fc961030484fa7e82ab3961d", "content_hash": "cd914832c93079dfa52cb1b529b7c73230cfcab0ea823bd46734a3941a50bb5b"},
+        {"evidence_id": "ev_b8c16fdaf99bd11bd78ff98cb1b19316c55ac89163df2f04310e050bb2ead20c", "content_hash": "98ab10c95eb29e0020bf7d7aed2198936cd849756d373573d3ada373480e3943"},
+        {"evidence_id": "ev_3f3061b777834e3cdf0b55f1e86a64d5beb019a8a57148fde61fe71c90c3cb66", "content_hash": "7b75a6506e2415bc72d14ad5fab4cabcab8aac809b228ddc34dae64462709630"}
+      ],
+      "required_sources": ["issue", "document", "git_commit"],
+      "expected_authority": {"levels": ["source_evidence"], "notes": "需要沿 Z-42 线索多轮调查。"},
+      "expected_temporal": {"known_at": null, "expected_current_version_id": null, "expected_version_ids": [], "expected_supersedes": {}, "unknown_time_policy": "不得从采集时间补造事件时间。"},
+      "expected_conflict": null,
+      "abstention": {"required": false, "expected_termination": ["sufficient", "insufficient"], "must_disclose": []},
+      "required_capabilities": ["feedback_loop"],
+      "injected_failure": null,
+      "human_review_rules": [
+        "确认答案找到 Z-42 关闭顺序与后续提交，而不是只提高内存的猜测。",
+        "确认明确指出内存扩容不是根因修复。"
+      ]
+    },
+    "decision-atlas": {
+      "task_id": "decision-atlas",
+      "category": "decision_history",
+      "decision_id": "dec_486fc2db944c219a5a44bf52ae040c03",
+      "key_facts": [
+        {
+          "fact_id": "known_at_b_confirmed",
+          "statement": "截至 2025-02-20，系统已确认版本是 B：固定分区归属。",
+          "required": true,
+          "marker_groups": [["2025-02-20", "截至"], ["固定分区归属", "B"], ["确认", "已确认"]]
+        },
+        {
+          "fact_id": "c_pending_at_cutoff",
+          "statement": "C（带 fencing token 的租约迁移）在该时点仍是待审候选，不是已确认版本。",
+          "required": true,
+          "marker_groups": [["C", "租约", "fencing"], ["待审", "候选", "未确认", "pending"]]
+        }
+      ],
+      "acceptable_evidence": [
+        {"evidence_id": "ev_040364740331b53779419de0bb315a9c06aa4ef378aee78b41b9a90adbd5fe0a", "content_hash": "34bb07cc8fe528b325074f3ca95612036cf533c66e1ee6b00f46b53e91c676d0"}
+      ],
+      "required_sources": ["issue"],
+      "expected_authority": {"levels": ["reviewed_decision"], "notes": "只认系统知识时间下的已审核版本；候选不是确认。"},
+      "expected_temporal": {"known_at": "2025-02-20T00:00:00+00:00", "expected_current_version_id": "dv_3c0c1c993afe96c23dd83f9dd2d81b1f", "expected_version_ids": ["dv_3c0c1c993afe96c23dd83f9dd2d81b1f"], "expected_supersedes": {}, "unknown_time_policy": "不得把 2025-03-20 的审核结果提前到截止日。"},
+      "expected_conflict": null,
+      "abstention": {"required": false, "expected_termination": ["sufficient", "insufficient"], "must_disclose": []},
+      "required_capabilities": ["time_filters"],
+      "injected_failure": null,
+      "human_review_rules": [
+        "确认答案使用 known_at=2025-02-20，而不是当前确认指针。",
+        "确认候选 C 没有被写成当时已确认或已执行。"
+      ]
+    },
+    "decision-zephyr": {
+      "task_id": "decision-zephyr",
+      "category": "decision_history",
+      "decision_id": "dec_bd7c458b1b4a11fc9f7db54ba85c8c74",
+      "key_facts": [
+        {
+          "fact_id": "b_local_copy",
+          "statement": "B 是采用本地副本的旧版本。",
+          "required": true,
+          "marker_groups": [["本地副本", "B"], ["可用性", "副本"]]
+        },
+        {
+          "fact_id": "c_version_watermark",
+          "statement": "C 采用版本水位读取，减少旧值回写。",
+          "required": true,
+          "marker_groups": [["版本水位", "C"], ["旧值", "回写", "减少"]]
+        },
+        {
+          "fact_id": "c_supersedes_b",
+          "statement": "C 替代 B，当前确认指针指向 C。",
+          "required": true,
+          "marker_groups": [["C"], ["替代", "supersedes", "取代"], ["B"]]
+        }
+      ],
+      "acceptable_evidence": [
+        {"evidence_id": "ev_eded2531bd98d9404d9f8911d1e448dc0dc1e36c93d76a8f229fff6136dee19f", "content_hash": "20c7d7013aab999f842d351790cc674e729b469db27fc98c86567bd79da32a30"},
+        {"evidence_id": "ev_c5d39dfe67531909eb7d327ed92982d03f9a56237584ef107fbdce8e923a4c71", "content_hash": "68c255aea4a6b5bb481be8e201394db7767f2161f16bc28b2060cc1d89108d38"}
+      ],
+      "required_sources": ["chat", "document"],
+      "expected_authority": {"levels": ["discussion", "reviewed_decision"], "notes": "聊天讨论 B 与已审核版本 C 必须区分；评审通过不等于生产切换。"},
+      "expected_temporal": {"known_at": null, "expected_current_version_id": "dv_f69943d9d56ebc090fc63d2f0e9ae671", "expected_version_ids": ["dv_7373e0dc9719faa5376ce9e51da65cc9", "dv_f69943d9d56ebc090fc63d2f0e9ae671"], "expected_supersedes": {"dv_f69943d9d56ebc090fc63d2f0e9ae671": "dv_7373e0dc9719faa5376ce9e51da65cc9"}, "requires_history": true, "unknown_time_policy": "B/C 的业务时间与审核时间必须分开。"},
+      "expected_conflict": null,
+      "abstention": {"required": false, "expected_termination": ["sufficient", "insufficient"], "must_disclose": []},
+      "required_capabilities": ["history_view"],
+      "injected_failure": null,
+      "human_review_rules": [
+        "确认同时看到 B 和 C，而不是只有当前版本 C。",
+        "确认 C.supersedes=B 与当前指针正确，且没有把系统确认写成生产已切换。"
+      ]
+    },
+    "authority-atlas": {
+      "task_id": "authority-atlas",
+      "category": "reviewed_vs_discussion",
+      "decision_id": "dec_486fc2db944c219a5a44bf52ae040c03",
+      "key_facts": [
+        {
+          "fact_id": "chat_discussion_b",
+          "statement": "聊天讨论提出分区归属 B，理由是同一账户写入必须有序。",
+          "required": true,
+          "marker_groups": [["聊天", "讨论"], ["分区归属", "B"], ["同一账户", "有序"]]
+        },
+        {
+          "fact_id": "review_record_b",
+          "statement": "评审记录批准固定分区归属 B，并指出热点账户暂不跨分区迁移。",
+          "required": true,
+          "marker_groups": [["评审", "批准"], ["固定分区归属", "B"], ["热点账户"]]
+        },
+        {
+          "fact_id": "known_at_b_not_c",
+          "statement": "截至 2025-02-20，系统已审核确认 B；C 只是候选。",
+          "required": true,
+          "marker_groups": [["2025-02-20", "截至"], ["B"], ["C", "候选", "待审"]]
+        }
+      ],
+      "acceptable_evidence": [
+        {"evidence_id": "ev_9ccc9fcf6f0f451cfc3a4ecc8d405ebe7d8f54e05f1bd49b7d03740f5124b7aa", "content_hash": "97f4ff9983269603afa42e31ea2d67927c99ad9a637e145a39963508e8853492"},
+        {"evidence_id": "ev_040364740331b53779419de0bb315a9c06aa4ef378aee78b41b9a90adbd5fe0a", "content_hash": "34bb07cc8fe528b325074f3ca95612036cf533c66e1ee6b00f46b53e91c676d0"},
+        {"evidence_id": "ev_e8a6134474085c010b751f866e005349c83c61801f71fca1fe0281d8c3273295", "content_hash": "cb389f60a412f364ddd8e195a62044ab08ff08c4a823ddaecf604cfede56bb15"}
+      ],
+      "required_sources": ["chat", "issue", "document"],
+      "expected_authority": {"levels": ["discussion", "reviewed_decision"], "notes": "聊天是讨论级，评审记录是评审证据，只有系统已审核版本算 reviewed_decision。"},
+      "expected_temporal": {"known_at": "2025-02-20T00:00:00+00:00", "expected_current_version_id": "dv_3c0c1c993afe96c23dd83f9dd2d81b1f", "expected_version_ids": ["dv_3c0c1c993afe96c23dd83f9dd2d81b1f"], "expected_supersedes": {}, "unknown_time_policy": "C 的审核时间晚于截止日，不得出现在当时确认状态中。"},
+      "expected_conflict": null,
+      "abstention": {"required": false, "expected_termination": ["sufficient", "insufficient"], "must_disclose": []},
+      "required_capabilities": ["time_filters"],
+      "injected_failure": null,
+      "human_review_rules": [
+        "确认聊天讨论没有被当作正式确认或已执行。",
+        "确认评审记录与已审核版本分别披露，并正确使用 2025-02-20 截止点。"
+      ]
+    },
+    "authority-zephyr": {
+      "task_id": "authority-zephyr",
+      "category": "reviewed_vs_discussion",
+      "decision_id": "dec_bd7c458b1b4a11fc9f7db54ba85c8c74",
+      "key_facts": [
+        {
+          "fact_id": "chat_discussion_b",
+          "statement": "聊天讨论批准 B：读本地副本，优先可用性，跨节点短暂不一致另行处理。",
+          "required": true,
+          "marker_groups": [["聊天", "讨论"], ["本地副本", "B"], ["可用性"]]
+        },
+        {
+          "fact_id": "review_material_c",
+          "statement": "评审材料提出 C：读取版本水位，减少旧值回写；评审通过不等于生产已切换。",
+          "required": true,
+          "marker_groups": [["评审", "材料"], ["版本水位", "C"], ["生产", "切换", "回写"]]
+        },
+        {
+          "fact_id": "reviewed_versions_b_to_c",
+          "statement": "系统已审核版本先 B 后 C，C 替代 B，当前指针为 C。",
+          "required": true,
+          "marker_groups": [["B"], ["C"], ["替代", "supersedes", "取代"], ["当前", "指针"]]
+        }
+      ],
+      "acceptable_evidence": [
+        {"evidence_id": "ev_eded2531bd98d9404d9f8911d1e448dc0dc1e36c93d76a8f229fff6136dee19f", "content_hash": "20c7d7013aab999f842d351790cc674e729b469db27fc98c86567bd79da32a30"},
+        {"evidence_id": "ev_c5d39dfe67531909eb7d327ed92982d03f9a56237584ef107fbdce8e923a4c71", "content_hash": "68c255aea4a6b5bb481be8e201394db7767f2161f16bc28b2060cc1d89108d38"}
+      ],
+      "required_sources": ["chat", "document"],
+      "expected_authority": {"levels": ["discussion", "reviewed_decision"], "notes": "聊天讨论、评审材料和系统已审核版本是三个不同层级。"},
+      "expected_temporal": {"known_at": null, "expected_current_version_id": "dv_f69943d9d56ebc090fc63d2f0e9ae671", "expected_version_ids": ["dv_7373e0dc9719faa5376ce9e51da65cc9", "dv_f69943d9d56ebc090fc63d2f0e9ae671"], "expected_supersedes": {"dv_f69943d9d56ebc090fc63d2f0e9ae671": "dv_7373e0dc9719faa5376ce9e51da65cc9"}, "requires_history": true, "unknown_time_policy": "讨论、评审和审核时间不能互相替代。"},
+      "expected_conflict": null,
+      "abstention": {"required": false, "expected_termination": ["sufficient", "insufficient"], "must_disclose": []},
+      "required_capabilities": ["history_view"],
+      "injected_failure": null,
+      "human_review_rules": [
+        "确认三个层级分别披露，不把聊天或评审材料升级为正式确认。",
+        "确认 B→C 的已审核版本链与当前指针正确。"
+      ]
+    },
+    "conflict-atlas": {
+      "task_id": "conflict-atlas",
+      "category": "conflict",
+      "decision_id": null,
+      "key_facts": [
+        {
+          "fact_id": "ack_values",
+          "statement": "同日两份记录分别写 ack_mode=exactly_once 与 at_least_once。",
+          "required": true,
+          "marker_groups": [["exactly_once"], ["at_least_once"]]
+        },
+        {
+          "fact_id": "ack_unresolved",
+          "statement": "两份记录尚未对账，系统不裁决哪一方正确。",
+          "required": true,
+          "marker_groups": [["未", "尚未", "没有"], ["对账", "核对", "裁决"]]
+        }
+      ],
+      "acceptable_evidence": [
+        {"evidence_id": "ev_fec06e3f5d2acba37db2d8ab162b3506de32c66a3132ce8abb08ccc185ee8d06", "content_hash": "5033543c815050298ce54e6cd3c4fae369348127c57ab46c833d17b7770458ac"},
+        {"evidence_id": "ev_6847f3e60f6f78f80ed8d9932655b2063ad75c4915429fd17a941ca7ac70650d", "content_hash": "bda7967c2ee10f2035a489936774310fc13b9752304dede02174368a1811e3fa"}
+      ],
+      "required_sources": ["document"],
+      "expected_authority": {"levels": ["source_evidence"], "notes": "两份同日来源冲突，保留双方；不选边。"},
+      "expected_temporal": {"known_at": null, "expected_current_version_id": null, "expected_version_ids": [], "expected_supersedes": {}, "unknown_time_policy": "只比较同一事件日的记录；未知时间不参与同日冲突判断。"},
+      "expected_conflict": {"field": "ack_mode", "values": ["exactly_once", "at_least_once"], "must_disclose_both": true},
+      "abstention": {"required": false, "expected_termination": ["conflict", "insufficient"], "must_disclose": [["exactly_once"], ["at_least_once"]]},
+      "required_capabilities": [],
+      "injected_failure": null,
+      "human_review_rules": [
+        "确认答案保留 exactly_once 与 at_least_once 双方，不擅自选边。",
+        "确认指出尚未对账/解决，而不是把其中一份当成最终事实。"
+      ]
+    },
+    "conflict-zephyr": {
+      "task_id": "conflict-zephyr",
+      "category": "conflict",
+      "decision_id": null,
+      "key_facts": [
+        {
+          "fact_id": "ttl_values",
+          "statement": "同日设计说明与值班记录分别写 ttl_seconds=60 与 300。",
+          "required": true,
+          "marker_groups": [["60"], ["300"]]
+        },
+        {
+          "fact_id": "ttl_unresolved",
+          "statement": "两份记录未核对，系统不平均也不裁决。",
+          "required": true,
+          "marker_groups": [["未", "尚未", "没有"], ["核对", "裁决", "平均"]]
+        }
+      ],
+      "acceptable_evidence": [
+        {"evidence_id": "ev_58c51a7538cd1b76bb744bc448492aa9f9ef6857179322314e1a326ddca491d1", "content_hash": "b81fa608a2cede955dcd77da55dc8911d5a45424281230c7f79c14ffa350cb6e"},
+        {"evidence_id": "ev_2516afa31ede8adf80b5e272401b27b5db741e533541c34a3a9842b5796d902f", "content_hash": "0c760813b9c7f539822f17359f86bd4da4f2cf73c4f7daa89d0681b98e251083"}
+      ],
+      "required_sources": ["document"],
+      "expected_authority": {"levels": ["source_evidence"], "notes": "设计说明与值班记录冲突，保留双方。"},
+      "expected_temporal": {"known_at": null, "expected_current_version_id": null, "expected_version_ids": [], "expected_supersedes": {}, "unknown_time_policy": "只比较同一事件日；未知时间不参与。"},
+      "expected_conflict": {"field": "ttl_seconds", "values": ["60", "300"], "must_disclose_both": true},
+      "abstention": {"required": false, "expected_termination": ["conflict", "insufficient"], "must_disclose": [["60"], ["300"]]},
+      "required_capabilities": [],
+      "injected_failure": null,
+      "human_review_rules": [
+        "确认答案同时披露 60 与 300 秒，不静默取平均或选一个。",
+        "确认指出两份同日记录尚未核对。"
+      ]
+    },
+    "missing-atlas": {
+      "task_id": "missing-atlas",
+      "category": "insufficient",
+      "decision_id": "dec_486fc2db944c219a5a44bf52ae040c03",
+      "key_facts": [
+        {
+          "fact_id": "latest_system_c",
+          "statement": "系统当前确认版本是 C：带 fencing token 的租约迁移。",
+          "required": true,
+          "marker_groups": [["C", "租约迁移"], ["fencing token", "fencing"]]
+        },
+        {
+          "fact_id": "production_unknown",
+          "statement": "没有生产执行证据，不能证明现在已执行/部署。",
+          "required": true,
+          "marker_groups": [["生产", "production"], ["执行", "部署", "deployed", "证据"]]
+        }
+      ],
+      "acceptable_evidence": [
+        {"evidence_id": "ev_e8a6134474085c010b751f866e005349c83c61801f71fca1fe0281d8c3273295", "content_hash": "cb389f60a412f364ddd8e195a62044ab08ff08c4a823ddaecf604cfede56bb15"}
+      ],
+      "required_sources": ["document"],
+      "expected_authority": {"levels": ["reviewed_decision", "execution"], "notes": "系统确认不等于实际执行；execution 不得由系统版本直接证明。"},
+      "expected_temporal": {"known_at": null, "expected_current_version_id": "dv_d46c1881b3b9a911a39e1f1a4efc1927", "expected_version_ids": ["dv_d46c1881b3b9a911a39e1f1a4efc1927"], "expected_supersedes": {"dv_d46c1881b3b9a911a39e1f1a4efc1927": "dv_3c0c1c993afe96c23dd83f9dd2d81b1f"}, "unknown_time_policy": "当前确认指针不等于现实生产状态。"},
+      "expected_conflict": null,
+      "abstention": {"required": true, "expected_termination": ["insufficient"], "must_disclose": [["生产", "production"], ["执行", "部署", "deployed", "未知", "缺少"]]},
+      "required_capabilities": [],
+      "injected_failure": null,
+      "missing_fact": "production_execution",
+      "human_review_rules": [
+        "确认答案将最新系统确认与生产执行证据分开。",
+        "确认没有因为系统版本存在就宣称生产已执行。"
+      ]
+    },
+    "missing-zephyr": {
+      "task_id": "missing-zephyr",
+      "category": "insufficient",
+      "decision_id": "dec_10b4be9a75199ef6259dea0b25f95f91",
+      "key_facts": [
+        {
+          "fact_id": "retention_unreviewed",
+          "statement": "只有七天保留窗口的未审核建议，没有正式批准或确认版本。",
+          "required": true,
+          "marker_groups": [["七天", "7 天", "7天"], ["建议", "候选", "提议"], ["未审核", "没有审批", "无审批", "未确认"]]
+        }
+      ],
+      "acceptable_evidence": [
+        {"evidence_id": "ev_0387cc6cec469e390ba9a6792c3f9a995525e2acf9a1c4a6dbee431c87ebdb7e", "content_hash": "5b57a8370d76a7a305116cd240d41ed2832a084f71850b7ef1314ec4226aac9d"}
+      ],
+      "required_sources": ["issue"],
+      "expected_authority": {"levels": ["discussion", "reviewed_decision"], "notes": "建议不是正式确认；没有已审核版本。"},
+      "expected_temporal": {"known_at": null, "expected_current_version_id": null, "expected_version_ids": [], "expected_supersedes": {}, "unknown_time_policy": "业务时间未知时不得补造批准时间。"},
+      "expected_conflict": null,
+      "abstention": {"required": true, "expected_termination": ["insufficient"], "must_disclose": [["审批", "批准", "approver"], ["确认", "confirmed", "版本"]]},
+      "required_capabilities": [],
+      "injected_failure": null,
+      "missing_fact": "retention_approver",
+      "no_confirmed_version": true,
+      "human_review_rules": [
+        "确认答案明确只有未审核建议，没有批准人。",
+        "确认没有把建议当作当前确认版本。"
+      ]
+    },
+    "recovery-atlas": {
+      "task_id": "recovery-atlas",
+      "category": "tool_failure",
+      "decision_id": null,
+      "key_facts": [
+        {
+          "fact_id": "issue_tool_failed",
+          "statement": "Issue 工具不可用，需要换来源并披露缺口。",
+          "required": true,
+          "marker_groups": [["Issue", "search_issues"], ["不可用", "失败", "超时", "缺口"]]
+        },
+        {
+          "fact_id": "recovery_rebuild_pool",
+          "statement": "应急手册要求重建连接池并重新加载证书，不能只刷新磁盘文件。",
+          "required": true,
+          "marker_groups": [["重建", "reload", "重新加载"], ["连接池", "pool"], ["证书", "certificate"], ["不能只", "不能仅", "不只是"]]
+        }
+      ],
+      "acceptable_evidence": [
+        {"evidence_id": "ev_799f114b3d4b1bb200032bdc7a99c1786bb3fd9c41937dbac043885e5e0843b8", "content_hash": "424a96c9a679afd83860d7eb00aef7cf3a50dc1a379b939bf274e43a535cdcb7"}
+      ],
+      "required_sources": ["document"],
+      "expected_authority": {"levels": ["source_evidence"], "notes": "应急手册是操作来源，不是生产执行验证。"},
+      "expected_temporal": {"known_at": null, "expected_current_version_id": null, "expected_version_ids": [], "expected_supersedes": {}, "unknown_time_policy": "不得从采集时间补造事件时间。"},
+      "expected_conflict": null,
+      "abstention": {"required": false, "expected_termination": ["sufficient", "insufficient", "tool_failure"], "must_disclose": [["Issue", "search_issues"], ["不可用", "失败", "超时", "缺口"]]},
+      "required_capabilities": ["failure_recovery"],
+      "injected_failure": {"skill": "problem", "error": "TimeoutError"},
+      "human_review_rules": [
+        "确认故障后实际换到文档来源，而不是只重试 Issue。",
+        "确认答案给出重建连接池并重载证书，且披露 Issue 工具缺口。"
+      ]
+    },
+    "recovery-zephyr": {
+      "task_id": "recovery-zephyr",
+      "category": "tool_failure",
+      "decision_id": null,
+      "key_facts": [
+        {
+          "fact_id": "document_tool_failed",
+          "statement": "文档工具不可用，需要查其他来源并披露缺口。",
+          "required": true,
+          "marker_groups": [["文档", "search_docs"], ["不可用", "失败", "超时", "缺口"]]
+        },
+        {
+          "fact_id": "pool_recovery_order",
+          "statement": "恢复时先停止预热并回收句柄；新增容量不是根治。",
+          "required": true,
+          "marker_groups": [["停止", "关闭"], ["预热", "prewarm"], ["回收", "归还"], ["句柄", "handle"], ["容量", "capacity"]]
+        }
+      ],
+      "acceptable_evidence": [
+        {"evidence_id": "ev_678bef6cd25f899536497b05322e7e0e8dff9fd4bc5b5607c85b90fced99232e", "content_hash": "4c7bef9159a52690f886773bae4ef59314b5159e2c53035a60f669613463a990"}
+      ],
+      "required_sources": ["log"],
+      "expected_authority": {"levels": ["source_evidence"], "notes": "池日志是来源证据，不是正式决策或执行确认。"},
+      "expected_temporal": {"known_at": null, "expected_current_version_id": null, "expected_version_ids": [], "expected_supersedes": {}, "unknown_time_policy": "不得从采集时间补造事件时间。"},
+      "expected_conflict": null,
+      "abstention": {"required": false, "expected_termination": ["sufficient", "insufficient", "tool_failure"], "must_disclose": [["文档", "search_docs"], ["不可用", "失败", "超时", "缺口"]]},
+      "required_capabilities": ["failure_recovery"],
+      "injected_failure": {"skill": "document", "error": "TimeoutError"},
+      "human_review_rules": [
+        "确认故障后实际换到日志来源，而不是只重试文档工具。",
+        "确认答案指出先停预热再回收句柄，并说明扩容不是根因修复。"
+      ]
+    }
+  }
+}

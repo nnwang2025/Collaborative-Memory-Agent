@@ -1,0 +1,613 @@
+[
+  {
+    "content": "Atlas 顺序队列讨论：采用分区归属方案 B，原因是同一账户的写入必须有序。",
+    "content_hash": "97f4ff9983269603afa42e31ea2d67927c99ad9a637e145a39963508e8853492",
+    "dataset_kind": "live",
+    "event_time": "2025-01-01T00:00:00Z",
+    "evidence_id": "ev_9ccc9fcf6f0f451cfc3a4ecc8d405ebe7d8f54e05f1bd49b7d03740f5124b7aa",
+    "ingested_at": "2025-06-01T00:00:00Z",
+    "locator": {
+      "record_key": "a-order-chat"
+    },
+    "metadata": {
+      "assertions": {
+        "decision_reason": "account_order"
+      },
+      "synthetic": true
+    },
+    "original_record_id": "a-order-chat",
+    "project_id": "bench-atlas",
+    "source_type": "chat",
+    "source_uri": "benchmark://bench-atlas/chat"
+  },
+  {
+    "content": "Atlas 调度方案评审批准 B：固定分区归属；代价是热点账户暂不跨分区迁移。",
+    "content_hash": "34bb07cc8fe528b325074f3ca95612036cf533c66e1ee6b00f46b53e91c676d0",
+    "dataset_kind": "live",
+    "event_time": "2025-01-01T00:00:00Z",
+    "evidence_id": "ev_040364740331b53779419de0bb315a9c06aa4ef378aee78b41b9a90adbd5fe0a",
+    "ingested_at": "2025-06-01T00:00:00Z",
+    "locator": {
+      "record_key": "a-order-issue"
+    },
+    "metadata": {
+      "assertions": {},
+      "synthetic": true
+    },
+    "original_record_id": "a-order-issue",
+    "project_id": "bench-atlas",
+    "source_type": "issue",
+    "source_uri": "benchmark://bench-atlas/issue"
+  },
+  {
+    "content": "Atlas 后续调度方案 C 提议：使用租约迁移。评审要求迁移前保留 fencing token。",
+    "content_hash": "cb389f60a412f364ddd8e195a62044ab08ff08c4a823ddaecf604cfede56bb15",
+    "dataset_kind": "live",
+    "event_time": "2025-02-10T00:00:00Z",
+    "evidence_id": "ev_e8a6134474085c010b751f866e005349c83c61801f71fca1fe0281d8c3273295",
+    "ingested_at": "2025-06-01T00:00:00Z",
+    "locator": {
+      "record_key": "a-order-proposal"
+    },
+    "metadata": {
+      "assertions": {},
+      "synthetic": true
+    },
+    "original_record_id": "a-order-proposal",
+    "project_id": "bench-atlas",
+    "source_type": "document",
+    "source_uri": "benchmark://bench-atlas/document"
+  },
+  {
+    "content": "Atlas E42 故障日志：旧证书仍在连接池中；刷新证书后未重建池，因此出现 TLS 校验失败。",
+    "content_hash": "091e4711c79b955602de3e7aec828c008e0c6c0dbf5b9aac35bfc66557f34ef4",
+    "dataset_kind": "live",
+    "event_time": "2025-02-02T00:00:00Z",
+    "evidence_id": "ev_9203ca23a20d38a3bf69190bdfa04071f85e50036c37b84e298fcf22ffa3f7e3",
+    "ingested_at": "2025-06-01T00:00:00Z",
+    "locator": {
+      "record_key": "a-tls-log"
+    },
+    "metadata": {
+      "assertions": {
+        "root_cause": "stale_pool_certificate"
+      },
+      "synthetic": true
+    },
+    "original_record_id": "a-tls-log",
+    "project_id": "bench-atlas",
+    "source_type": "log",
+    "source_uri": "benchmark://bench-atlas/log"
+  },
+  {
+    "content": "Atlas 回滚调查入口：失败任务与 A-17 相关；需查 A-17 运行记录才能确认恢复门槛。",
+    "content_hash": "876232be62fb879129bafe228e3d6e2593883d86893d03099c666b7ffc457dd3",
+    "dataset_kind": "live",
+    "event_time": "2025-04-01T00:00:00Z",
+    "evidence_id": "ev_90e73251d970fdd582be774ca68b3288634fbc1c288140a4f5aa8f7afdf47213",
+    "ingested_at": "2025-06-01T00:00:00Z",
+    "locator": {
+      "record_key": "a-incident"
+    },
+    "metadata": {
+      "assertions": {},
+      "related_record": "a-runbook-A17",
+      "synthetic": true
+    },
+    "original_record_id": "a-incident",
+    "project_id": "bench-atlas",
+    "source_type": "issue",
+    "source_uri": "benchmark://bench-atlas/issue"
+  },
+  {
+    "content": "A-17 运行记录：积压持续两分钟才触发回滚，短暂峰值不回滚；后续提交加入持续时间门槛。",
+    "content_hash": "1fb634d92eb79504a729336f296a35534bca3149140670fe22ef9071c2844838",
+    "dataset_kind": "live",
+    "event_time": "2025-04-03T00:00:00Z",
+    "evidence_id": "ev_708b62597e00a4fb22771ed5f54117e7faefb6833caa51270fa0b1333c69ceaf",
+    "ingested_at": "2025-06-01T00:00:00Z",
+    "locator": {
+      "record_key": "a-runbook-A17"
+    },
+    "metadata": {
+      "assertions": {},
+      "synthetic": true
+    },
+    "original_record_id": "a-runbook-A17",
+    "project_id": "bench-atlas",
+    "source_type": "document",
+    "source_uri": "benchmark://bench-atlas/document"
+  },
+  {
+    "content": "Atlas prod 消息确认说明，2025-05-01：ack_mode=exactly_once。",
+    "content_hash": "5033543c815050298ce54e6cd3c4fae369348127c57ab46c833d17b7770458ac",
+    "dataset_kind": "live",
+    "event_time": "2025-05-01T00:00:00Z",
+    "evidence_id": "ev_fec06e3f5d2acba37db2d8ab162b3506de32c66a3132ce8abb08ccc185ee8d06",
+    "ingested_at": "2025-06-01T00:00:00Z",
+    "locator": {
+      "record_key": "a-ack-1"
+    },
+    "metadata": {
+      "assertions": {
+        "ack_mode": "exactly_once",
+        "environment": "prod"
+      },
+      "synthetic": true
+    },
+    "original_record_id": "a-ack-1",
+    "project_id": "bench-atlas",
+    "source_type": "document",
+    "source_uri": "benchmark://bench-atlas/document"
+  },
+  {
+    "content": "Atlas prod 同日运维记录：ack_mode=at_least_once；尚未完成对账。",
+    "content_hash": "bda7967c2ee10f2035a489936774310fc13b9752304dede02174368a1811e3fa",
+    "dataset_kind": "live",
+    "event_time": "2025-05-01T00:00:00Z",
+    "evidence_id": "ev_6847f3e60f6f78f80ed8d9932655b2063ad75c4915429fd17a941ca7ac70650d",
+    "ingested_at": "2025-06-01T00:00:00Z",
+    "locator": {
+      "record_key": "a-ack-2"
+    },
+    "metadata": {
+      "assertions": {
+        "ack_mode": "at_least_once",
+        "environment": "prod"
+      },
+      "synthetic": true
+    },
+    "original_record_id": "a-ack-2",
+    "project_id": "bench-atlas",
+    "source_type": "document",
+    "source_uri": "benchmark://bench-atlas/document"
+  },
+  {
+    "content": "Atlas E42 应急手册：重建连接池并重新加载证书，不能仅刷新磁盘文件。",
+    "content_hash": "424a96c9a679afd83860d7eb00aef7cf3a50dc1a379b939bf274e43a535cdcb7",
+    "dataset_kind": "live",
+    "event_time": "2025-05-03T00:00:00Z",
+    "evidence_id": "ev_799f114b3d4b1bb200032bdc7a99c1786bb3fd9c41937dbac043885e5e0843b8",
+    "ingested_at": "2025-06-01T00:00:00Z",
+    "locator": {
+      "record_key": "a-recovery"
+    },
+    "metadata": {
+      "assertions": {},
+      "synthetic": true
+    },
+    "original_record_id": "a-recovery",
+    "project_id": "bench-atlas",
+    "source_type": "document",
+    "source_uri": "benchmark://bench-atlas/document"
+  },
+  {
+    "content": "Zephyr 重试策略：最多两次重试，第三次会超出租约窗口，因此要求交给下一轮任务。",
+    "content_hash": "02efc09c43787f000abded653e276f452b3de96acbbbfba67eca2f8dbeb397fd",
+    "dataset_kind": "live",
+    "event_time": "2025-04-01T00:00:00Z",
+    "evidence_id": "ev_c144747229712e484b5156d159cf2d96d6fcf9089a49d0bd270e9d024eab54f1",
+    "ingested_at": "2025-06-01T00:00:00Z",
+    "locator": {
+      "record_key": "z-retry"
+    },
+    "metadata": {
+      "assertions": {},
+      "synthetic": true
+    },
+    "original_record_id": "z-retry",
+    "project_id": "bench-zephyr",
+    "source_type": "document",
+    "source_uri": "benchmark://bench-zephyr/document"
+  },
+  {
+    "content": "Zephyr 预热覆盖问题：旧任务可能把新缓存值覆盖；Z-cachefix 要求比较 generation 后才能写入。",
+    "content_hash": "12673238a11f4fb830fc21b829f7c4d8ef366e60d5848c7b5bca93766a6ec6ed",
+    "dataset_kind": "live",
+    "event_time": "2025-01-12T00:00:00Z",
+    "evidence_id": "ev_54d814aad58226e1fb4b90d5ae3b6877c7eba9780015c722ecb38a3a7b50c43d",
+    "ingested_at": "2025-06-01T00:00:00Z",
+    "locator": {
+      "record_key": "z-warm-issue"
+    },
+    "metadata": {
+      "assertions": {},
+      "synthetic": true
+    },
+    "original_record_id": "z-warm-issue",
+    "project_id": "bench-zephyr",
+    "source_type": "issue",
+    "source_uri": "benchmark://bench-zephyr/issue"
+  },
+  {
+    "content": "Zephyr 泄漏调查入口：定位到 Z-42；需要追查 Z-42 关闭顺序记录，而不是仅提高内存限制。",
+    "content_hash": "cd914832c93079dfa52cb1b529b7c73230cfcab0ea823bd46734a3941a50bb5b",
+    "dataset_kind": "live",
+    "event_time": "2025-04-01T00:00:00Z",
+    "evidence_id": "ev_b8bafe7a148074b1e2f3e736ef6cc2ffa36df861fc961030484fa7e82ab3961d",
+    "ingested_at": "2025-06-01T00:00:00Z",
+    "locator": {
+      "record_key": "z-incident"
+    },
+    "metadata": {
+      "assertions": {},
+      "related_record": "z-runbook-Z42",
+      "synthetic": true
+    },
+    "original_record_id": "z-incident",
+    "project_id": "bench-zephyr",
+    "source_type": "issue",
+    "source_uri": "benchmark://bench-zephyr/issue"
+  },
+  {
+    "content": "Z-42 关闭顺序记录：先停止预热生产者，再释放句柄；反序会让新任务继续占用已释放池。",
+    "content_hash": "98ab10c95eb29e0020bf7d7aed2198936cd849756d373573d3ada373480e3943",
+    "dataset_kind": "live",
+    "event_time": "2025-04-02T00:00:00Z",
+    "evidence_id": "ev_b8c16fdaf99bd11bd78ff98cb1b19316c55ac89163df2f04310e050bb2ead20c",
+    "ingested_at": "2025-06-01T00:00:00Z",
+    "locator": {
+      "record_key": "z-runbook-Z42"
+    },
+    "metadata": {
+      "assertions": {},
+      "synthetic": true
+    },
+    "original_record_id": "z-runbook-Z42",
+    "project_id": "bench-zephyr",
+    "source_type": "document",
+    "source_uri": "benchmark://bench-zephyr/document"
+  },
+  {
+    "content": "Zephyr prod 缓存说明，2025-05-01：ttl_seconds=60。",
+    "content_hash": "b81fa608a2cede955dcd77da55dc8911d5a45424281230c7f79c14ffa350cb6e",
+    "dataset_kind": "live",
+    "event_time": "2025-05-01T00:00:00Z",
+    "evidence_id": "ev_58c51a7538cd1b76bb744bc448492aa9f9ef6857179322314e1a326ddca491d1",
+    "ingested_at": "2025-06-01T00:00:00Z",
+    "locator": {
+      "record_key": "z-ttl-1"
+    },
+    "metadata": {
+      "assertions": {
+        "environment": "prod",
+        "ttl_seconds": 60
+      },
+      "synthetic": true
+    },
+    "original_record_id": "z-ttl-1",
+    "project_id": "bench-zephyr",
+    "source_type": "document",
+    "source_uri": "benchmark://bench-zephyr/document"
+  },
+  {
+    "content": "Zephyr prod 值班记录，同日：ttl_seconds=300；与设计记录未核对。",
+    "content_hash": "0c760813b9c7f539822f17359f86bd4da4f2cf73c4f7daa89d0681b98e251083",
+    "dataset_kind": "live",
+    "event_time": "2025-05-01T00:00:00Z",
+    "evidence_id": "ev_2516afa31ede8adf80b5e272401b27b5db741e533541c34a3a9842b5796d902f",
+    "ingested_at": "2025-06-01T00:00:00Z",
+    "locator": {
+      "record_key": "z-ttl-2"
+    },
+    "metadata": {
+      "assertions": {
+        "environment": "prod",
+        "ttl_seconds": 300
+      },
+      "synthetic": true
+    },
+    "original_record_id": "z-ttl-2",
+    "project_id": "bench-zephyr",
+    "source_type": "document",
+    "source_uri": "benchmark://bench-zephyr/document"
+  },
+  {
+    "content": "Zephyr 清理策略建议：提出七天保留窗口；没有审批或执行确认记录。",
+    "content_hash": "5b57a8370d76a7a305116cd240d41ed2832a084f71850b7ef1314ec4226aac9d",
+    "dataset_kind": "live",
+    "event_time": "2025-05-01T00:00:00Z",
+    "evidence_id": "ev_0387cc6cec469e390ba9a6792c3f9a995525e2acf9a1c4a6dbee431c87ebdb7e",
+    "ingested_at": "2025-06-01T00:00:00Z",
+    "locator": {
+      "record_key": "z-retention"
+    },
+    "metadata": {
+      "assertions": {
+        "approval": "pending"
+      },
+      "synthetic": true
+    },
+    "original_record_id": "z-retention",
+    "project_id": "bench-zephyr",
+    "source_type": "issue",
+    "source_uri": "benchmark://bench-zephyr/issue"
+  },
+  {
+    "content": "Zephyr P9 池耗尽记录：预热句柄未归还；恢复时先停止预热并回收句柄，新增容量不是根治。",
+    "content_hash": "4c7bef9159a52690f886773bae4ef59314b5159e2c53035a60f669613463a990",
+    "dataset_kind": "live",
+    "event_time": "2025-05-02T00:00:00Z",
+    "evidence_id": "ev_678bef6cd25f899536497b05322e7e0e8dff9fd4bc5b5607c85b90fced99232e",
+    "ingested_at": "2025-06-01T00:00:00Z",
+    "locator": {
+      "record_key": "z-pool-log"
+    },
+    "metadata": {
+      "assertions": {},
+      "synthetic": true
+    },
+    "original_record_id": "z-pool-log",
+    "project_id": "bench-zephyr",
+    "source_type": "log",
+    "source_uri": "benchmark://bench-zephyr/log"
+  },
+  {
+    "content": "Zephyr 缓存方案讨论批准 B：读本地副本，优先可用性；跨节点短暂不一致需要另行处理。",
+    "content_hash": "20c7d7013aab999f842d351790cc674e729b469db27fc98c86567bd79da32a30",
+    "dataset_kind": "live",
+    "event_time": "2025-01-01T00:00:00Z",
+    "evidence_id": "ev_eded2531bd98d9404d9f8911d1e448dc0dc1e36c93d76a8f229fff6136dee19f",
+    "ingested_at": "2025-06-01T00:00:00Z",
+    "locator": {
+      "record_key": "z-cache-chat"
+    },
+    "metadata": {
+      "assertions": {},
+      "synthetic": true
+    },
+    "original_record_id": "z-cache-chat",
+    "project_id": "bench-zephyr",
+    "source_type": "chat",
+    "source_uri": "benchmark://bench-zephyr/chat"
+  },
+  {
+    "content": "Zephyr 缓存方案 C 评审材料：读取版本水位，减少旧值回写；评审通过并不证明生产已切换。",
+    "content_hash": "68c255aea4a6b5bb481be8e201394db7767f2161f16bc28b2060cc1d89108d38",
+    "dataset_kind": "live",
+    "event_time": "2025-02-01T00:00:00Z",
+    "evidence_id": "ev_c5d39dfe67531909eb7d327ed92982d03f9a56237584ef107fbdce8e923a4c71",
+    "ingested_at": "2025-06-01T00:00:00Z",
+    "locator": {
+      "record_key": "z-cache-C"
+    },
+    "metadata": {
+      "assertions": {},
+      "synthetic": true
+    },
+    "original_record_id": "z-cache-C",
+    "project_id": "bench-zephyr",
+    "source_type": "document",
+    "source_uri": "benchmark://bench-zephyr/document"
+  },
+  {
+    "content": "Orbit 开发样本：批次上限八条，以便人工定位单条失败。",
+    "content_hash": "575c5cf95de0527309fc8f4a2ef51453b9b6cd04a9f8e501f57b358e75eacdca",
+    "dataset_kind": "live",
+    "event_time": "2025-01-01T00:00:00Z",
+    "evidence_id": "ev_db335e00d3aff0cbb038c01251536f9d01efbcca03bf93e493d31b5ce1d73218",
+    "ingested_at": "2025-06-01T00:00:00Z",
+    "locator": {
+      "record_key": "d-config"
+    },
+    "metadata": {
+      "assertions": {},
+      "synthetic": true
+    },
+    "original_record_id": "d-config",
+    "project_id": "bench-orbit-dev",
+    "source_type": "document",
+    "source_uri": "benchmark://bench-orbit-dev/document"
+  },
+  {
+    "content": "Orbit 开发样本：压缩实验尚未运行，没有吞吐量结论。",
+    "content_hash": "39350f49e7ace19722b4b85f9b8e371ff9f50ddcdc25728e9796c142f9b418ff",
+    "dataset_kind": "live",
+    "event_time": "2025-01-01T00:00:00Z",
+    "evidence_id": "ev_998a7b74e1420bdf245df6ecf44bd190295a0ccdf0d704d41b8cc762461a4294",
+    "ingested_at": "2025-06-01T00:00:00Z",
+    "locator": {
+      "record_key": "d-unknown"
+    },
+    "metadata": {
+      "assertions": {},
+      "synthetic": true
+    },
+    "original_record_id": "d-unknown",
+    "project_id": "bench-orbit-dev",
+    "source_type": "issue",
+    "source_uri": "benchmark://bench-orbit-dev/issue"
+  },
+  {
+    "content": "commit 8360af047eb3c7fee955ba8464cf1efe51efdaab by Benchmark Author\ndate: 2025-01-01T12:00:00Z\nmessage: Atlas initial partition config\n\nfiles: config.txt",
+    "content_hash": "146c4a6106a0d505228e6314254e857d876f4bba444bec35c6e8cee384fe3872",
+    "dataset_kind": "live",
+    "event_time": "2025-01-01T12:00:00Z",
+    "evidence_id": "ev_f2756f6198440a671ef91c576124c6213529a415d145bcd839cc4090101db28f",
+    "ingested_at": "2025-06-01T00:00:00Z",
+    "locator": {
+      "commit_sha": "8360af047eb3c7fee955ba8464cf1efe51efdaab",
+      "files": [
+        "config.txt"
+      ],
+      "repository_uri": "git+benchmark://bench-atlas/repo"
+    },
+    "metadata": {
+      "author": "Benchmark Author",
+      "category": "commits",
+      "date": "2025-01-01T12:00:00Z",
+      "email": "benchmark@example.invalid",
+      "files": [
+        "config.txt"
+      ],
+      "hash": "8360af047eb3c7fee955ba8464cf1efe51efdaab",
+      "message": "Atlas initial partition config\n",
+      "repository_uri": "git+benchmark://bench-atlas/repo",
+      "synthetic": true
+    },
+    "original_record_id": "8360af047eb3c7fee955ba8464cf1efe51efdaab",
+    "project_id": "bench-atlas",
+    "source_type": "git_commit",
+    "source_uri": "git+benchmark://bench-atlas/repo"
+  },
+  {
+    "content": "commit f7935f9f42874907e16f9739896b05f88472b88d by Benchmark Author\ndate: 2025-01-13T12:00:00Z\nmessage: Atlas account ordering uses partition ownership B\n\nfiles: config.txt",
+    "content_hash": "7e68f6f3371b973aff76ac43bb6ab07f495d2dff9c71b1700123af0c1f7f2b18",
+    "dataset_kind": "live",
+    "event_time": "2025-01-13T12:00:00Z",
+    "evidence_id": "ev_6c9d44174e8d75343a4c992eb5be7d5be7f3f3ed05ae58a1a56ab5341c47d0b0",
+    "ingested_at": "2025-06-01T00:00:00Z",
+    "locator": {
+      "commit_sha": "f7935f9f42874907e16f9739896b05f88472b88d",
+      "files": [
+        "config.txt"
+      ],
+      "repository_uri": "git+benchmark://bench-atlas/repo"
+    },
+    "metadata": {
+      "author": "Benchmark Author",
+      "category": "commits",
+      "date": "2025-01-13T12:00:00Z",
+      "email": "benchmark@example.invalid",
+      "files": [
+        "config.txt"
+      ],
+      "hash": "f7935f9f42874907e16f9739896b05f88472b88d",
+      "message": "Atlas account ordering uses partition ownership B\n",
+      "repository_uri": "git+benchmark://bench-atlas/repo",
+      "synthetic": true
+    },
+    "original_record_id": "f7935f9f42874907e16f9739896b05f88472b88d",
+    "project_id": "bench-atlas",
+    "source_type": "git_commit",
+    "source_uri": "git+benchmark://bench-atlas/repo"
+  },
+  {
+    "content": "commit 956ba4eebf55e986a5c81c719a7693b88dca4639 by Benchmark Author\ndate: 2025-04-04T12:00:00Z\nmessage: Atlas A-17 rollback waits for persistent backlog\n\nfiles: config.txt",
+    "content_hash": "4d678af67f58eedb50cee9b86c58c28fccc616e89d1826f11ca26247fbe7d8b9",
+    "dataset_kind": "live",
+    "event_time": "2025-04-04T12:00:00Z",
+    "evidence_id": "ev_100b9694ff8b2f1365b8cf35b3b657e9269adff028d7eeaed2dc2afe071c078b",
+    "ingested_at": "2025-06-01T00:00:00Z",
+    "locator": {
+      "commit_sha": "956ba4eebf55e986a5c81c719a7693b88dca4639",
+      "files": [
+        "config.txt"
+      ],
+      "repository_uri": "git+benchmark://bench-atlas/repo"
+    },
+    "metadata": {
+      "author": "Benchmark Author",
+      "category": "commits",
+      "date": "2025-04-04T12:00:00Z",
+      "email": "benchmark@example.invalid",
+      "files": [
+        "config.txt"
+      ],
+      "hash": "956ba4eebf55e986a5c81c719a7693b88dca4639",
+      "message": "Atlas A-17 rollback waits for persistent backlog\n",
+      "repository_uri": "git+benchmark://bench-atlas/repo",
+      "synthetic": true
+    },
+    "original_record_id": "956ba4eebf55e986a5c81c719a7693b88dca4639",
+    "project_id": "bench-atlas",
+    "source_type": "git_commit",
+    "source_uri": "git+benchmark://bench-atlas/repo"
+  },
+  {
+    "content": "commit 540030a539177074706723da0a65c4729a262739 by Benchmark Author\ndate: 2025-01-01T12:00:00Z\nmessage: Zephyr initial cache config\n\nfiles: config.txt",
+    "content_hash": "81aad3c5d965d50e445bb413d4346fe84620d760fddde8d60878dc45e4cb8a90",
+    "dataset_kind": "live",
+    "event_time": "2025-01-01T12:00:00Z",
+    "evidence_id": "ev_c5978dd9465aecba1afa238b0e9a6a2ddef22ad8aa21bea77730a10cec19c895",
+    "ingested_at": "2025-06-01T00:00:00Z",
+    "locator": {
+      "commit_sha": "540030a539177074706723da0a65c4729a262739",
+      "files": [
+        "config.txt"
+      ],
+      "repository_uri": "git+benchmark://bench-zephyr/repo"
+    },
+    "metadata": {
+      "author": "Benchmark Author",
+      "category": "commits",
+      "date": "2025-01-01T12:00:00Z",
+      "email": "benchmark@example.invalid",
+      "files": [
+        "config.txt"
+      ],
+      "hash": "540030a539177074706723da0a65c4729a262739",
+      "message": "Zephyr initial cache config\n",
+      "repository_uri": "git+benchmark://bench-zephyr/repo",
+      "synthetic": true
+    },
+    "original_record_id": "540030a539177074706723da0a65c4729a262739",
+    "project_id": "bench-zephyr",
+    "source_type": "git_commit",
+    "source_uri": "git+benchmark://bench-zephyr/repo"
+  },
+  {
+    "content": "commit 7d36bc7535d80d1114c4afa4133714f6830ddf47 by Benchmark Author\ndate: 2025-01-13T12:00:00Z\nmessage: Zephyr Z-cachefix compares generation before cache write\n\nfiles: config.txt",
+    "content_hash": "4406c36bbf0ab50065d13a0631da7f3b1ae188031e600258ceb587507926bf3b",
+    "dataset_kind": "live",
+    "event_time": "2025-01-13T12:00:00Z",
+    "evidence_id": "ev_2ba87b4fb100eda4fb435a963808b4fc0a87952835eea71207de39fdeee9e56f",
+    "ingested_at": "2025-06-01T00:00:00Z",
+    "locator": {
+      "commit_sha": "7d36bc7535d80d1114c4afa4133714f6830ddf47",
+      "files": [
+        "config.txt"
+      ],
+      "repository_uri": "git+benchmark://bench-zephyr/repo"
+    },
+    "metadata": {
+      "author": "Benchmark Author",
+      "category": "commits",
+      "date": "2025-01-13T12:00:00Z",
+      "email": "benchmark@example.invalid",
+      "files": [
+        "config.txt"
+      ],
+      "hash": "7d36bc7535d80d1114c4afa4133714f6830ddf47",
+      "message": "Zephyr Z-cachefix compares generation before cache write\n",
+      "repository_uri": "git+benchmark://bench-zephyr/repo",
+      "synthetic": true
+    },
+    "original_record_id": "7d36bc7535d80d1114c4afa4133714f6830ddf47",
+    "project_id": "bench-zephyr",
+    "source_type": "git_commit",
+    "source_uri": "git+benchmark://bench-zephyr/repo"
+  },
+  {
+    "content": "commit 9764ae07e96039cffee6c6c7fac01f47247e20df by Benchmark Author\ndate: 2025-04-04T12:00:00Z\nmessage: Zephyr Z-42 stops producer before closing handles\n\nfiles: config.txt",
+    "content_hash": "7b75a6506e2415bc72d14ad5fab4cabcab8aac809b228ddc34dae64462709630",
+    "dataset_kind": "live",
+    "event_time": "2025-04-04T12:00:00Z",
+    "evidence_id": "ev_3f3061b777834e3cdf0b55f1e86a64d5beb019a8a57148fde61fe71c90c3cb66",
+    "ingested_at": "2025-06-01T00:00:00Z",
+    "locator": {
+      "commit_sha": "9764ae07e96039cffee6c6c7fac01f47247e20df",
+      "files": [
+        "config.txt"
+      ],
+      "repository_uri": "git+benchmark://bench-zephyr/repo"
+    },
+    "metadata": {
+      "author": "Benchmark Author",
+      "category": "commits",
+      "date": "2025-04-04T12:00:00Z",
+      "email": "benchmark@example.invalid",
+      "files": [
+        "config.txt"
+      ],
+      "hash": "9764ae07e96039cffee6c6c7fac01f47247e20df",
+      "message": "Zephyr Z-42 stops producer before closing handles\n",
+      "repository_uri": "git+benchmark://bench-zephyr/repo",
+      "synthetic": true
+    },
+    "original_record_id": "9764ae07e96039cffee6c6c7fac01f47247e20df",
+    "project_id": "bench-zephyr",
+    "source_type": "git_commit",
+    "source_uri": "git+benchmark://bench-zephyr/repo"
+  }
+]

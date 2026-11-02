@@ -6,7 +6,9 @@ Three agent backends available:
   3. Linear     (–linear) – Original sequential pipeline
 """
 
-import sys
+import argparse
+
+from src.evidence import EvidenceScope
 
 from src.agents.coordinator_agent import CoordinatorAgent
 
@@ -29,21 +31,37 @@ def main():
         pass
 
     # Parse CLI flags
-    use_react = "--react" in sys.argv
-    use_linear = "--linear" in sys.argv
+    parser = argparse.ArgumentParser()
+    modes = parser.add_mutually_exclusive_group()
+    modes.add_argument("--react", action="store_true")
+    modes.add_argument("--linear", action="store_true")
+    modes.add_argument("--langgraph", action="store_true")
+    parser.add_argument("--dataset-kind", choices=["fixture", "live"], default="fixture")
+    parser.add_argument("--project-id")
+    parser.add_argument("--db", type=str, default=None, help="Explicit live Evidence SQLite path")
+    parser.add_argument("--trace-jsonl", help="Explicit opt-in export path, for --react only")
+    args = parser.parse_args()
+    fields = {"dataset_kind": args.dataset_kind}
+    if args.project_id is not None:
+        fields["project_id"] = args.project_id
+    try:
+        scope = EvidenceScope(**fields)
+    except ValueError as exc:
+        parser.error(str(exc))
+    use_react, use_linear = args.react, args.linear
 
     if use_react:
         print_banner("ReAct Agent (Think-Act-Observe)")
         from src.agents.react_agent import ReActAgent
-        agent = ReActAgent(max_iterations=5)
-        run_react_loop(agent)
+        agent = ReActAgent(max_iterations=5, scope=scope, db_path=args.db)
+        run_react_loop(agent, trace_path=args.trace_jsonl)
     elif use_linear:
         print_banner("Linear Pipeline")
-        agent = CoordinatorAgent(use_langgraph=False)
+        agent = CoordinatorAgent(use_langgraph=False, scope=scope, db_path=args.db)
         run_simple_loop(agent)
     else:
         print_banner("LangGraph StateGraph (parallel fan-out)")
-        agent = CoordinatorAgent(use_langgraph=True)
+        agent = CoordinatorAgent(use_langgraph=True, scope=scope, db_path=args.db)
         run_simple_loop(agent)
 
 
@@ -51,7 +69,7 @@ def run_simple_loop(agent):
     """CLI loop for LangGraph and Linear backends (single ask() call)."""
     while True:
         try:
-            question = input("\n❯ ").strip()
+            question = input("\n> ").strip()
         except (EOFError, KeyboardInterrupt):
             print("\n再见！")
             break
@@ -67,11 +85,11 @@ def run_simple_loop(agent):
         print(answer)
 
 
-def run_react_loop(agent):
+def run_react_loop(agent, trace_path=None):
     """CLI loop for ReAct backend."""
     while True:
         try:
-            question = input("\n🧠❯ ").strip()
+            question = input("\nreact> ").strip()
         except (EOFError, KeyboardInterrupt):
             print("\n再见！")
             break
@@ -82,7 +100,12 @@ def run_react_loop(agent):
         if not question:
             continue
 
-        answer = agent.run(question)
+        if trace_path:
+            result = agent.run_result(question)
+            result.export_jsonl(trace_path)
+            answer = result.answer
+        else:
+            answer = agent.run(question)
         print()
         print(answer)
 

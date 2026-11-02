@@ -1,10 +1,13 @@
 """
-Evaluation benchmarks for the Collaborative Memory Agent.
+Legacy demonstration diagnostics for the Collaborative Memory Agent.
+
+These keyword-derived labels are not an independent quality benchmark.
+Use python -m benchmark.runner for frozen evidence-labelled offline comparisons.
 
 Measures:
-  1. Retrieval quality: Recall@5 for pure-BM25 vs Hybrid (vector+BM25+entity)
+  1. Retrieval quality: Hit@5 for pure-BM25 vs Hybrid (vector+BM25+entity)
   2. Routing accuracy: Keyword vs LLM intent classification
-  3. End-to-end answer quality: Correct skill selected + relevant evidence
+  3. Routing/evidence heuristics (not semantic answer correctness)
 
 Usage:
     python -m src.evaluate
@@ -83,7 +86,7 @@ TEST_SET: List[Tuple[str, str, List[str]]] = [
 # ---------------------------------------------------------------------------
 
 def evaluate_retrieval() -> dict:
-    """Compare BM25-only vs Hybrid retrieval using Recall@5."""
+    """Compare BM25-only vs Hybrid retrieval using Hit@5."""
     from src.retrieval import HybridRetriever, _bm25_rank
 
     retriever = HybridRetriever()
@@ -123,8 +126,10 @@ def evaluate_retrieval() -> dict:
 
     return {
         "total_queries": total_relevant,
-        "bm25_recall@5": round(bm25_hits / max(total_relevant, 1), 3),
-        "hybrid_recall@5": round(hybrid_hits / max(total_relevant, 1), 3),
+        "skipped_queries": len(TEST_SET) - total_relevant,
+        "label_method": "heuristic_keyword_overlap_not_independent_gold",
+        "bm25_hit@5": round(bm25_hits / max(total_relevant, 1), 3),
+        "hybrid_hit@5": round(hybrid_hits / max(total_relevant, 1), 3),
     }
 
 
@@ -159,7 +164,7 @@ def evaluate_routing() -> dict:
     return {
         "total_queries": total,
         "keyword_accuracy": round(kw_correct / max(total, 1), 3),
-        "llm_accuracy": round(llm_correct / max(total, 1), 3),
+        "llm_or_keyword_fallback_accuracy": round(llm_correct / max(total, 1), 3),
     }
 
 
@@ -173,14 +178,14 @@ def main():
     print("=" * 60)
 
     # 1. Retrieval ablation
-    print("\n 1. Retrieval Quality (Recall@5)")
+    print("\n 1. Retrieval Quality (Hit@5)")
     print("-" * 40)
     try:
         ret_results = evaluate_retrieval()
         print(f"  Test queries:         {ret_results['total_queries']}")
-        print(f"  BM25-only Recall@5:   {ret_results['bm25_recall@5']:.1%}")
-        print(f"  Hybrid Recall@5:      {ret_results['hybrid_recall@5']:.1%}")
-        delta = ret_results['hybrid_recall@5'] - ret_results['bm25_recall@5']
+        print(f"  BM25-only Hit@5:   {ret_results['bm25_hit@5']:.1%}")
+        print(f"  Hybrid Hit@5:      {ret_results['hybrid_hit@5']:.1%}")
+        delta = ret_results['hybrid_hit@5'] - ret_results['bm25_hit@5']
         print(f"  Δ (Hybrid - BM25):    {delta:+.1%}")
     except Exception as exc:
         print(f"  Skipped: {exc}")
@@ -192,7 +197,7 @@ def main():
         route_results = evaluate_routing()
         print(f"  Test queries:         {route_results['total_queries']}")
         print(f"  Keyword routing:      {route_results['keyword_accuracy']:.1%}")
-        print(f"  LLM routing:          {route_results['llm_accuracy']:.1%}")
+        print(f"  LLM routing:          {route_results['llm_or_keyword_fallback_accuracy']:.1%}")
     except Exception as exc:
         print(f"  Skipped: {exc}")
 

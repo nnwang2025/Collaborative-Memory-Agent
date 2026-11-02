@@ -175,44 +175,88 @@ def get_embedding_dim() -> int:
 def _build_documents() -> List[dict]:
     """Convert all project data sources into a flat document list.
 
+    Uses category-aware chunking:
+      - Markdown → recursive split by headers/paragraphs/sentences (512 chars, 64 overlap)
+      - Chats     → split by speaker turns (384 chars, 48 overlap)
+      - Logs      → time-window grouping (512 chars max)
+      - JSON records → content-aware split for long fields
+      - Default   → recursive split
+
     Each document has:
       - id: unique string
-      - content: text for embedding / BM25
-      - metadata: source, category, record info
+      - content: chunked text for embedding / BM25
+      - metadata: source, category, chunk info
     """
+    from src.chunking import chunk_for_category
+
     docs: List[dict] = []
     seen: set = set()
+    _chunk_id_counter = 0
 
     for path, category in _iter_data_sources():
-        if category == "docs":
+        source = str(path.relative_to(ROOT))
+        base_meta = {"source": source, "category": category}
+
+        # --- Category 1: Markdown / docs → structural recursive split ---
+        if category in ("docs",):
             text = path.read_text(encoding="utf-8")
-            # Split Markdown into paragraphs, embed each
-            for ci, para in enumerate(text.split("\n\n")):
-                para = para.strip()
-                if len(para) < 10:
-                    continue
-                doc_id = f"{path.stem}__p{ci}"
+            chunks = chunk_for_category("markdown", text, metadata=base_meta)
+            for ci, ch in enumerate(chunks):
+                doc_id = f"{path.stem}__c{ci}"
                 if doc_id in seen:
-                    continue
+                    # Avoid exact duplicate doc_ids (can happen with small files)
+                    doc_id = f"{path.stem}__c{ci}_{_chunk_id_counter}"
+                    _chunk_id_counter += 1
                 seen.add(doc_id)
                 docs.append({
                     "id": doc_id,
-                    "content": para,
-                    "metadata": {
-                        "source": str(path.relative_to(ROOT)),
-                        "category": category,
-                    },
+                    "content": ch["content"],
+                    "metadata": {**base_meta, **ch.get("metadata", {}),
+                                 "chunk_index": ci},
                 })
             continue
 
-        # JSON records
+        # --- Category 2: Chats → speaker turn split ---
+        if category in ("chats",):
+            records = _read_json_records(path)
+            for ri, record in enumerate(records):
+                content = record.get("content") or record.get("message") or _flatten(record)
+                chunks = chunk_for_category("conversation", content, metadata=base_meta)
+                for ci, ch in enumerate(chunks):
+                    doc_id = f"{category}__r{ri}_c{ci}"
+                    if doc_id in seen:
+                        doc_id = f"{category}__r{ri}_c{ci}_{_chunk_id_counter}"
+                        _chunk_id_counter += 1
+                    seen.add(doc_id)
+                    docs.append({
+                        "id": doc_id,
+                        "content": ch["content"],
+                        "metadata": {**base_meta, "record_id": str(ri),
+                                     "chunk_index": ci},
+                    })
+            continue
+
+        # --- Category 3: Logs → time-window grouping ---
+        if category in ("logs",):
+            text = path.read_text(encoding="utf-8")
+            chunks = chunk_for_category("logs", text, metadata=base_meta)
+            for ci, ch in enumerate(chunks):
+                doc_id = f"{path.stem}__c{ci}"
+                if doc_id in seen:
+                    doc_id = f"{path.stem}__c{ci}_{_chunk_id_counter}"
+                    _chunk_id_counter += 1
+                seen.add(doc_id)
+                docs.append({
+                    "id": doc_id,
+                    "content": ch["content"],
+                    "metadata": {**base_meta, "chunk_index": ci},
+                })
+            continue
+
+        # --- Category 4: JSON records (decisions, issues, commits, memory, etc.) ---
         records = _read_json_records(path)
         for ri, record in enumerate(records):
             record_id = record.get("id") or record.get("record_id") or ri
-            doc_id = f"{category}__{record_id}"
-            if doc_id in seen:
-                continue
-            seen.add(doc_id)
 
             # Build rich content from priority fields
             parts = []
@@ -223,16 +267,43 @@ def _build_documents() -> List[dict]:
                     parts.append(_flatten(val))
             content = " | ".join(parts) if parts else _flatten(record)
 
-            docs.append({
-                "id": doc_id,
-                "content": content,
-                "metadata": {
-                    "source": str(path.relative_to(ROOT)),
-                    "category": category,
-                    "record_id": str(record_id),
-                    "raw_json": json.dumps(record, ensure_ascii=False),
-                },
-            })
+            # If content is short enough, keep as one document
+            if len(content) <= 512:
+                doc_id = f"{category}__{record_id}"
+                if doc_id in seen:
+                    doc_id = f"{category}__{record_id}_{_chunk_id_counter}"
+                    _chunk_id_counter += 1
+                seen.add(doc_id)
+                docs.append({
+                    "id": doc_id,
+                    "content": content,
+                    "metadata": {
+                        "source": source,
+                        "category": category,
+                        "record_id": str(record_id),
+                        "raw_json": json.dumps(record, ensure_ascii=False),
+                    },
+                })
+            else:
+                # Long JSON record → chunk it while preserving context
+                chunks = chunk_for_category("json_record", content, metadata=base_meta)
+                for ci, ch in enumerate(chunks):
+                    doc_id = f"{category}__{record_id}__c{ci}"
+                    if doc_id in seen:
+                        doc_id = f"{category}__{record_id}__c{ci}_{_chunk_id_counter}"
+                        _chunk_id_counter += 1
+                    seen.add(doc_id)
+                    docs.append({
+                        "id": doc_id,
+                        "content": ch["content"],
+                        "metadata": {
+                            "source": source,
+                            "category": category,
+                            "record_id": str(record_id),
+                            "chunk_index": ci,
+                            "raw_json": json.dumps(record, ensure_ascii=False),
+                        },
+                    })
 
     return docs
 
@@ -543,6 +614,7 @@ class HybridRetriever:
         dense_on: bool = True,
         sparse_on: bool = True,
         entity_on: bool = True,
+        *, scope=None, db_path=None, live_dir=None,
     ) -> List[dict]:
         """Hybrid retrieval with RRF fusion.
 
@@ -560,6 +632,9 @@ class HybridRetriever:
         list[dict]
             Ranked documents with ``rrf_score`` and per-channel scores.
         """
+        if scope is not None:
+            return retrieve_evidence(query, scope=scope, db_path=db_path,
+                                     live_dir=live_dir, top_k=top_k)
         result_lists: List[List[dict]] = []
 
         if dense_on:
@@ -595,6 +670,7 @@ def hybrid_rank(
     query: str,
     docs: Optional[List[dict]] = None,
     top_k: int = 10,
+    *, scope=None, db_path=None, live_dir=None,
 ) -> List[dict]:
     """Hybrid rank – drop-in replacement for ``bm25_rank()``.
 
@@ -603,17 +679,96 @@ def hybrid_rank(
 
     If *docs* is None, retrieves from the full index.
     """
+    if scope is not None:
+        return retrieve_evidence(query, scope=scope, db_path=db_path, live_dir=live_dir, top_k=top_k)
     retriever = get_hybrid_retriever()
 
     result_lists: List[List[dict]] = []
 
-    # Dense: always from full index
-    result_lists.append(retriever.dense_search(query, top_k=top_k * 2))
-
-    # Sparse + Entity: from provided docs or full index
-    target_docs = docs if docs else retriever.docs
+    # Subset calls must never introduce evidence outside the requested corpus.
+    # Canonical IDs also prevent unrelated legacy docs merging by rank position.
+    if docs is not None and not docs:
+        return []
+    target_docs = []
+    for original in docs if docs is not None else retriever.docs:
+        item = dict(original)
+        if "id" not in item:
+            item["id"] = json.dumps([item.get("source"), item.get("record"),
+                                     item.get("paragraph"), item.get("content")], ensure_ascii=False)
+        target_docs.append(item)
+    dense_hits = retriever.dense_search(query, top_k=top_k * 2)
+    if docs is not None:
+        # Preserve original record metadata and content; match only exact text.
+        by_content = {}
+        for item in target_docs:
+            by_content.setdefault(item["content"], []).append(item)
+        dense_hits = [dict(item) for hit in dense_hits
+                      for item in by_content.get(hit["content"], [])]
+    result_lists.append(dense_hits)
     result_lists.append(_bm25_rank(query, target_docs, top_k=top_k * 2))
     result_lists.append(_entity_boost(query, target_docs)[:top_k * 2])
 
     fused = reciprocal_rank_fusion(result_lists)
     return fused[:top_k]
+
+
+def retrieve_evidence(query, *, scope, db_path=None, live_dir=None, source_types=None, top_k=10, filters=None):
+    """Explicitly scoped live retrieval; uses existing BM25 without a shared index.
+
+    Filter ownership BEFORE ranking. No fixture entities, cached FAISS or fallback.
+    """
+    from src.evidence import EvidenceScope
+    from src.evidence_store import EvidenceStore, read_live_json
+    scope = EvidenceScope.model_validate(scope)
+    if scope.dataset_kind != "live":
+        return []  # fixture demo remains on the existing Skill path
+    store = EvidenceStore(db_path)
+    records = {r.evidence_id: r for r in read_live_json(live_dir or store.path.parent, scope)}
+    records.update({r.evidence_id: r for r in store.list(scope)})
+    docs = [r.as_hit() for r in records.values() if source_types is None or r.source_type in source_types]
+    if filters:
+        docs = filter_evidence_hits(docs, filters)
+    hits = _bm25_rank(query, docs, top_k=top_k)
+    for hit in hits:
+        hit["score"] = hit["bm25_score"]
+    return hits
+
+
+def filter_evidence_hits(hits, filters):
+    from datetime import datetime
+    from src.investigation import Filters
+    filters = filters if isinstance(filters, Filters) else Filters.model_validate(filters)
+    after = datetime.fromisoformat(filters.after.replace("Z", "+00:00")) if filters.after else None
+    before = datetime.fromisoformat(filters.before.replace("Z", "+00:00")) if filters.before else None
+    result = []
+    for hit in hits:
+        if filters.source_types and hit.get("source_type") not in filters.source_types:
+            continue
+        if filters.evidence_ids and hit.get("evidence_id") not in filters.evidence_ids:
+            continue
+        event_time = hit.get("event_time")
+        if filters.undated_only and event_time is not None:
+            continue
+        date = datetime.fromisoformat(event_time.replace("Z", "+00:00")) if isinstance(event_time, str) else event_time
+        if (after or before) and date is None:
+            continue
+        if after and date < after or before and date > before:
+            continue
+        result.append(hit)
+    return result
+
+
+def get_evidence(evidence_id, *, scope, db_path=None, live_dir=None, content_hash=None):
+    """Re-fetch full evidence within the exact partition, optionally by version hash."""
+    from src.evidence import EvidenceScope
+    from src.evidence_store import EvidenceStore, read_live_json
+    scope = EvidenceScope.model_validate(scope)
+    store = EvidenceStore(db_path)
+    found = store.get(evidence_id, scope, content_hash)
+    if found is not None:
+        return found
+    if scope.dataset_kind == "live":
+        for record in read_live_json(live_dir or store.path.parent, scope):
+            if record.evidence_id == evidence_id and (content_hash is None or record.content_hash == content_hash):
+                return record
+    return None
