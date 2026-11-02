@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>研发调查工作台 · Collaborative Memory Agent</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">CM</div>
+      <div>
+        <h1>研发调查工作台</h1>
+        <p>Collaborative Memory Agent V2 · 只读调查与证据回溯</p>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <span id="connection-status" class="status-pill status-neutral" role="status">未连接</span>
+      <a class="text-link" href="/docs" target="_blank" rel="noreferrer">API 文档</a>
+    </div>
+  </header>
+
+  <main class="workspace">
+    <aside class="panel session-panel" aria-label="Session 与项目范围">
+      <section class="panel-section">
+        <div class="section-heading">
+          <h2>项目范围</h2>
+          <span class="hint">Scope</span>
+        </div>
+        <label class="field">
+          <span>project_id</span>
+          <input id="project-id" name="project-id" type="text" maxlength="200"
+                 autocomplete="off" spellcheck="false" placeholder="例如 collaborative-memory-demo">
+        </label>
+        <label class="field">
+          <span>dataset_kind</span>
+          <select id="dataset-kind" name="dataset-kind">
+            <option value="live">live</option>
+            <option value="fixture">fixture</option>
+          </select>
+        </label>
+        <button id="create-session-btn" class="button primary" type="button">创建 Session</button>
+        <p id="scope-hint" class="hint">创建 Session 后才能提交调查问题。</p>
+      </section>
+
+      <section class="panel-section">
+        <div class="section-heading">
+          <h2>当前 Session</h2>
+          <span id="session-status" class="status-pill status-neutral">未加载</span>
+        </div>
+        <label class="field">
+          <span>session_id（可恢复）</span>
+          <input id="session-id" name="session-id" type="text" maxlength="200"
+                 autocomplete="off" spellcheck="false" placeholder="ses_...">
+        </label>
+        <div class="button-row">
+          <button id="load-session-btn" class="button" type="button">加载 Session</button>
+          <button id="close-session-btn" class="button danger" type="button" disabled>关闭</button>
+        </div>
+        <dl id="session-summary" class="summary-grid" aria-live="polite">
+          <div><dt>项目</dt><dd>—</dd></div>
+          <div><dt>数据集</dt><dd>—</dd></div>
+          <div><dt>创建时间</dt><dd>—</dd></div>
+          <div><dt>Run 数</dt><dd>—</dd></div>
+        </dl>
+      </section>
+
+      <section class="panel-section grow">
+        <div class="section-heading">
+          <h2>Run 历史</h2>
+          <button id="refresh-session-btn" class="text-button" type="button">刷新</button>
+        </div>
+        <div id="run-history" class="run-history" aria-live="polite">
+          <p class="muted">当前 Session 尚无 Run。</p>
+        </div>
+      </section>
+
+      <section class="panel-section">
+        <div class="section-heading">
+          <h2>部署提示</h2>
+        </div>
+        <p class="small muted">
+          本页面仅提供同源只读工作台。默认绑定本地/可信网络；不要直接暴露到公网。
+          浏览器不保存 API Key。
+        </p>
+      </section>
+    </aside>
+
+    <section class="panel conversation-panel" aria-label="调查对话">
+      <div class="conversation-header">
+        <div>
+          <h2>调查对话</h2>
+          <p id="conversation-subtitle" class="hint">选择或创建 Session 开始。</p>
+        </div>
+        <div class="run-badge-wrap">
+          <span id="run-status-badge" class="status-pill status-neutral">无 Run</span>
+          <span id="run-id-label" class="run-id-label">run_id: —</span>
+        </div>
+      </div>
+
+      <div id="notice" class="notice hidden" role="alert"></div>
+
+      <div id="conversation" class="conversation" aria-live="polite">
+        <div class="empty-state">
+          <div class="empty-icon" aria-hidden="true">⌕</div>
+          <h3>从一次可追溯的调查开始</h3>
+          <p>创建 Session 后输入研发历史问题。提交后可实时查看 SSE 事件、最终答案、Evidence 引用、Tool Calls 与 Trace。</p>
+          <ul class="checklist">
+            <li>回答与证据分离展示，未通过证据校验的内容不会标为“已验证结论”。</li>
+            <li><code>insufficient</code> 表示证据不足，不是成功找到答案。</li>
+            <li>刷新页面不会取消后台 Run；可用 session_id / run_id 恢复。</li>
+          </ul>
+        </div>
+      </div>
+
+      <form id="run-form" class="composer" autocomplete="off">
+        <label class="field composer-field">
+          <span>研发调查问题</span>
+          <textarea id="question" name="question" rows="3" maxlength="4000"
+                    placeholder="例如：截至 2025-06-30，系统记录了哪些部署方案及其变更原因？"></textarea>
+        </label>
+        <div class="composer-actions">
+          <div class="composer-hint-wrap">
+            <span id="composer-hint" class="hint">请先创建或加载 Session。</span>
+            <span id="composer-count" class="hint">0 / 4000</span>
+          </div>
+          <div class="button-row">
+            <button id="cancel-run-btn" class="button danger" type="button" disabled>取消当前 Run</button>
+            <button id="submit-run-btn" class="button primary" type="submit" disabled>提交 Run</button>
+          </div>
+        </div>
+      </form>
+    </section>
+
+    <aside class="panel inspector-panel" aria-label="调查证据与追踪">
+      <div class="tabs" role="tablist" aria-label="调查详情">
+        <button class="tab active" type="button" role="tab" aria-selected="true"
+                aria-controls="tab-evidence" data-tab="evidence">Evidence <span id="evidence-count" class="tab-count">0</span></button>
+        <button class="tab" type="button" role="tab" aria-selected="false"
+                aria-controls="tab-tools" data-tab="tools">Tool Calls <span id="tool-count" class="tab-count">0</span></button>
+        <button class="tab" type="button" role="tab" aria-selected="false"
+                aria-controls="tab-trace" data-tab="trace">Trace <span id="trace-count" class="tab-count">0</span></button>
+      </div>
+
+      <div id="tab-evidence" class="tab-panel active" role="tabpanel">
+        <div class="panel-toolbar">
+          <h2>Evidence 引用</h2>
+          <span class="hint">仅显示后端返回的引用与只读详情</span>
+        </div>
+        <div id="evidence-list" class="card-list">
+          <p class="muted">提交并完成 Run 后显示 Evidence 引用。</p>
+        </div>
+      </div>
+
+      <div id="tab-tools" class="tab-panel" role="tabpanel" hidden>
+        <div class="panel-toolbar">
+          <h2>Tool Calls</h2>
+          <span class="hint">按后端 ordinal 排序</span>
+        </div>
+        <div id="tool-call-list" class="card-list">
+          <p class="muted">暂无 Tool Call。</p>
+        </div>
+      </div>
+
+      <div id="tab-trace" class="tab-panel" role="tabpanel" hidden>
+        <div class="panel-toolbar">
+          <h2>运行与上下文 Trace</h2>
+          <span class="hint">事件按 event_seq 去重</span>
+        </div>
+        <div id="trace-summary" class="trace-summary muted">暂无 Trace。</div>
+        <h3 class="subheading">SSE / 生命周期事件</h3>
+        <ol id="trace-events" class="timeline">
+          <li class="muted">暂无事件。</li>
+        </ol>
+        <h3 class="subheading">Context Trace</h3>
+        <div id="context-trace" class="card-list">
+          <p class="muted">暂无 Context Trace。</p>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <footer class="footer">
+    <span>只读工作台 · 同源 API · 不发起未授权的模型请求</span>
+    <span id="footer-state">未连接</span>
+  </footer>
+
+  <script src="./app.js" defer></script>
+</body>
+</html>

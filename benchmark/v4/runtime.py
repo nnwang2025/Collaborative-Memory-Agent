@@ -281,6 +281,17 @@ def _react_budget(override: dict[str, Any] | None) -> Budget:
     return Budget(**values) if values else Budget()
 
 
+def _model_call_count(trace) -> int:
+    """Count provider requests, not final trace action labels.
+
+    A successful model decision is relabeled ``tool_call`` or ``finish`` after
+    parsing, so ``action == "model_decision"`` undercounts calls that produced
+    an action.  ``requested_output_tokens`` is set only when a request is about
+    to be sent.
+    """
+    return sum(step.requested_output_tokens is not None for step in trace)
+
+
 def run_react(task: dict[str, Any], databases: tuple[Path, Path], *,
               injected_failure: dict[str, Any] | None = None,
               budget_override: dict[str, Any] | None = None,
@@ -291,6 +302,7 @@ def run_react(task: dict[str, Any], databases: tuple[Path, Path], *,
     started = time.perf_counter()
     output = {
         "task_id": task["task_id"], "backend": "react", "turn_count": len(turns),
+        "run_id": None,
         "answer": "", "answers": [], "claims": [], "citation_refs": [],
         "retrieved_ids": [], "decision_memories": [], "events": [],
         "gaps": [], "conflicts": [], "termination_reason": None,
@@ -319,6 +331,7 @@ def run_react(task: dict[str, Any], databases: tuple[Path, Path], *,
                         agent._open_request = urllib.request.build_opener(_NoRedirect()).open
                     context = _conversation_context(previous, scope, store)
                     result = agent.run_result(turn, conversation_context=context)
+                    output["run_id"] = result.run_id
                     output["answers"].append(result.answer)
                     output["claims"].extend(claim.model_dump(mode="json")
                                             for claim in result.claims)
@@ -339,8 +352,7 @@ def run_react(task: dict[str, Any], databases: tuple[Path, Path], *,
                         "steps": [step.model_dump(mode="json") for step in result.trace],
                     })
                     if result.mode == "react":
-                        output["model_calls"] += sum(step.action == "model_decision"
-                                                     for step in result.trace)
+                        output["model_calls"] += _model_call_count(result.trace)
                     output["provider_input_tokens"] += result.usage.input_tokens
                     output["provider_output_tokens"] += result.usage.output_tokens
                     output["estimated_usage"] = output["estimated_usage"] and result.usage.estimated

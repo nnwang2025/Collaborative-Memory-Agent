@@ -12,18 +12,23 @@ import json
 import time
 from typing import Literal
 
-from fastapi import APIRouter, HTTPException, Query, Request
+from fastapi import APIRouter, HTTPException, Path as PathParam, Query, Request
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, ConfigDict, Field
 from starlette.concurrency import run_in_threadpool
 
 from src.evidence import EvidenceScope
+from src.evidence_store import EvidenceStore
 from src.runtime.errors import (
     IdempotencyConflict, RunNotFound, ScopeMismatch, SessionBusy, SessionClosed,
     SessionNotFound,
 )
 from src.runtime.service import RunService
 from src.runtime.store import TERMINAL_STATUSES, sanitize
+
+# Evidence bodies are bounded for the read-only demo endpoint.  The full record
+# stays in the append-only store; this limit only controls what a browser sees.
+MAX_EVIDENCE_DETAIL_CHARS = 12000
 
 
 class StrictBody(BaseModel):
@@ -63,6 +68,52 @@ def _runtime(request: Request) -> RunService:
 
 def _session_public(row):
     return sanitize(dict(row))
+
+
+def _evidence_detail(record, current):
+    """Return one scoped evidence revision without mutating its lifecycle."""
+    content = record.content
+    truncated = len(content) > MAX_EVIDENCE_DETAIL_CHARS
+    current_hash = current["content_hash"] if current else None
+    matches = current["matches"] if current else None
+    state = current["state"] if current else "unknown"
+    if current is None:
+        verification = "projection_unavailable"
+        is_current = None
+    elif not matches:
+        verification = "historical"
+        is_current = False
+    elif state == "active":
+        verification = "current_active"
+        is_current = True
+    else:
+        verification = "current_inactive"
+        is_current = False
+    return {
+        "evidence_id": record.evidence_id,
+        "project_id": record.project_id,
+        "dataset_kind": record.dataset_kind,
+        "source_type": record.source_type,
+        "source_uri": record.source_uri,
+        "original_record_id": record.original_record_id,
+        "event_time": record.event_time.isoformat() if record.event_time else None,
+        "ingested_at": record.ingested_at.isoformat() if record.ingested_at else None,
+        "content_hash": record.content_hash,
+        "content": content[:MAX_EVIDENCE_DETAIL_CHARS],
+        "content_chars": len(content),
+        "content_truncated": truncated,
+        "content_limit": MAX_EVIDENCE_DETAIL_CHARS,
+        # Locator fields (commit SHA, file/line position) are provenance, not
+        # credentials, so they must remain inspectable.  Free-form metadata is
+        # sanitized because it can contain copied request headers or paths.
+        "locator": record.locator,
+        "metadata": sanitize(record.metadata),
+        "current_state": current,
+        "is_current": is_current,
+        "content_hash_matches_current": matches,
+        "current_content_hash": current_hash,
+        "verification": verification,
+    }
 
 
 def _raise_known(exc):
@@ -277,6 +328,39 @@ def build_runtime_router() -> APIRouter:
         except RunNotFound as exc:
             _raise_known(exc)
         return {"run_id": run_id, "evidence_refs": sanitize(rows)}
+
+    @router.get("/evidence/{evidence_id}")
+    def get_evidence(
+        request: Request,
+        evidence_id: str = PathParam(pattern=r"^ev_[0-9a-f]{64}$"),
+        project_id: str = Query(min_length=1, max_length=200),
+        dataset_kind: Literal["fixture", "live"] = Query(...),
+        content_hash: str | None = Query(
+            default=None, pattern=r"^[0-9a-f]{64}$"),
+    ):
+        """Read one Evidence revision inside an explicit project/dataset scope.
+
+        This endpoint is read-only and never changes Evidence lifecycle state.
+        Supplying ``content_hash`` pins the exact observed revision; a run's
+        EvidenceRef should always pass its hash so a later revision cannot be
+        displayed in place of the text the run actually saw.
+        """
+        try:
+            scope = EvidenceScope(project_id=project_id,
+                                  dataset_kind=dataset_kind)
+        except ValueError as exc:
+            raise HTTPException(status_code=422, detail=_detail(
+                "invalid_scope", str(exc)))
+        runtime = _runtime(request)
+        store = EvidenceStore(runtime.store.path)
+        record = store.get(evidence_id, scope, content_hash=content_hash)
+        if record is None:
+            raise HTTPException(status_code=404, detail=_detail(
+                "evidence_not_found",
+                "evidence was not found in the requested project/dataset scope"))
+        current = store.current_state(evidence_id, scope,
+                                      content_hash=content_hash)
+        return {"evidence": _evidence_detail(record, current)}
 
     @router.get("/runs/{run_id}/context-trace")
     def get_context_trace(run_id: str, request: Request,

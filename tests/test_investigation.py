@@ -284,6 +284,27 @@ class RuntimeTests(unittest.TestCase):
         self.assertEqual(result.termination_reason, "budget")
         self.assertFalse(result.evidence_refs)
 
+    def test_empty_optional_search_does_not_become_global_gap_after_evidence(self):
+        evidence_result = {"evidence": [self.a], "retrieval_diagnostics": {
+            "effective_mode": "hybrid", "candidate_count": 1, "accepted_count": 1}}
+        empty_result = {"evidence": [], "retrieval_diagnostics": {
+            "effective_mode": "hybrid", "candidate_count": 5, "accepted_count": 0,
+            "empty_after_filtering": True, "empty_reason": "all_candidates_filtered"}}
+        for order, responses in (
+                ("evidence_then_empty", [evidence_result, empty_result]),
+                ("empty_then_evidence", [empty_result, evidence_result])):
+            with self.subTest(order=order):
+                actions = [tool("search_issues", "Decision"),
+                           tool("search_docs", "postmortem"), finish(self.a)]
+                agent = self.agent(actions, Budget(
+                    max_model_rounds=5, max_tokens=100000, max_output_tokens=8192))
+                responses_iter = iter(responses)
+                agent.executor.execute = lambda *args, **kwargs: next(responses_iter)
+                result = agent.run_result("Why latency?")
+                self.assertEqual(result.termination_reason, "sufficient")
+                self.assertEqual(len(result.claims), 1)
+                self.assertFalse(any("未取得可引用证据" in gap for gap in result.gaps))
+
     def test_multiple_runs_do_not_share_ledger_or_run_id(self):
         agent = self.agent([tool(), finish(self.a), finish(self.a)])
         first = agent.run_result("question")

@@ -18,11 +18,12 @@ from benchmark.v4 import (ablations, acceptance, build, dataset, grade, indexing
 from benchmark.v4 import scoring
 from benchmark.v4.dataset import SnapshotError
 from benchmark.v4.indexing import IndexPreparationError
-from benchmark.v4.runtime import ModelCallStop, ModelHttpGuard, run_task
+from benchmark.v4.runtime import (ModelCallStop, ModelHttpGuard,
+                                  _model_call_count, run_task)
 from src.evidence import EvidenceScope
 from src.evidence_store import EvidenceStore
 from src.index.retriever import LiveRetriever
-from src.investigation import Budget
+from src.investigation import Budget, TraceStep
 
 
 class _FakeEmbedder:
@@ -433,7 +434,18 @@ class OfflineRuntimeTests(unittest.TestCase):
         self.assertEqual(result["turn_count"], 2)
         self.assertEqual(len(result["answers"]), 2)
         self.assertEqual(result["model_calls"], 0)
+        self.assertIsNotNone(result["run_id"])
         self.assertIsNone(result["runtime_error"])
+
+    def test_model_call_count_is_not_undercounted_by_final_action_label(self):
+        trace = [
+            TraceStep(step_index=1, action="tool_call", requested_output_tokens=8192),
+            TraceStep(step_index=2, action="tool_attempt"),
+            TraceStep(step_index=3, action="tool_call", requested_output_tokens=8192),
+            TraceStep(step_index=4, action="tool_attempt"),
+            TraceStep(step_index=5, action="model_decision"),
+        ]
+        self.assertEqual(_model_call_count(trace), 2)
 
     def test_grading_requires_complete_explicit_human_judgment(self):
         template = grade.template(self.report, [json.loads(line) for line in
@@ -654,6 +666,9 @@ class OnlineRunnerTests(unittest.TestCase):
             encoding="utf-8").splitlines()[0])
         self.assertEqual(row["run_status"], "provider_unavailable")
         self.assertEqual(run_online._classify([503]), "provider_unavailable")
+        self.assertEqual(
+            run_online._classify([], {"termination_reason": "model_error"}),
+            "model_error")
 
     def test_call_and_token_caps_stop_before_next_task(self):
         output = Path(self.temp.name) / "call-cap"

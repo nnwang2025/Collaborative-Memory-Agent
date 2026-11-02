@@ -599,9 +599,10 @@ class ReActAgent:
                         **context_usage, "round": decision,
                         "step_index": step.step_index,
                     })
-                # UTF-8 bytes deliberately overestimate ordinary tokenization and
-                # remain the auxiliary total-budget unit used by Phase 2 callers.
-                estimate = byte_estimate
+                # max_tokens is a provider-token budget.  UTF-8 bytes are an
+                # auxiliary request-size ceiling enforced by the context
+                # builder, not a substitute for the token estimate here.
+                estimate = token_estimate
                 remaining_tokens = budget.max_tokens - usage.input_tokens - usage.output_tokens
                 if remaining_tokens <= estimate:
                     reason = "budget"
@@ -632,7 +633,7 @@ class ReActAgent:
                     "round": decision, "model": self.model,
                     "requested_output_tokens": output_limit,
                     "estimated_input_tokens": token_estimate,
-                    "input_bytes": estimate,
+                    "input_bytes": byte_estimate,
                     "tokenizer_mode": context_usage.get("tokenizer_mode")
                         if live else "estimated",
                 })
@@ -669,7 +670,7 @@ class ReActAgent:
                         "error": diagnostic,
                         "message": model_error_message(diagnostic),
                     })
-                    reason = "budget" if exhausted() else "insufficient"
+                    reason = "budget" if exhausted() else "model_error"
                     stop_detail = budget_detail() if exhausted() else "model_error"
                     gaps.append("模型调用失败，调查未完成。")
                     break
@@ -909,10 +910,6 @@ class ReActAgent:
                 try:
                     items = result.get("evidence", [])
                     observation.retrieval_diagnostics = retrieval_diagnostics
-                    if (live and not items
-                            and retrieval_diagnostics.get("empty_after_filtering")):
-                        runtime_gaps.append(
-                            "检索候选均未通过相关性阈值，返回空结果；未取得可引用证据。")
                     new_refs = ledger.register(items, action.tool)
                     successful_calls += bool(items)
                     observation.error = None
@@ -998,6 +995,16 @@ class ReActAgent:
             runtime_gaps.append("任务目标缺少可核验记录：" + "、".join(labels))
             if reason == "sufficient":
                 reason, stop_detail = "insufficient", "task_targets_missing"
+        empty_search = any(
+            (getattr(step, "retrieval_diagnostics", {}) or {}).get("empty_after_filtering")
+            for step in trace if getattr(step, "action", "") == "tool_attempt")
+        if live and not ledger.entries and empty_search:
+            # An empty query is a global "no citable evidence" limitation only
+            # when the whole investigation holds no evidence.  Once any verified
+            # evidence exists, the miss stays in the trace/observation diagnostics
+            # and must not block an otherwise complete finish.
+            runtime_gaps.append(
+                "检索候选均未通过相关性阈值，返回空结果；未取得可引用证据。")
         gaps = list(dict.fromkeys(gaps + runtime_gaps))
         if runtime_gaps and reason == "sufficient": reason = "insufficient"
         if ledger.conflicts:
@@ -1025,13 +1032,14 @@ class ReActAgent:
             decision_memories=memory_records)
         answer = self.answer_agent.render_investigation(
             ledger, claims, gaps, conflicts, reason, coverage=coverage,
-            synthesis=synthesis)
+            synthesis=synthesis, state_evolutions=ledger.state_evolutions)
         answer += self.answer_agent.render_decision_memories(memory_records)
         return InvestigationResult(run_id=ledger.run_id, scope=scope, answer=answer, termination_reason=reason, termination_detail=stop_detail,
             claims=claims, synthesis=synthesis, claim_counts=claim_counts,
             evidence_refs=[EvidenceRef(evidence_id=e.evidence.evidence_id,
             content_hash=e.evidence.content_hash) for e in ledger.entries], gaps=list(dict.fromkeys(gaps)),
-            conflicts=conflicts, trace=trace, usage=usage, possible_sources=possible_sources,
+            conflicts=conflicts, state_evolutions=ledger.state_evolutions,
+            trace=trace, usage=usage, possible_sources=possible_sources,
             mode="offline_fallback" if offline else "react", decision_memories=memory_records,
             task_coverage=coverage, context_usage=context_usage,
             context_trace=context_trace)

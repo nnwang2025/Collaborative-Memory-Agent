@@ -79,7 +79,7 @@ class ProtocolRegressionTests(unittest.TestCase):
         with patch("urllib.request.urlopen", return_value=self.response(body)) as transport:
             result = agent.run_result("Question")
         payload = json.loads(transport.call_args.args[0].data)
-        reservation = len(json.dumps(payload["messages"], ensure_ascii=False).encode("utf-8"))
+        reservation = result.trace[0].context_usage["estimated_input_tokens"]
         self.assertEqual(payload["max_tokens"], 5000 - reservation)
         self.assertGreater(payload["max_tokens"], 0)
         self.assertTrue(result.usage.estimated)
@@ -228,6 +228,27 @@ class ProtocolRegressionTests(unittest.TestCase):
         self.assertEqual(execute.call_count, 0)
         self.assertEqual((result.termination_reason, result.termination_detail), ("budget", "token_budget"))
 
+    def test_total_token_budget_uses_tokens_not_utf8_bytes(self):
+        agent = self.agent([self.reply(self.finish())],
+                           Budget(max_tokens=5000, max_output_tokens=4096))
+        usage = {
+            "estimated_input_tokens": 1000,
+            "input_bytes": 6000,  # bytes exceed the remaining tokens
+            "tokenizer_mode": "estimated",
+            "candidate_evidence_count": 0,
+            "selected_evidence_count": 0,
+            "deduped_evidence_count": 0,
+            "pruned_count": 0,
+            "pruning_reasons": {},
+            "important_conflicts_retained": False,
+        }
+        with patch("src.agents.react_agent.InvestigationContext.request",
+                   return_value=([{"role": "system", "content": "rules"}], usage)):
+            result = agent.run_result("Question")
+        self.assertEqual(agent._call_llm.call_count, 1)
+        self.assertNotEqual(result.termination_detail, "token_budget")
+        self.assertEqual(result.trace[0].requested_output_tokens, 4000)
+
     def test_tool_failure_switches_source_and_short_finish_after_truncation(self):
         agent = self.agent([self.reply(self.tool("search_issues")), self.reply(self.tool("search_memory")),
             self.reply('{"action":"finish","claims":[', "length", 512), self.reply(self.finish(self.record))])
@@ -316,6 +337,22 @@ class ProtocolRegressionTests(unittest.TestCase):
         serialized = json.dumps(result.model_dump(mode="json"), ensure_ascii=False)
         self.assertNotIn(secret, serialized)
         self.assertNotIn("Authorization", serialized)
+
+    def test_model_auth_error_is_not_mapped_to_evidence_insufficiency(self):
+        agent = self.agent()
+        body = json.dumps({"error": {
+            "code": "invalid_api_key",
+            "message": "Authentication Fails"}}).encode("utf-8")
+        failure = urllib.error.HTTPError("https://api.deepseek.com/chat/completions", 401,
+                                         "Unauthorized", {}, io.BytesIO(body))
+        agent._call_llm = Mock(side_effect=failure)
+        result = agent.run_result("Question")
+        self.assertEqual(result.termination_reason, "model_error")
+        self.assertEqual(result.termination_detail, "model_error")
+        self.assertEqual(agent._call_llm.call_count, 1)
+        self.assertFalse(any(step.action == "tool_attempt" for step in result.trace))
+        self.assertFalse(any(step.protocol_category for step in result.trace))
+        self.assertTrue(result.usage.estimated)
 
     def test_transport_error_reports_phase_without_exception_text(self):
         agent = self.agent()

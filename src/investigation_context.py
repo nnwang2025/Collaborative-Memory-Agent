@@ -101,7 +101,7 @@ QUESTION_TARGET_PATTERNS = {
     "conflict_or_gap": r"冲突|矛盾|不一致|分歧|一致吗|是否一致|缺口|未知|不足|\bconflict\b|inconsisten|\bmissing\b|\bgap\b",
 }
 EVIDENCE_MARKERS = {
-    "initial_reason": r"原因|理由|因为|由于|因此|所以|为了|以便|避免|防止|不足|风险|约束|代价|背景|需求|动机|because|due to|reason|so that|to avoid|root cause",
+    "initial_reason": r"原因|理由|因为|由于|因此|所以|为了|以便|避免|防止|不足|风险|约束|代价|背景|需求|动机|根因|起因|because|due to|reason|so that|to avoid|root cause",
     "decision_formation": r"决定|决策|确定|采用|选择|批准|结论|方案|拍板|decided|decision|adopt|chosen|approved|the team will",
     "review_or_objection": r"评审|审查|review|反对|异议|质疑|意见|风险|代价|要求|建议|批准|未核对|objection|concern|blocker",
     "later_adjustment": r"后来|之后|后续|变化|变更|调整|取消|替代|修订|推翻|重新评估|改成|更新|supersed|cancel|revise|adjust|change",

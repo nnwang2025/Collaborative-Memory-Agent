@@ -13,6 +13,8 @@ default runtime is created lazily on the first Session/Run API call.
 
 Usage:
     uvicorn api:app --reload --port 8000
+    uvicorn api:app --reload --port 8000 --env-file .env
+    python api.py                 # explicitly loads .env, then starts uvicorn
 """
 
 from __future__ import annotations
@@ -21,11 +23,13 @@ import json
 import os
 import re
 import threading
+from pathlib import Path
 from typing import AsyncGenerator, Literal
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse
+from fastapi.responses import RedirectResponse, StreamingResponse
+from fastapi.staticfiles import StaticFiles
 from starlette.concurrency import run_in_threadpool
 from pydantic import BaseModel
 from src.api.runtime_routes import build_runtime_router
@@ -185,6 +189,17 @@ def create_app(runtime_service=None, runtime_config=None) -> FastAPI:
     app.add_api_route("/chat", chat, methods=["POST"], response_model=ChatResponse)
     app.add_api_route("/chat/stream", chat_stream, methods=["POST"])
     app.include_router(build_runtime_router())
+
+    web_dir = Path(__file__).resolve().with_name("web")
+    if web_dir.is_dir():
+        app.mount("/demo", StaticFiles(directory=str(web_dir), html=True),
+                  name="demo")
+
+        async def demo_index():
+            return RedirectResponse(url="/demo/")
+
+        app.add_api_route("/", demo_index, methods=["GET"],
+                          include_in_schema=False)
     return app
 
 

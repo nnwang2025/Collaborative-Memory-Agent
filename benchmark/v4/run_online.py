@@ -223,6 +223,8 @@ def _classify(statuses: list[int | None], raw: dict[str, Any] | None = None) -> 
     if 503 in statuses:
         return "provider_unavailable"
     reason = (raw or {}).get("termination_reason")
+    if reason == "model_error":
+        return "model_error"
     if reason in {"max_model_calls", "max_budget_tokens"}:
         return "budget_exhausted"
     if statuses:

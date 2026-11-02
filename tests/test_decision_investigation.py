@@ -216,6 +216,17 @@ class DecisionInvestigationTests(unittest.TestCase):
         self.assertFalse(authority["reviewed_decision"]["observed"])
         self.assertTrue(authority["execution"]["observed"])
 
+    def test_root_cause_wording_satisfies_initial_reason_coverage(self):
+        root_cause = self.record(
+            "document", "review://ROOT-001", "2026-01-10T10:00:00+08:00",
+            "评审记录：根因是上游批次过小，固定开销占比过高；建议调整 batch_size。")
+        ledger = EvidenceLedger(self.scope)
+        ledger.register([root_cause], "search_docs")
+        coverage = task_coverage("写入放大的根因是什么？", ledger)
+        statuses = {item["target"]: item["status"] for item in coverage["targets"]}
+        self.assertEqual(statuses["initial_reason"], "observed")
+        self.assertNotIn("initial_reason", coverage["missing_targets"])
+
     def test_structured_conflicts_same_day_only_and_never_judged(self):
         deploy_one = self.by_source("DEPLOY-001")
         deploy_two = self.by_source("DEPLOY-002")

@@ -14,7 +14,7 @@ from src.evidence import Evidence, EvidenceScope, legacy_evidence
 
 ToolName = Literal["search_memory", "search_issues", "search_docs", "analyze_dependency", "find_entrypoint"]
 TOOLS = ("search_memory", "search_issues", "search_docs", "analyze_dependency", "find_entrypoint")
-Reason = Literal["sufficient", "insufficient", "conflict", "budget", "tool_failure"]
+Reason = Literal["sufficient", "insufficient", "conflict", "budget", "tool_failure", "model_error"]
 
 
 class StrictModel(BaseModel):
@@ -76,6 +76,10 @@ class Conflict(StrictModel):
     origin: Literal["evidence_version", "structured_assertion", "model_reported"] = "model_reported"
     fields: list[str] = Field(default_factory=list, max_length=20)
     subject: str | None = Field(default=None, max_length=200)
+    # Runtime-derived classification.  A state evolution is kept separate from
+    # unresolved conflicts: both records remain visible, but they describe
+    # different stages rather than competing assertions about one state.
+    status: Literal["competing", "undetermined", "state_evolution"] = "undetermined"
     relation: ConflictRelation = "unattributable"
     affected_claim_indexes: list[int] = Field(default_factory=list, max_length=20)
 
@@ -256,46 +260,248 @@ def _shared_subject(left, right):
     return None
 
 
-def structured_assertion_conflicts(entries):
-    """Find only machine-readable assertion contradictions on the same event day.
+# Explicit event-stage metadata is preferred.  Content markers are only a
+# fallback for records that do not carry a role; neither time order nor the
+# direction of a numeric value is used to infer a transition.
+_ROLE_STAGE = {
+    "issue_open": "pre",
+    "commit_initial": "pre",
+    "doc_v1": "pre",
+    "issue_duplicate": "pre_reference",
+    "log_error": "observed",
+    "chat_discussion": "discussion",
+    "chat_proposal": "proposed",
+    "issue_triage": "proposed",
+    "doc_review": "proposed",
+    "meeting_review": "proposed",
+    "doc_v2": "proposed",
+    "doc_runbook": "proposed",
+    "meeting_followup": "proposed",
+    "commit_fix": "post",
+    "commit_followup": "post",
+    "issue_fix": "post",
+    "log_recovery": "post",
+    "code_config": "post",
+    "commit_revert": "post_restore",
+    "chat_conflict": "competing",
+}
+_POST_REFERENCE = re.compile(
+    r"保留原始记录|原始记录|关闭为重复|不改变.{0,16}(?:结论|取值)|duplicate", re.IGNORECASE)
+_POST_CHANGE = re.compile(
+    r"调整后|修复后|修复验证|验证通过|已恢复|恢复(?:到|为|至)|Fixes\b|部署后|上线后|"
+    r"重新调整为|回滚一次|已回滚|回滚后|rollback|revert", re.IGNORECASE)
+_PROPOSAL = re.compile(
+    r"建议|计划|拟|草案|评审|候选|尚未|未确认|待确认|待系统|proposal|draft|proposed",
+    re.IGNORECASE)
+_COMPETING = re.compile(
+    r"不一致|冲突|矛盾|两份记录|都要保留|尚未完成对账|conflict|inconsisten", re.IGNORECASE)
+_OBSERVED = re.compile(r"\bERROR\b|失败|故障", re.IGNORECASE)
+_POST_PHASES = {"post", "post_restore"}
+_PRE_PHASES = {"pre", "pre_reference", "observed", "discussion"}
 
-    This is deliberately narrower than semantic entailment: prose is never judged.
-    Unknown timestamps do not participate, because "same day" cannot be inferred.
+
+def _state_phase(evidence):
+    role = evidence.metadata.get("record_role")
+    if isinstance(role, str) and role.strip():
+        phase = _ROLE_STAGE.get(role.strip().lower())
+        if phase:
+            return phase
+    content = evidence.content or ""
+    # Specific stage/change markers take precedence over the generic word
+    # "conflict": a fix note may say it resolved a conflict without becoming a
+    # competing assertion itself.
+    if _POST_CHANGE.search(content):
+        return "post"
+    if _POST_REFERENCE.search(content):
+        return "pre_reference"
+    if _PROPOSAL.search(content):
+        return "proposed"
+    if _COMPETING.search(content):
+        return "competing"
+    if _OBSERVED.search(content):
+        return "observed"
+    return "unknown"
+
+
+def _environment(evidence, assertions):
+    for mapping in (assertions, evidence.metadata):
+        for key in ("environment", "env"):
+            value = mapping.get(key)
+            if isinstance(value, str) and value.strip():
+                return value.strip()
+    return None
+
+
+def _differing_assertions(left, right):
+    left_assertions = left.metadata.get("assertions")
+    right_assertions = right.metadata.get("assertions")
+    if not isinstance(left_assertions, dict) or not isinstance(right_assertions, dict):
+        return []
+    left_env, right_env = _environment(left, left_assertions), _environment(right, right_assertions)
+    if left_env and right_env and left_env != right_env:
+        return []
+    return sorted(
+        key for key in set(left_assertions) & set(right_assertions)
+        if key not in {"environment", "env", "project_id", "dataset_kind"}
+        and isinstance(left_assertions[key], (str, int, float, bool))
+        and isinstance(right_assertions[key], (str, int, float, bool))
+        and left_assertions[key] != right_assertions[key])
+
+
+def _related_issue_mismatch(left, right):
+    first = left.metadata.get("related_issue")
+    second = right.metadata.get("related_issue")
+    return bool(first and second and str(first).strip() != str(second).strip())
+
+
+def _shared_change_context(left, right, fields):
+    """Require a reviewable shared identity before any cross-record inference."""
+    for key in ("related_issue", "related_commit"):
+        first = left.metadata.get(key)
+        second = right.metadata.get(key)
+        if first and second and str(first).strip() == str(second).strip():
+            return True
+    metric = str(left.metadata.get("metric_name") or "").strip()
+    if (metric and metric == str(right.metadata.get("metric_name") or "").strip()
+            and any(str(field).strip().lower() == metric.lower() for field in fields)):
+        return True
+    if _shared_subject(left, right):
+        return True
+    return False
+
+
+def _classify_phases(left_phase, right_phase):
+    if "competing" in {left_phase, right_phase}:
+        return "competing"
+    if left_phase in _POST_PHASES and right_phase in _POST_PHASES:
+        # Two current/post-change records that disagree describe the same
+        # effective version; a revert only counts when the other side is not
+        # itself another current record.
+        return "state_evolution" if {left_phase, right_phase} == {"post", "post_restore"} else "competing"
+    if left_phase in _POST_PHASES and right_phase in _PRE_PHASES | {"proposed", "discussion"}:
+        return "state_evolution"
+    if right_phase in _POST_PHASES and left_phase in _PRE_PHASES | {"proposed", "discussion"}:
+        return "state_evolution"
+    if "proposed" in {left_phase, right_phase} and (
+            (left_phase == "proposed" and right_phase in _PRE_PHASES)
+            or (right_phase == "proposed" and left_phase in _PRE_PHASES)):
+        # An explicitly proposed change from a recorded pre-change state is
+        # an evolution, not two assertions about the same effective state.
+        return "state_evolution"
+    return "undetermined"
+
+
+def classify_assertion_pair(left, right):
+    """Classify one machine-readable assertion pair without judging prose.
+
+    Returns ``None`` when the pair is not comparable, otherwise a small
+    deterministic classification.  ``state_evolution`` is only returned when
+    both an explicit stage/role relation and a shared change context exist.
+    Everything else remains ``competing`` or ``undetermined``.
+    """
+    if left.evidence_id == right.evidence_id or left.event_time is None or right.event_time is None:
+        return None
+    if _related_issue_mismatch(left, right):
+        return None
+    fields = _differing_assertions(left, right)
+    if not fields:
+        return None
+    left_phase, right_phase = _state_phase(left), _state_phase(right)
+    classification = _classify_phases(left_phase, right_phase)
+    shared = _shared_change_context(left, right, fields)
+    if classification == "state_evolution" and not shared:
+        # Without shared identity, an apparent transition could be unrelated.
+        classification = "undetermined"
+    return {
+        "classification": classification,
+        "fields": fields,
+        "left_phase": left_phase,
+        "right_phase": right_phase,
+        "shared_context": shared,
+    }
+
+
+def _stage_label(evidence):
+    role = evidence.metadata.get("record_role")
+    if isinstance(role, str) and role.strip():
+        return role.strip()[:80]
+    return f"{evidence.source_type}:{evidence.evidence_id[:12]}"
+
+
+def _bounded(text, limit=500):
+    return text if len(text) <= limit else text[: limit - 3] + "..."
+
+
+def _state_evolution_conflict(left, right, analysis):
+    fields = ", ".join(analysis["fields"][:20])
+    description = (
+        f"历史状态演进（非竞争性）：字段 {fields}；"
+        f"{_stage_label(left)}[{analysis['left_phase']}]@{left.event_time.isoformat()} 与 "
+        f"{_stage_label(right)}[{analysis['right_phase']}]@{right.event_time.isoformat()}；"
+        "记录角色或内容明确区分了原始记录、修复前状态或提议阶段与后续状态，保留双方，不据此裁决。")
+    return Conflict(
+        description=_bounded(description),
+        refs=[EvidenceRef(evidence_id=left.evidence_id, content_hash=left.content_hash),
+              EvidenceRef(evidence_id=right.evidence_id, content_hash=right.content_hash)],
+        origin="structured_assertion", fields=analysis["fields"][:20],
+        subject=_shared_subject(left, right), status="state_evolution",
+        relation="independent_of_submitted_claims")
+
+
+def state_evolution_conflict(left, right, analysis):
+    """Public builder for a classified pre/post pair; never trusts model text."""
+    return _state_evolution_conflict(left, right, analysis)
+
+
+def _structured_assertion_analysis(entries):
+    """Return (unresolved conflicts, explicit state evolutions).
+
+    Same-day assertions remain comparable for compatibility.  A cross-day pair
+    participates only when it shares an explicit issue/commit/metric/subject
+    context.  The classifier never uses Gold labels, time order alone or
+    numeric direction alone, and never assigns a winner.
     """
     items = []
     for entry in entries:
         item = entry.evidence if hasattr(entry, "evidence") else entry
         items.append(item if hasattr(item, "metadata") else Evidence.model_validate(item))
-    conflicts = []
+    conflicts, evolutions = [], []
     for index, left in enumerate(items):
-        left_assertions = left.metadata.get("assertions")
-        if not isinstance(left_assertions, dict) or left.event_time is None:
-            continue
         for right in items[index + 1:]:
-            right_assertions = right.metadata.get("assertions")
-            if (not isinstance(right_assertions, dict) or right.event_time is None
-                    or left.evidence_id == right.evidence_id
-                    or left.event_time.date() != right.event_time.date()):
+            analysis = classify_assertion_pair(left, right)
+            if analysis is None:
                 continue
-            left_env = left_assertions.get("environment")
-            right_env = right_assertions.get("environment")
-            if left_env and right_env and left_env != right_env:
+            same_day = left.event_time.date() == right.event_time.date()
+            if not same_day and not analysis["shared_context"]:
                 continue
-            differing = sorted(
-                key for key in set(left_assertions) & set(right_assertions)
-                if key not in {"environment", "env", "project_id", "dataset_kind"}
-                and isinstance(left_assertions[key], (str, int, float, bool))
-                and isinstance(right_assertions[key], (str, int, float, bool))
-                and left_assertions[key] != right_assertions[key]
-            )
-            if differing:
-                conflicts.append(Conflict(
-                    description="结构化断言在同一事件日不一致：" + ", ".join(differing) + "；需人工核对，系统不择一裁决。",
-                    refs=[EvidenceRef(evidence_id=left.evidence_id, content_hash=left.content_hash),
-                          EvidenceRef(evidence_id=right.evidence_id, content_hash=right.content_hash)],
-                    origin="structured_assertion", fields=differing[:20],
-                    subject=_shared_subject(left, right)))
-    return conflicts
+            if analysis["classification"] == "state_evolution":
+                evolutions.append(_state_evolution_conflict(left, right, analysis))
+                continue
+            label = "竞争性" if analysis["classification"] == "competing" else "无法判断"
+            conflicts.append(Conflict(
+                description=_bounded(
+                    f"结构化断言不一致（{label}）：" + ", ".join(analysis["fields"]) +
+                    "；需人工核对，系统不择一裁决。"),
+                refs=[EvidenceRef(evidence_id=left.evidence_id, content_hash=left.content_hash),
+                      EvidenceRef(evidence_id=right.evidence_id, content_hash=right.content_hash)],
+                origin="structured_assertion", fields=analysis["fields"][:20],
+                subject=_shared_subject(left, right),
+                status=analysis["classification"] if analysis["classification"] in {"competing", "undetermined"} else "undetermined"))
+    return conflicts, evolutions
+
+
+def structured_assertion_analysis(entries):
+    """Public analysis entry: (unresolved conflicts, explicit evolutions)."""
+    return _structured_assertion_analysis(entries)
+
+
+def structured_assertion_conflicts(entries):
+    """Return only unresolved structured assertion conflicts.
+
+    Explicit state evolutions are exposed separately by
+    :func:`structured_assertion_analysis`; they are not conflicts.
+    """
+    return _structured_assertion_analysis(entries)[0]
 
 
 class LedgerEntry(StrictModel):
@@ -314,6 +520,9 @@ class EvidenceLedger:
         self.duplicate_observations = 0
         self.gaps = ["尚未取得足以支持结论的证据。"]
         self.conflicts = []
+        # Explicitly classified pre/post records are kept visible but are not
+        # unresolved conflicts and do not affect submitted claims.
+        self.state_evolutions = []
 
     @property
     def entries(self):
@@ -347,11 +556,19 @@ class EvidenceLedger:
                     origin="evidence_version"))
         known = {tuple(sorted((r.evidence_id, r.content_hash) for r in conflict.refs))
                  for conflict in self.conflicts}
-        for conflict in structured_assertion_conflicts(self._entries.values()):
+        known_evolutions = {tuple(sorted((r.evidence_id, r.content_hash) for r in evolution.refs))
+                            for evolution in self.state_evolutions}
+        structured, evolutions = _structured_assertion_analysis(self._entries.values())
+        for conflict in structured:
             signature = tuple(sorted((r.evidence_id, r.content_hash) for r in conflict.refs))
             if signature not in known:
                 self.conflicts.append(conflict)
                 known.add(signature)
+        for evolution in evolutions:
+            signature = tuple(sorted((r.evidence_id, r.content_hash) for r in evolution.refs))
+            if signature not in known_evolutions:
+                self.state_evolutions.append(evolution)
+                known_evolutions.add(signature)
         if added:
             self.gaps = ["证据已取得，问题覆盖与语义支持仍待核实。"]
         return added
@@ -379,6 +596,8 @@ class EvidenceLedger:
                 rejected.append(key)
                 del self._entries[key]
         self.conflicts = [c for c in self.conflicts if all((r.evidence_id, r.content_hash) in self._entries for r in c.refs)]
+        self.state_evolutions = [e for e in self.state_evolutions
+                                 if all((r.evidence_id, r.content_hash) in self._entries for r in e.refs)]
         return rejected
 
 
@@ -428,6 +647,9 @@ class InvestigationResult(StrictModel):
     evidence_refs: list[EvidenceRef] = Field(default_factory=list)
     gaps: list[str] = Field(default_factory=list)
     conflicts: list[Conflict] = Field(default_factory=list)
+    # Explicit historical state evolution, kept separate from unresolved
+    # conflicts so it neither clears claims nor forces a conflict termination.
+    state_evolutions: list[Conflict] = Field(default_factory=list)
     possible_sources: list[ToolName] = Field(default_factory=lambda: list(TOOLS))
     trace: list[TraceStep] = Field(default_factory=list)
     usage: TokenUsage = Field(default_factory=TokenUsage)

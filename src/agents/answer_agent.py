@@ -413,23 +413,56 @@ class AnswerAgent:
         that the claim is unaffected.  Free-form legacy summaries never enter the
         answer.
         """
-        from src.investigation import Claim, Conflict
+        from src.investigation import (
+            Claim, Conflict, classify_assertion_pair, state_evolution_conflict)
         gaps = list(finish.gaps)
         accepted = []
         validated = []
         conflicts = list(ledger.conflicts)
         resolved_conflicts = []
-        for conflict in finish.conflicts:
-            records = [ledger.resolve(ref, getter) for ref in conflict.refs]
-            # Never trust attribution metadata supplied by the model itself.
-            resolved_conflicts.append((Conflict.model_validate({
-                "description": conflict.description, "refs": conflict.refs,
-                "origin": "model_reported", "fields": [], "subject": None,
-                "relation": "unattributable", "affected_claim_indexes": [],
-            }), records))
+        conflict_signatures = set()
         for conflict in conflicts:
             records = [ledger.resolve(ref, getter) for ref in conflict.refs]
             resolved_conflicts.append((conflict, records))
+            conflict_signatures.add(tuple(sorted((r.evidence_id, r.content_hash) for r in conflict.refs)))
+        evolution_signatures = {
+            tuple(sorted((r.evidence_id, r.content_hash) for r in evolution.refs))
+            for evolution in ledger.state_evolutions}
+        for conflict in finish.conflicts:
+            records = [ledger.resolve(ref, getter) for ref in conflict.refs]
+            signature = tuple(sorted((r.evidence_id, r.content_hash) for r in conflict.refs))
+            # A model report cannot resurrect a pair the evidence already
+            # classifies as an explicit pre/post state evolution.
+            if signature in evolution_signatures:
+                continue
+            analyses = []
+            for index, left in enumerate(records):
+                for right in records[index + 1:]:
+                    analysis = classify_assertion_pair(left, right)
+                    if analysis is not None:
+                        analyses.append((left, right, analysis))
+            pair_count = len(records) * (len(records) - 1) // 2
+            if (analyses and len(analyses) == pair_count
+                    and all(item[2]["classification"] == "state_evolution"
+                            for item in analyses)):
+                left, right, analysis = analyses[0]
+                ledger.state_evolutions.append(
+                    state_evolution_conflict(left, right, analysis))
+                evolution_signatures.add(signature)
+                continue
+            # A duplicate of a structured conflict is one conflict, not two.
+            if signature in conflict_signatures:
+                continue
+            # Never trust attribution metadata supplied by the model itself.
+            # An explicit model-reported conflict without a verified state
+            # evolution is still retained as competing/undetermined.
+            resolved_conflicts.append((Conflict.model_validate({
+                "description": conflict.description, "refs": conflict.refs,
+                "origin": "model_reported", "fields": [], "subject": None,
+                "status": "competing", "relation": "unattributable",
+                "affected_claim_indexes": [],
+            }), records))
+            conflict_signatures.add(signature)
         discarded_by_validation = 0
         for claim in finish.claims:
             records = [ledger.resolve(ref, getter) for ref in claim.refs]
@@ -521,7 +554,7 @@ class AnswerAgent:
         return lines
 
     def render_investigation(self, ledger, claims, gaps, conflicts, reason, coverage=None,
-                             synthesis=None, question=""):
+                             synthesis=None, question="", state_evolutions=()):
         if synthesis is None:
             synthesis = self.build_synthesis(ledger, claims, gaps, conflicts, reason, question)
         lines = ["【回答】(ReAct)", f"run_id: {ledger.run_id}", f"termination_reason: {reason}",
@@ -540,6 +573,13 @@ class AnswerAgent:
             for claim in pending:
                 refs = ", ".join(f"{r.evidence_id}@{r.content_hash}" for r in claim.refs)
                 lines.append(f"- 待核实原文摘录：{claim.text} [{refs}]")
+        if state_evolutions:
+            lines.append("【历史状态演进（证据明确区分阶段，非竞争性冲突；保留双方，不据此裁决）】")
+            for evolution in state_evolutions:
+                refs = ", ".join(f"{ref.evidence_id}@{ref.content_hash}"
+                                 for ref in evolution.refs)
+                lines.append(f"- {evolution.description} [{refs}]")
+            lines.append("- 完整原文见 Trace；该区段不改变任何 Claim 的引用身份校验结果。")
         related = [conflict for conflict in conflicts
                    if conflict.relation == "affects_submitted_claim"]
         unattributable = [conflict for conflict in conflicts

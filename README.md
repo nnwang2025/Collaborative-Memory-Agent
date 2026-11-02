@@ -4,7 +4,9 @@
 
 重点业务数据是聊天、会议纪要、需求文档、评审记录和决策变更；Git Commit、Issue 属于补充证据。系统通过可回取的 Evidence ID、来源 locator、事件时间和版本记录实现跨来源追溯，而不是把项目定位成单纯的 GitHub 代码检索。
 
-> **默认入口说明**：`python main.py` 运行的是 **fixture LangGraph Workflow 演示**，不是真实 Agent 自主调查。正式 live ReAct 调查必须显式指定 `--dataset-kind live --project-id ...`，并先通过 `src.ingest` 或 V2 `v2-source-add` / `v2-sync` 导入该项目的真实数据。API 默认同样是 fixture LangGraph；ReAct 需在请求中设置 `"backend": "react"` 和 live scope。
+> **默认入口说明**：`python main.py` 运行的是 **fixture LangGraph Workflow 演示**，不是真实 Agent 自主调查。正式 live ReAct 调查必须显式指定 `--dataset-kind live --project-id ...`，并先通过 `src.ingest` 或 V2 `v2-source-add` / `v2-sync` 导入该项目的真实数据。兼容 API `/chat` 默认同样是 fixture LangGraph；ReAct 需在请求中设置 `"backend": "react"` 和 live scope。
+>
+> **Web 工作台**：启动 API 后访问 `http://localhost:8000/demo/`。它调用持久化 `/sessions`、`/runs` 运行时（ReAct + SSE），不是 `/chat` 兼容接口。未配置模型凭据时会记录 `model_skipped`（`no_credential` / `offline_fallback`），通常以 `insufficient` 结束；这只能用于验证调查链、SSE、Evidence 与 Trace，不代表真实模型质量。
 
 ---
 
@@ -112,18 +114,19 @@ python main.py --react --dataset-kind live --project-id your-project
 
 当前评测事实（截至本版）：
 
-- **离线回归：284 项测试通过**（原 262 项 + 相关性策略/真实缓存模型检索/同步并发与扫描失败 22 项），不调用收费模型、不读取真实密钥。
+- **离线回归：390 项测试通过**（含 Runtime/Session/SSE、Context、ReAct 协议、历史状态演进与 Web 工作台/Evidence 详情），不调用收费模型、不读取真实密钥。
 - **任务级 Benchmark：16 任务 / 8 类别**。其中 **4 个不同任务**（`single-atlas`、`cross-atlas`、`conflict-atlas`、`decision-atlas`）做过真实模型在线运行；其余 12 个任务只有离线运行。
 - **尚无 16 任务整体人工成功率**。`TaskSuccessRate` 和 `AppropriateAbstentionRate` 只在显式人工评分后才有值，当前保持 `null`；字面标记覆盖率不能替代语义成功判断。
 - `decision-atlas` 第二轮在线结果的严格复评事实覆盖为 **1/2**。另一个事实依赖的标记出现在“未确认部分”标题中，严格判定不认可该标题作为事实证据，因此未放宽规则换取 2/2。
 - 在线结果还包含协议失败和一次预算耗尽，不能据此声称 ReAct 已整体优于 Workflow。
 - 独立 V2 合成开发集上已实测 BM25 / Dense / Hybrid；无匹配查询的空结果识别率在三种模式下均为 **1.0**，但正常查询存在 **9.09%**（1/11）的单一预期证据误拒，详见下文。
+- **Benchmark V4 首次真实单任务运行（`v4-single-source-01`）未形成 Citation 交付**：5 次模型调用、4 次工具调用、30,735 provider tokens，`EvidenceRecall@K=1.0`，但 `citation_count=0`、`FactAccuracy=0`、终止原因 `budget`。这些指标只覆盖已执行的有效调用，不能推导为 `TaskSuccessRate`；后者仍为 `null`，等待独立人工评分。
 
 详见 [评测报告](docs/BENCHMARK_EVALUATION.md) 与 [任务级评测说明](benchmark/tasks/README.md)。
 
 首次 DeepSeek Flash 冒烟日志已完成[定向协议诊断与修复](docs/DEEPSEEK_PROTOCOL_FIX.md)：修正 ReAct 每轮硬编码 512 输出限制，保留停止原因并分类反馈。后续在线运行已改用修复后的配置，历史报告原样保留。
 
-后续新增[调查完整性与上下文改进](docs/INVESTIGATION_CONTEXT_IMPLEMENTATION.md)：live 证据按查询选择可回取片段，保留父 ID/hash；日期过滤空结果可有界补查时间未知资料；请求历史去重并设独立字节预算。multi_round 按事实、来源和时间关联验收。**当前 284 项离线测试通过**；在线覆盖仍仅限上述 4 个任务。
+后续新增[调查完整性与上下文改进](docs/INVESTIGATION_CONTEXT_IMPLEMENTATION.md)：live 证据按查询选择可回取片段，保留父 ID/hash；日期过滤空结果可有界补查时间未知资料；请求历史去重并设独立字节预算。multi_round 按事实、来源和时间关联验收。**当前 390 项离线测试通过**；在线覆盖仍仅限上述任务与 Benchmark V4 的单任务首次运行。
 
 ---
 
@@ -249,6 +252,7 @@ DEEPSEEK_MODEL=deepseek-flash
 > - 非空占位值（如 `your_api_key_here`、`sk-your-key-here`）会被视为未配置，不会被当作真实凭据发送。
 > - 旧配置 `SILICONFLOW_API_KEY` / `SILICONFLOW_BASE_URL` / `SILICONFLOW_MODEL`、`OPENAI_API_KEY` / `OPENAI_BASE_URL` / `MODEL_NAME` 仍然兼容；DeepSeek Key 不会被转发到其他域名。
 > - 未配置 API Key 时，系统自动回退到本地模板生成（不影响离线运行和测试）。
+> - **`.env` 不会被 Python import 自动读取**。`uvicorn api:app` 只导入模块，不加载 `.env`；需要环境变量时使用 `uvicorn api:app --env-file .env`，或使用 `python api.py`（该入口显式调用 `load_env_file()`）。`main.py` 也只在 CLI 入口显式加载 dotenv。
 
 ### 运行
 
@@ -262,8 +266,14 @@ python main.py --react
 # Linear 对照
 python main.py --linear
 
-# 启动 API 服务（默认 fixture LangGraph）
+# 启动 API 服务（兼容 /chat 默认 fixture LangGraph；Web 工作台使用持久化 /sessions、/runs）
 uvicorn api:app --reload --port 8000
+
+# 需要从 .env 读取模型/数据库配置时，显式传 --env-file
+uvicorn api:app --reload --port 8000 --env-file .env
+
+# 等价的自带入口：先显式加载 .env，再启动 uvicorn
+python api.py
 
 # 接入真实 Git 数据
 python -m src.ingest --git /path/to/your/repo --project-id your-project --dry-run
@@ -277,7 +287,7 @@ python -m src.evaluate
 ### 离线验证（不调用模型、不读取密钥）
 
 ```bash
-# 331 项离线回归测试（含 Phase 2 Runtime/Session/SSE 与 Phase 3 Context Engineering）
+# 390 项离线回归测试（含 Phase 2 Runtime/Session/SSE、Phase 3 Context Engineering 与 Web 工作台）
 python -m unittest discover -s tests -v
 
 # Demo 1：校验合成 CSV 导入，不写入数据库
@@ -288,6 +298,49 @@ python examples/team_collaboration/decision_demo.py
 ```
 
 Windows 下通过管道向交互式 CLI 输入中文时，建议先设置 `PYTHONUTF8=1`（PowerShell：`$env:PYTHONUTF8="1"`），否则 Python 可能按本地代码页解码失败。该问题属于终端输入编码，不是 Agent 运行错误。
+
+### 研发调查 Web 工作台
+
+`web/` 是由同一 FastAPI 进程托管的轻量 HTML/CSS/JavaScript 工作台，无 Node 构建链、无 CDN 依赖。启动后访问：
+
+```text
+http://localhost:8000/demo/
+```
+
+工作台调用真实后端，不内嵌演示答案：
+
+- 左侧创建/加载/关闭 Session，按 `project_id` + `dataset_kind` 绑定 Scope；显示当前 Session 的 Run 历史。
+- 中间提交 Run，显示用户问题、最终 Agent 回答、Run 状态与终止原因。`insufficient` 明确显示为“证据不足”，不会包装成成功答案。
+- 右侧三个页签：Evidence（ID、来源、locator、hash、只读内容与当前/历史版本）、Tool Calls（顺序、耗时、错误/重试、检索模式与 fallback）、Trace（生命周期事件、Context Trace、SSE 时间线）。
+- 提交后立即显示 `run_id`，通过 `GET /runs/{run_id}/stream` 接收 SSE；断线后用 `after_seq`/事件 API 回填并按 `event_seq` 去重；SSE 不可用时轮询 Run 状态。
+- 刷新或关闭页面只断开浏览器连接，**不会取消后台 Run**。刷新后通过 URL/localStorage 中的 `session_id`、`run_id` 恢复。
+- 浏览器不保存 API Key；不会展示 Authorization Header、环境变量或数据库堆栈。页面只做只读展示，不修改 Evidence 生命周期。
+
+Evidence 正文通过新增的只读 `GET /evidence/{evidence_id}` 获取。该端点要求显式 `project_id` + `dataset_kind`，可带 `content_hash` 固定本次 Run 实际看到的版本；跨 Scope 或 hash 不匹配返回 404，正文最多返回 12,000 字符并标记截断，不会用当前版本替换历史引用。
+
+**离线/无凭据模式**：如果未配置模型 Key，ReAct 记录 `model_skipped` 并走离线回退。Run 仍会完成调查链并可能返回 `insufficient`；这是预期行为，不代表真实模型检索或回答质量。
+
+**常见错误**：
+
+| 现象 | 处理 |
+|------|------|
+| `/demo/` 404 | 确认从仓库根目录启动，且 `web/index.html` 存在；`create_app()` 仅在 `web/` 存在时挂载静态目录。 |
+| 页面能打开但 API 503/504 | 检查 Uvicorn 进程、`EVIDENCE_DB_PATH` 与索引/数据是否就绪；页面会显示后端状态。 |
+| 提交 Run 返回 409 `session_closed` | 当前 Session 已关闭；创建新 Session 或加载未关闭的 Session。 |
+| 提交 Run 返回 409 `scope_mismatch` | 请求 `project_id`/`dataset_kind` 与 Session 不一致；页面使用 Session 绑定的 Scope。 |
+| Evidence 详情 404 | Evidence 不属于当前 project/dataset，或 `content_hash` 不存在；页面会保留引用元数据并明确提示。 |
+| SSE 断开 | 页面自动重连并按 `after_seq` 回填；多次失败后轮询 Run 状态，后台 Run 不受影响。 |
+| `.env` 中配置未生效 | `uvicorn api:app` 不自动读取 `.env`；改用 `--env-file .env` 或 `python api.py`。 |
+
+浏览器级验收脚本（需要本机 Chrome/Edge 与 `websockets`，会启动临时 Uvicorn、临时 SQLite 和合成语料；不调用收费模型）：
+
+```bash
+python tests/browser_web_demo_check.py
+```
+
+该脚本不是普通 unittest 的一部分；普通离线回归仍使用 `python -m unittest discover -s tests -v`。
+
+完整的演示路径、数据接入、问题示例、Evidence/Trace 讲解口径与真实模型成功率边界见 [DEMO_GUIDE.md](DEMO_GUIDE.md)。
 
 ### 正式 live ReAct 演示（可复现）
 
@@ -408,13 +461,39 @@ ingest_all(csv_files=[{
 
 ## API 端点
 
+### 兼容问答接口
+
 | 方法 | 路径 | 说明 |
 |------|------|------|
-| `POST` | `/chat` | 问答（JSON）；请求体含 `question`、`backend`、`scope` |
-| `POST` | `/chat/stream` | 问答（SSE 流式） |
+| `POST` | `/chat` | 请求级问答（JSON）；请求体含 `question`、`backend`、`scope` |
+| `POST` | `/chat/stream` | 请求级问答（SSE 流式） |
 | `GET` | `/health` | 健康检查 |
 
-启动后访问 `http://localhost:8000/docs` 查看完整 Swagger 文档。API 默认 `backend=langgraph` 且 scope 为 fixture；live ReAct 必须显式传 `backend=react` 与 live scope，并通过 `EVIDENCE_DB_PATH` 选择数据库。当前 API 没有认证和限流，只适合本地/受控环境，不能直接暴露到公网。
+`/chat` 默认 `backend=langgraph` 且 scope 为 fixture；live ReAct 必须显式传 `backend=react` 与 live scope。它与持久化 Session/Run 是两套入口，不能假设二者共享对话状态。
+
+### 持久化 Session / Run（Web 工作台所用）
+
+| 方法 | 路径 | 说明 |
+|------|------|------|
+| `POST` | `/sessions` | 创建 Session；body：`project_id`、`dataset_kind` |
+| `GET` | `/sessions/{session_id}` | Session、消息与最近 Run |
+| `POST` | `/sessions/{session_id}/close` | 关闭 Session；之后提交 Run 返回 409 `session_closed` |
+| `GET` | `/sessions/{session_id}/runs` | 当前 Session 的 Run 列表 |
+| `POST` | `/runs` | 提交 Run；body：`session_id`、`question`，可带 `project_id`、`dataset_kind`、`timeout_seconds`、`budget`、`idempotency_key`（或 `Idempotency-Key` 请求头） |
+| `GET` | `/runs/{run_id}?project_id=...` | Run 状态、终止原因、检索诊断字段 |
+| `GET` | `/runs/{run_id}/events?project_id=...` | 持久化事件（支持 `after_seq`） |
+| `GET` | `/runs/{run_id}/stream?project_id=...` | SSE；支持 `after_seq` 与 `Last-Event-ID`，断开不取消 Run |
+| `GET` | `/runs/{run_id}/result?project_id=...` | 终态结果；非终态返回 409 `run_not_terminal` |
+| `GET` | `/runs/{run_id}/tool-calls?project_id=...` | Tool Calls（顺序、状态、耗时、错误） |
+| `GET` | `/runs/{run_id}/evidence-refs?project_id=...` | 本次 Run 实际引用的 Evidence ID/hash |
+| `GET` | `/runs/{run_id}/context-trace?project_id=...` | Context Engineering 事件与预算统计 |
+| `POST` | `/runs/{run_id}/cancel?project_id=...` | 协作式取消请求 |
+| `GET` | `/evidence/{evidence_id}?project_id=...&dataset_kind=...` | 只读 Evidence 详情；可带 `content_hash` 固定历史版本，正文最多 12,000 字符 |
+| `GET` | `/demo/` | 同源 Web 工作台；`/` 重定向到此处 |
+
+Run 级读取必须带所属 `project_id`，跨项目按 404 处理；Evidence 详情进一步要求显式 `project_id` + `dataset_kind`，不会回退到其他项目或当前版本。SSE 事件名为 `run_created`、`run_started`、`tool_started`、`model_skipped`、`run_finished` 等，流末发送 `stream_end`。
+
+启动后访问 `http://localhost:8000/docs` 查看完整 Swagger 文档。当前 API 没有认证和限流，只适合本地/受控环境，不能直接暴露到公网。
 
 ---
 
@@ -422,7 +501,11 @@ ingest_all(csv_files=[{
 
 ```
 ├── main.py                  # CLI 入口（支持 --langgraph/--react/--linear）
-├── api.py                   # FastAPI 服务
+├── api.py                   # FastAPI 服务 + /demo 静态挂载
+├── web/                     # 轻量研发调查工作台（原生 HTML/CSS/JS）
+│   ├── index.html
+│   ├── styles.css
+│   └── app.js
 ├── Dockerfile / docker-compose.yml / .dockerignore
 ├── requirements.txt / requirements.lock
 ├── .env.example             # 模板；真实 .env 不进入镜像
@@ -500,7 +583,7 @@ ingest_all(csv_files=[{
 - **证据化输出**：回答+证据+来源+实体+置信度+路由；live ReAct 额外校验 Evidence ID、hash、scope 和原文摘录
 - **多轮对话记忆**：追问感知，窗口滑动 + 历史摘要
 - **双模式部署**：CLI 交互 + FastAPI 流式服务 + Docker 容器化
-- **离线 Benchmark/回归**：冻结 V1 合成集保持不变；V2 独立开发集报告与 284 项离线测试通过。真实模型仅覆盖 4 个 V1 任务，V2 尚无真实模型语义验收。
+- **离线 Benchmark/回归**：冻结 V1 合成集保持不变；V2 独立开发集报告与 390 项离线测试通过。真实模型仅覆盖 4 个 V1 任务与 Benchmark V4 单任务首次运行，尚无完整真实模型语义验收。
 
 ## Docker 部署与安全边界
 
@@ -524,7 +607,8 @@ ingest_all(csv_files=[{
 - **空结果策略的边界**：Dense/Hybrid 的最近邻候选现在会经过校准门控，无匹配查询在 V2 测试集上识别率为 1.0；但门控是保守的词法/绝对 cosine 规则，不是重排模型。低重叠语义改写可能被误拒，阈值也只在 9 文档开发集上校准。门控不满足时应返回空结果并在 diagnostics/Agent gap 中披露，而不是返回最近邻伪证据；更换领域或 embedder 后必须重新校准。
 - **Docker 实际构建**：本机无 Docker CLI，镜像构建与容器运行未验证。
 - **16 任务整体在线成功率**：只有 4 个任务有真实模型运行记录，且没有对全部任务做人工评分。
-- **连续会话持久化**：API 为请求独立实例，没有跨请求的持久会话。
+- **Benchmark V4 真实模型调查成功率**：仅执行过 `v4-single-source-01` 一次真实运行，未形成最终可引用答案；真实模型多轮调查的成功率尚未得到充分验证。`EvidenceRecall@K=1.0` 只表示本次已交付 Evidence 覆盖了 Gold 组，不等于 `TaskSuccessRate=100%`，也不等于 Citation 的语义支持已自动验证。
+- **持久化运行时范围**：`/sessions`、`/runs` 已提供跨请求持久化 Session/Run、事件重放和追问上下文；兼容 `/chat`、`/chat/stream` 仍是请求独立实例。没有多租户认证、全局 Session 列表、后台调度或跨进程分布式运行时。
 
 ## 工程审计与后续开发
 

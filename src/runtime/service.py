@@ -41,6 +41,7 @@ REASON_TO_STATUS = {
     "conflict": "conflict",
     "tool_failure": "failed",
     "budget": "failed",
+    "model_error": "failed",
 }
 
 
