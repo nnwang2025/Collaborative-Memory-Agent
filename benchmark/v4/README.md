@@ -113,6 +113,11 @@ task_set_version`（多轮任务另含 `turns`）。运行时不接收 Gold。�
 避免把只覆盖部分任务的指标误读为全体指标；例如离线基线中大量运行没有引用，
 CitationValidity 只在存在引用的运行上测量。
 
+`termination_matches_expected` 优先读取
+`Gold.expected_abstention.expected_termination`，并兼容旧的顶层
+`expected_termination` 字段。该检查只比较终止状态，不把 `insufficient` 当作
+语义成功，也不替代人工评分。
+
 **TaskSuccessRate 在独立人工评分完成前始终为 `null`**。自动评分只生成
 `pending_grading.json` 与模板；`grade.py` 只接受具名 reviewer 对每个
 `(backend, task_id)` 的显式布尔判断，并且写入独立 `graded-*` 目录，绝不回写原始报告。
@@ -218,8 +223,18 @@ python -m benchmark.v4.acceptance            # 生成到 benchmark/v4/acceptance
 python -m benchmark.v4.acceptance --plan-only
 ```
 
-本轮只准备材料，未执行真模型调用。`TaskSuccessRate` 只有在 20 个
-`(task_id, backend)` 都有具名 reviewer 的显式判断后才可计算。
+上述 10 任务计划只准备材料，未执行真模型调用；单任务最终验收记录见下。
+`TaskSuccessRate` 只有在 20 个 `(task_id, backend)` 都有具名 reviewer 的显式判断后
+才可计算。
+
+### 最终验收记录
+
+`acceptance/final_acceptance_v4_single_source_03.md` 记录了
+`v4-single-source-03` 的真实在线运行：4 条有效 Claim、4 条有效 Citation、
+2/2 Gold Evidence、3/3 必选事实，但 `termination_reason=insufficient`。
+该记录把样本归类为“核心答案与引用成功、严格终止状态未达标”，
+`TaskSuccessRate` 仍为 `null`。该文档同时说明：`CitationValidity=1.0`
+只表示引用身份与逐字摘录合法，不等于独立语义准确率。
 
 ## 人工评分
 

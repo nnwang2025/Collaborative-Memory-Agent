@@ -251,7 +251,12 @@ def _recovery_signal(label: dict[str, Any], raw: dict[str, Any], required_ids: s
 
 
 def _termination_signal(label: dict[str, Any], raw: dict[str, Any]) -> bool | None:
-    expected = label.get("expected_termination")
+    # Gold stores this under expected_abstention; keep the top-level fallback
+    # for older labels created before that structure was standardized.
+    abstention = label.get("expected_abstention") or {}
+    expected = abstention.get("expected_termination")
+    if expected is None:
+        expected = label.get("expected_termination")
     if not expected:
         return None
     termination = raw.get("termination_reason")

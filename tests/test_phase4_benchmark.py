@@ -276,6 +276,52 @@ class ScoringTests(unittest.TestCase):
         refused = _score(normal, refusal, self.db)
         self.assertTrue(refused["metrics"]["false_refusal_signal"])
 
+    def test_expected_termination_matches_all_supported_states(self):
+        cases = [
+            ("sufficient", "sufficient", True),
+            ("insufficient", "insufficient", True),
+            ("conflict", "conflict", True),
+            ("budget", "budget", True),
+            ("sufficient", "insufficient", False),
+            ("insufficient", "sufficient", False),
+            ("conflict", "budget", False),
+            ("budget", "conflict", False),
+        ]
+        for expected, actual, should_match in cases:
+            with self.subTest(expected=expected, actual=actual):
+                label = _base_label()
+                label["expected_abstention"]["expected_termination"] = [expected]
+                row = _score(label, _base_raw(termination_reason=actual), self.db)
+                self.assertEqual(row["metrics"]["termination_matches_expected"], should_match)
+
+    def test_expected_termination_prefers_nested_and_supports_top_level_fallback(self):
+        legacy = _base_label()
+        legacy.pop("expected_abstention")
+        legacy["expected_termination"] = ["budget"]
+        fallback = _score(legacy, _base_raw(termination_reason="budget"), self.db)
+        self.assertTrue(fallback["metrics"]["termination_matches_expected"])
+
+        nested = _base_label()
+        nested["expected_abstention"]["expected_termination"] = ["conflict"]
+        nested["expected_termination"] = ["budget"]
+        nested_match = _score(nested, _base_raw(termination_reason="conflict"), self.db)
+        nested_mismatch = _score(nested, _base_raw(termination_reason="budget"), self.db)
+        self.assertTrue(nested_match["metrics"]["termination_matches_expected"])
+        self.assertFalse(nested_mismatch["metrics"]["termination_matches_expected"])
+
+    def test_real_gold_termination_is_read_from_abstention_block(self):
+        snapshot = dataset.load()
+        label = snapshot.label("v4-single-source-03")
+        self.assertEqual(label["expected_abstention"]["expected_termination"], ["sufficient"])
+        self.assertIsNone(label.get("expected_termination"))
+        row = scoring.score_run(
+            _base_raw(termination_reason="insufficient"),
+            _task(label["task_id"], label["project_id"]),
+            label,
+            evidence_db=self.db,
+        )
+        self.assertFalse(row["metrics"]["termination_matches_expected"])
+
     def test_conflict_detection_requires_both_values(self):
         label = _base_label()
         label["expected_conflicts"] = [{"field": "canary_percent", "values": ["10", "5"],
