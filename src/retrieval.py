@@ -34,7 +34,7 @@ from typing import Dict, List, Optional, Sequence, Tuple
 
 import numpy as np
 
-ROOT = Path(__file__).resolve().parents[1]  # src/retrieval.py → LangGraphRAG/
+ROOT = Path(__file__).resolve().parents[1]  # src/retrieval.py → Collaborative memory agent/
 INDEX_DIR = ROOT / "db_md"
 INDEX_PATH = INDEX_DIR / "faiss.index"
 DOCS_PATH = INDEX_DIR / "docs.pkl"

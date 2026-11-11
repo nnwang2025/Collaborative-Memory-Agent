@@ -11,6 +11,19 @@ __pycache__/
 .env.*
 !.env.example
 
+# Additional credential material (never commit)
+*.pem
+*.key
+*.p12
+*.pfx
+*.kdbx
+credentials*
+secrets.env
+secrets/
+secret/
+.npmrc
+.pypirc
+
 # IDE/editor
 .idea/
 .vscode/
@@ -40,6 +53,14 @@ temp/
 *.out
 *_out.txt
 .claude/
+
+# Local personal material (kept out of the published repository)
+/INTERVIEW_HANDBOOK.md
+
+# Temporary trace exports (ad-hoc --trace-jsonl runs)
+*_trace.jsonl
+*.trace.json
+trace-*.json
 
 # Historical benchmark/evaluation artifacts (source and definitions stay tracked)
 benchmark/reports/

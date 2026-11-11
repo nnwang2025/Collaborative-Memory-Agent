@@ -114,7 +114,7 @@ python main.py --react --dataset-kind live --project-id your-project
 
 当前评测事实（截至本版）：
 
-- **离线回归：390 项测试通过**（含 Runtime/Session/SSE、Context、ReAct 协议、历史状态演进与 Web 工作台/Evidence 详情），不调用收费模型、不读取真实密钥。
+- **离线回归：393 项测试通过**（含 Runtime/Session/SSE、Context、ReAct 协议、历史状态演进与 Web 工作台/Evidence 详情），不调用收费模型、不读取真实密钥。
 - **任务级 Benchmark：16 任务 / 8 类别**。其中 **4 个不同任务**（`single-atlas`、`cross-atlas`、`conflict-atlas`、`decision-atlas`）做过真实模型在线运行；其余 12 个任务只有离线运行。
 - **尚无 16 任务整体人工成功率**。`TaskSuccessRate` 和 `AppropriateAbstentionRate` 只在显式人工评分后才有值，当前保持 `null`；字面标记覆盖率不能替代语义成功判断。
 - `decision-atlas` 第二轮在线结果的严格复评事实覆盖为 **1/2**。另一个事实依赖的标记出现在“未确认部分”标题中，严格判定不认可该标题作为事实证据，因此未放宽规则换取 2/2。
@@ -126,7 +126,7 @@ python main.py --react --dataset-kind live --project-id your-project
 
 首次 DeepSeek Flash 冒烟日志已完成[定向协议诊断与修复](docs/DEEPSEEK_PROTOCOL_FIX.md)：修正 ReAct 每轮硬编码 512 输出限制，保留停止原因并分类反馈。后续在线运行已改用修复后的配置，历史报告原样保留。
 
-后续新增[调查完整性与上下文改进](docs/INVESTIGATION_CONTEXT_IMPLEMENTATION.md)：live 证据按查询选择可回取片段，保留父 ID/hash；日期过滤空结果可有界补查时间未知资料；请求历史去重并设独立字节预算。multi_round 按事实、来源和时间关联验收。**当前 390 项离线测试通过**；在线覆盖仍仅限上述任务与 Benchmark V4 的单任务首次运行。
+后续新增[调查完整性与上下文改进](docs/INVESTIGATION_CONTEXT_IMPLEMENTATION.md)：live 证据按查询选择可回取片段，保留父 ID/hash；日期过滤空结果可有界补查时间未知资料；请求历史去重并设独立字节预算。multi_round 按事实、来源和时间关联验收。**当前 393 项离线测试通过**；在线覆盖仍仅限上述任务与 Benchmark V4 的单任务首次运行。
 
 ---
 
@@ -236,6 +236,8 @@ pip install -r requirements.lock
 
 > `requirements.lock` 来自 Windows / Python 3.12.7 的已验证环境快照；Docker 镜像使用的 Python 3.11 与容器内安装**尚未验证**，见文末“未验证项”。
 
+> 首次使用 Dense/Hybrid 检索或构建索引时，`sentence-transformers` 会从 Hugging Face 下载嵌入模型 `BAAI/bge-small-zh-v1.5`（需要网络，下载后缓存在本地）；纯 BM25 路径与不触达该模型的离线测试不需要下载。
+
 ### 配置
 
 ```bash
@@ -287,7 +289,7 @@ python -m src.evaluate
 ### 离线验证（不调用模型、不读取密钥）
 
 ```bash
-# 390 项离线回归测试（含 Phase 2 Runtime/Session/SSE、Phase 3 Context Engineering 与 Web 工作台）
+# 393 项离线回归测试（含 Phase 2 Runtime/Session/SSE、Phase 3 Context Engineering 与 Web 工作台）
 python -m unittest discover -s tests -v
 
 # Demo 1：校验合成 CSV 导入，不写入数据库
@@ -583,7 +585,7 @@ Run 级读取必须带所属 `project_id`，跨项目按 404 处理；Evidence �
 - **证据化输出**：回答+证据+来源+实体+置信度+路由；live ReAct 额外校验 Evidence ID、hash、scope 和原文摘录
 - **多轮对话记忆**：追问感知，窗口滑动 + 历史摘要
 - **双模式部署**：CLI 交互 + FastAPI 流式服务 + Docker 容器化
-- **离线 Benchmark/回归**：冻结 V1 合成集保持不变；V2 独立开发集报告与 390 项离线测试通过。真实模型仅覆盖 4 个 V1 任务与 Benchmark V4 单任务首次运行，尚无完整真实模型语义验收。
+- **离线 Benchmark/回归**：冻结 V1 合成集保持不变；V2 独立开发集报告与 393 项离线测试通过。真实模型仅覆盖 4 个 V1 任务与 Benchmark V4 单任务首次运行，尚无完整真实模型语义验收。
 
 ## Docker 部署与安全边界
 
